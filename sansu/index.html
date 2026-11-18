@@ -358,6 +358,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .wrap > .view { grid-row: 1 / 5; grid-column: 2; margin-top: 40px; }
   .wrap > .parents { grid-row: 4; grid-column: 1; }
 }
+#next.wait { opacity: .6; }
+.tapnext { font-size: 14px; color: var(--muted); }
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -1120,6 +1122,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (st.mode === 'mix' && q.type === prev.type)))));
     st.hist.push(key(q));
     st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false; st.blank = 0; st.vals = ['', ''];
+    st.queued = false; st.lockUntil = 0;
     requestAnimationFrame(() => showCard());
     st.anim = 0; st.lvMsg = '';
     st.qLv = cherryLv();
@@ -1456,6 +1459,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       : `<span class="ans${st.input ? ' filled' : ''}">${st.input || '&nbsp;'}</span>`;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！ ブロックを ほったよ！'}</span>
+      <span class="tapnext">👆 どこを おしても つぎへ すすむよ</span>
       ${st.lvMsg === 'up' ? `<span class="lvmsg">⬆ おてつだい レベル ${cherryLv()} に アップ！ ${cherryLv() === 3 ? 'つぎは こたえだけで やってみよう' : 'つぎは ちいさな けいさんだけ'}</span>` : ''}
       ${st.lvMsg === 'down' ? `<span class="lvmsg">おてつだい レベル ${cherryLv()} で もういちど たしかめよう</span>` : ''}
       ${dropHTML(st.got, st.gotNew)}
@@ -1480,7 +1484,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       </div><div class="acol">
       ${battleHTML()}
       ${fb}
-      ${st.solved ? '' : padHTML('c')}
+      ${padHTML('c')}
       <div class="actions">
         ${st.solved ? `<button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎの ブロック ▶' : 'けっかを みる ▶'}</button>`
                     : (st.hint ? '' : '<button class="btn" id="hint">ヒントを みる</button>')}
@@ -1503,20 +1507,30 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       render();
     }; });
     const h = document.getElementById('hint'); if (h) h.onclick = () => { st.hint = true; render(); };
-    const n = document.getElementById('next'); if (n) { n.onclick = advance; holdNext(n, fxNow); }
+    const n = document.getElementById('next'); if (n) holdNext(n, fxNow);
   }
   // こうげきを ゆっくり みられるように、つぎへ ボタンは すこし まってから おせる
   const SLOW = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
   function holdNext(n, fxNow) {
+    n.onclick = tryNext;
     if ((fxNow === 'hit' || fxNow === 'crit') && SLOW()) {
-      st.lockUntil = Date.now() + 2800; n.disabled = true;
-      setTimeout(() => { n.disabled = false; n.focus({ preventScroll: true }); }, 2800);
-    } else n.focus({ preventScroll: true });
+      st.lockUntil = Date.now() + 2800; n.classList.add('wait');
+      setTimeout(() => { n.classList.remove('wait'); }, 2800);
+    } else st.lockUntil = 0;
   }
+  // こたえた あとは どこを おしても つぎへ（こうげきの えんしゅつ ちゅうに おしたら、おわってから すすむ）
+  function tryNext() {
+    if (!st.solved || st.done || st.queued) return;
+    const wait = (st.lockUntil || 0) - Date.now();
+    if (wait <= 0) { advance(); return; }
+    st.queued = true;
+    setTimeout(() => { st.queued = false; if (st.solved && !st.done) advance(); }, wait);
+  }
+
 
   function press(k) {
     if (st.done) return;
-    if (st.solved) { if (k === 'go' && Date.now() >= (st.lockUntil || 0)) advance(); return; }
+    if (st.solved) { tryNext(); return; }
     if (k === 'del') st.input = st.input.slice(0, -1);
     else if (k === 'go') {
       if (!st.input) return;
@@ -2316,6 +2330,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   document.addEventListener('keydown', e => {
     if (!overlay.hidden) { if (e.key === 'Escape' && document.getElementById('playersBtn')) closeOverlay(); return; }
     if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (view === 'calc' && st.solved && !st.done && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && e.key !== 'Tab') { e.preventDefault(); tryNext(); return; }
     let k = null;
     if (/^[0-9]$/.test(e.key)) k = e.key;
     else if (e.key === 'Backspace') k = 'del';
@@ -2327,6 +2342,12 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (view === 'calc') press(k); else if (view === 'split') pressQuiz(k);
   });
 
+  // こたえた あとは カードの どこを おしても つぎへ
+  card.addEventListener('click', e => {
+    if (view !== 'calc' || !st.solved || st.done) return;
+    if (e.target.closest('.pad, #next, [data-lv]')) return;
+    tryNext();
+  });
   persistPlayers();
   renderInv();
   renderHero();

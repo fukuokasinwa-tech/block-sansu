@@ -195,6 +195,8 @@ button:disabled { opacity: .45; cursor: default; }
   .wrap > .view { grid-row: 3; grid-column: 1 / -1; }
   .wrap > .parents { grid-row: 4; grid-column: 1 / -1; }
 }
+#next.wait { opacity: .6; }
+.tapnext { font-size: 14px; color: var(--muted); }
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -747,6 +749,7 @@ button:disabled { opacity: .45; cursor: default; }
       (prev && (q.target === prev.target || keyQ(q) === keyQ(prev) || (st.mode === 'mix' && q.type === prev.type)))));
     st.hist.push(keyQ(q));
     Object.assign(st, { q, solved: false, wrong: false, no: [], got: null, gotNew: false, traceMsg: '' });
+    st.queued = false; st.lockUntil = 0;
     render();
     requestAnimationFrame(() => showCard());
     if (q.type === 'listen') setTimeout(() => speak(q.target), 250);
@@ -764,7 +767,7 @@ button:disabled { opacity: .45; cursor: default; }
     const words = q.type === 'word' && q.sub === 'pick';
     return `<div class="choices${words ? ' words' : ''}">${q.choices.map((c, k) => {
       const cls = st.solved && c === q.answer ? ' yes' : st.no.includes(c) ? ' no' : '';
-      return `<button class="choice${cls}" id="ch${k}" data-c="${esc(c)}" ${st.solved || st.no.includes(c) ? 'disabled' : ''} aria-label="${esc(c)}">${esc(c)}</button>`;
+      return `<button class="choice${cls}" id="ch${k}" data-c="${esc(c)}" ${!st.solved && st.no.includes(c) ? 'disabled' : ''} aria-label="${esc(c)}">${esc(c)}</button>`;
     }).join('')}</div>`;
   }
   function questionHTML(q) {
@@ -818,6 +821,7 @@ button:disabled { opacity: .45; cursor: default; }
     const q = st.q;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！'}</span>
+      <span class="tapnext">👆 どこを おしても つぎへ すすむよ</span>
       <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ たてものも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span>
       ${st.bossCard ? `<span class="reward"><span class="kcard">${esc(st.bossCard)}</span>👑 ボスを たおした ごほうび！「${esc(st.bossCard)}」の カード${st.bossCardNew ? '<span class="new">あたらしい カード！</span>' : ''}</span>` : ''}</div>`;
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
@@ -839,11 +843,11 @@ button:disabled { opacity: .45; cursor: default; }
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
     const n = document.getElementById('next');
     if (n) {
-      n.onclick = advance;
-      // こうげきを ゆっくり みられるように すこし まってから おせる
+      n.onclick = tryNext;
+      // こうげきを ゆっくり みられるように：はやく おしても、えんしゅつが おわってから すすむ
       if ((st.fx === 'hit' || st.fx === 'crit') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        n.disabled = true; setTimeout(() => { n.disabled = false; n.focus({ preventScroll: true }); }, 2800);
-      } else n.focus({ preventScroll: true });
+        st.lockUntil = Date.now() + 2800; n.classList.add('wait'); setTimeout(() => n.classList.remove('wait'), 2800);
+      } else st.lockUntil = 0;
     }
     setDash(card);
     const fxNow = st.fx;
@@ -871,8 +875,16 @@ button:disabled { opacity: .45; cursor: default; }
     render();
     speak(st.q.type === 'word' ? st.q.word.w : st.q.target);
   }
+  // こたえた あとは どこを おしても つぎへ（こうげきの えんしゅつ ちゅうに おしたら、おわってから すすむ）
+  function tryNext() {
+    if (!st.solved || st.done || st.queued) return;
+    const wait = (st.lockUntil || 0) - Date.now();
+    if (wait <= 0) { advance(); return; }
+    st.queued = true;
+    setTimeout(() => { st.queued = false; if (st.solved && !st.done) advance(); }, wait);
+  }
   function choose(c, btn) {
-    if (st.solved) return;
+    if (st.solved) { tryNext(); return; }
     if (c === st.q.answer) { solve(); return; }
     st.wrong = true; st.no.push(c); st.fx = 'miss';
     render();
@@ -964,6 +976,15 @@ button:disabled { opacity: .45; cursor: default; }
   document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
   document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b && !b.disabled) { userMoved = true; start(b.dataset.mode); } };
 
+  card.addEventListener('click', e => {
+    if (view !== 'play' || !st.solved || st.done) return;
+    if (e.target.closest('#next, .choice, #sayBtn')) return;
+    tryNext();
+  });
+  document.addEventListener('keydown', e => {
+    if (view !== 'play' || !st.solved || st.done || e.repeat || e.ctrlKey || e.metaKey || e.altKey || e.key === 'Tab') return;
+    e.preventDefault(); tryNext();
+  });
   renderMe();
   findVoice();
   start('word');
