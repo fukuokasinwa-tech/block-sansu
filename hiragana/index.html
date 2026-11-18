@@ -162,7 +162,7 @@ button:disabled { opacity: .45; cursor: default; }
 /* たたかい */
 .battle {
   position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: 8px;
-  padding: 34px 14px 8px; min-height: 178px; overflow: hidden; border: 3px solid var(--panel-edge);
+  padding: 30px 14px 6px; min-height: 148px; overflow: hidden; border: 3px solid var(--panel-edge);
 }
 .battle.bg-grass { background: linear-gradient(#5aa9d6, #a8dcf5 62%, #6cc447 62%, #4e9a2f); }
 .battle.bg-night { background: linear-gradient(#1d1640, #4b3a8a 62%, #3a2e5c 62%, #2a2145); }
@@ -173,8 +173,8 @@ button:disabled { opacity: .45; cursor: default; }
 .hearts { display: flex; gap: 3px; }
 .hearts i { width: 13px; height: 13px; background: #3a1d24; border: 2px solid #000; }
 .hearts i.on { background: #ff4d6d; }
-.spr-e { display: block; width: 88px; height: 99px; image-rendering: pixelated; background-size: 100% 100%; }
-.b-enemy.boss .spr-e { width: 120px; height: 135px; }
+.spr-e { display: block; width: 76px; height: 86px; image-rendering: pixelated; background-size: 100% 100%; }
+.b-enemy.boss .spr-e { width: 100px; height: 112px; }
 .b-enemy.down .spr-e { opacity: .12; filter: grayscale(1); }
 .b-line {
   position: absolute; top: 6px; left: 8px; margin: 0; max-width: 54%;
@@ -198,8 +198,8 @@ button:disabled { opacity: .45; cursor: default; }
   @keyframes dmg { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
 }
 @media (max-width: 460px) {
-  .spr-e { width: 72px; height: 81px; }
-  .b-enemy.boss .spr-e { width: 100px; height: 112px; }
+  .spr-e { width: 64px; height: 72px; }
+  .b-enemy.boss .spr-e { width: 84px; height: 95px; }
   .b-hero img { width: 48px; height: 64px; }
 }
 .stage { align-items: center; }
@@ -635,16 +635,21 @@ button:disabled { opacity: .45; cursor: default; }
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
     card.innerHTML = `
       <div class="stage"><span>ステージ ${(save.hiraStage || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
-      ${battleHTML()}
       ${dotsHTML()}
       ${questionHTML(q)}
+      ${battleHTML()}
       ${fb}
       ${st.solved ? `<div class="actions"><button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎへ ▶' : 'けっかを みる ▶'}</button></div>` : ''}`;
     const say = document.getElementById('sayBtn');
     if (say) say.onclick = () => speak(q.type === 'word' ? q.word.w : q.target);
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
     const n = document.getElementById('next'); if (n) { n.onclick = advance; n.focus({ preventScroll: true }); }
+    const fxNow = st.fx;
     st.fx = '';
+    if (fxNow) {
+      const bt = card.querySelector('.battle');
+      if (bt) bt.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
     if (q.type === 'trace') setupTrace(q);
   }
 
