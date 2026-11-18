@@ -298,6 +298,19 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .frame i.out .blk { animation: away .6s steps(5); }
   @keyframes away { from { opacity: 1; transform: none; } to { opacity: .3; transform: translateY(-6px); } }
 }
+
+/* もんだい・たたかい・こたえる ボタンを 1がめんに：ひろい がめん（PC・よこむきの タブレット）は 2れつ */
+.qa { display: flex; flex-direction: column; gap: 14px; }
+.qcol, .acol { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+@media (min-width: 900px) {
+  .qa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, 420px); gap: 18px; align-items: start; }
+  .acol { position: sticky; top: 8px; }
+  .qcol .picture { padding: 0; }
+  .qcol .expr { font-size: clamp(30px, 4vw, 54px); gap: 6px; flex-wrap: wrap; }
+  .qcol .item .blk, .qcol .items .blk { width: 28px; height: 28px; }
+  .qcol .story { font-size: clamp(17px, 1.8vw, 22px); }
+  .acol .b-line { max-width: 50%; font-size: 13px; }
+}
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -1060,6 +1073,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (st.mode === 'mix' && q.type === prev.type)))));
     st.hist.push(key(q));
     st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false; st.blank = 0; st.vals = ['', ''];
+    requestAnimationFrame(() => showCard());
     st.anim = 0; st.lvMsg = '';
     st.qLv = cherryLv();
     st.steps = q.kind === 'cherry' ? stepsFor(q, st.qLv) : [];
@@ -1388,6 +1402,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 
     card.innerHTML = `
       <div class="stage-label"><span>ステージ ${(save.stageNo || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
+      <div class="qa"><div class="qcol">
       ${q.kind === 'cherry' ? `
       ${lvPickerHTML()}
       <p class="story">🍒 さくらんぼ けいさん<br>${cherryAsk(q)}</p>
@@ -1398,6 +1413,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       ${storyHTML(q)}
       ${pictureHTML(q)}
       <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>`}
+      </div><div class="acol">
       ${battleHTML()}
       ${fb}
       ${st.solved ? '' : padHTML('c')}
@@ -1405,6 +1421,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         ${st.solved ? `<button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎの ブロック ▶' : 'けっかを みる ▶'}</button>`
                     : (st.hint ? '' : '<button class="btn" id="hint">ヒントを みる</button>')}
       </div>
+      </div></div>
       ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}
       <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div>`;
     setDash(card);
@@ -1468,7 +1485,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
     render();
   }
+  let userMoved = false;
+  function showCard() {
+    if (!userMoved) return;
+    const r = card.getBoundingClientRect();
+    if (r.top < 0 || r.top > 90) card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
   function advance() {
+    userMoved = true;
     if (st.i + 1 >= TOTAL) {
       const wBefore = WEAPONS.filter(w => unlockedW(w)).length;
       st.done = true; st.dragonPrize = null;
@@ -2217,7 +2241,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (v === 'zukan') renderZukan();
   }
   document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
-  document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b) start(b.dataset.mode); };
+  document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b) { userMoved = true; start(b.dataset.mode); } };
   document.getElementById('chips').onclick = e => { const b = e.target.closest('button'); if (b) { sp.n = Number(b.dataset.n); renderSplit(); } };
   document.addEventListener('click', e => {
     const b = e.target.closest('.pad button'); if (!b) return;

@@ -159,6 +159,16 @@ button:disabled { opacity: .45; cursor: default; }
 .zcell.empty { visibility: hidden; }
 .zrow-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
 
+
+/* もんだい・たたかい・こたえる ボタンを 1がめんに：ひろい がめん（PC・よこむきの タブレット）は 2れつ */
+.qa { display: flex; flex-direction: column; gap: 14px; }
+.qcol, .acol { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+@media (min-width: 900px) {
+  .qa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, 420px); gap: 18px; align-items: start; }
+  .acol { position: sticky; top: 8px; }
+  .qcol .picture { padding: 0; }
+  .acol .b-line { max-width: 50%; font-size: 13px; }
+}
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -696,6 +706,7 @@ button:disabled { opacity: .45; cursor: default; }
     st.hist.push(keyQ(q));
     Object.assign(st, { q, solved: false, wrong: false, no: [], got: null, gotNew: false, traceMsg: '' });
     render();
+    requestAnimationFrame(() => showCard());
     if (q.type === 'listen') setTimeout(() => speak(q.target), 250);
   }
 
@@ -767,13 +778,18 @@ button:disabled { opacity: .45; cursor: default; }
       <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ たてものも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span>
       ${st.bossCard ? `<span class="reward"><span class="kcard">${esc(st.bossCard)}</span>👑 ボスを たおした ごほうび！「${esc(st.bossCard)}」の カード${st.bossCardNew ? '<span class="new">あたらしい カード！</span>' : ''}</span>` : ''}</div>`;
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
+    const qh = questionHTML(q), cut = qh.indexOf('<div class="choices');
+    const qLeft = cut >= 0 ? qh.slice(0, cut) : qh, qChoices = cut >= 0 ? qh.slice(cut) : '';
     card.innerHTML = `
       <div class="stage"><span>ステージ ${(save.hiraStage || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
       ${dotsHTML()}
-      ${questionHTML(q)}
+      <div class="qa"><div class="qcol">${qLeft}</div>
+      <div class="acol">
       ${battleHTML()}
+      ${qChoices}
       ${fb}
-      ${st.solved ? `<div class="actions"><button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎへ ▶' : 'けっかを みる ▶'}</button></div>` : ''}`;
+      ${st.solved ? `<div class="actions"><button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎへ ▶' : 'けっかを みる ▶'}</button></div>` : ''}
+      </div></div>`;
     const say = document.getElementById('sayBtn');
     if (say) say.onclick = () => speak(q.type === 'word' ? q.word.w : q.target);
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
@@ -820,7 +836,14 @@ button:disabled { opacity: .45; cursor: default; }
     if (again) again.classList.add('shake');
     if (st.q.type === 'listen') setTimeout(() => speak(st.q.target), 300);
   }
+  let userMoved = false;
+  function showCard() {
+    if (!userMoved) return;
+    const r = card.getBoundingClientRect();
+    if (r.top < 0 || r.top > 90) card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
   function advance() {
+    userMoved = true;
     if (st.i + 1 >= TOTAL) { st.done = true; save.hiraStage = (save.hiraStage || 0) + 1; persist(); render(); return; }
     st.i++; next();
   }
@@ -895,7 +918,7 @@ button:disabled { opacity: .45; cursor: default; }
     if (v === 'zukan') renderZukan();
   }
   document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
-  document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b && !b.disabled) start(b.dataset.mode); };
+  document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b && !b.disabled) { userMoved = true; start(b.dataset.mode); } };
 
   renderMe();
   findVoice();

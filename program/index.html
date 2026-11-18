@@ -110,6 +110,7 @@ button:disabled { opacity: .4; cursor: default; }
 .msg { width: 100%; min-height: 1.6em; text-align: center; font-family: var(--num); font-weight: 800; font-size: 18px; margin: 0; }
 .msg.good { color: var(--green); } .msg.bad { color: var(--red); }
 
+@media (min-width: 761px) { .mapwrap { flex: 0 0 auto; max-width: 55%; } }
 .code { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .palette { display: flex; flex-wrap: wrap; gap: 6px; }
 .pal { font-family: var(--num); font-weight: 800; font-size: 15px; color: #fff; border: 3px solid var(--panel-edge); padding: 8px 10px; cursor: pointer; text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
@@ -397,7 +398,7 @@ button:disabled { opacity: .4; cursor: default; }
       const n = i + 1, s = save.prog.stars[n] || 0;
       return `<button data-lv="${n}" aria-pressed="${n === pg.lv}" ${n > open ? 'disabled' : ''} title="${L.n}">${n}<small>${s ? '★'.repeat(s) : n > open ? '🔒' : '・'}</small></button>`;
     }).join('');
-    document.querySelectorAll('#lvs [data-lv]').forEach(b => { b.onclick = () => { if (pg.running) return; pg.lv = Number(b.dataset.lv); pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); }; });
+    document.querySelectorAll('#lvs [data-lv]').forEach(b => { b.onclick = () => { if (pg.running) return; pg.lv = Number(b.dataset.lv); pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); showGame(); }; });
   }
 
   /* プログラムの ひょうじ */
@@ -480,6 +481,7 @@ button:disabled { opacity: .4; cursor: default; }
     document.getElementById('clearBtn').onclick = () => { if (!pg.running) { pg.prog = []; pg.target = []; pg.msg = ''; renderGame(); } };
   }
 
+  function showGame() { document.getElementById('game').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
   /* じっこう */
   function* exec(list, path, ctx) {
     for (let i = 0; i < list.length; i++) {
@@ -559,7 +561,7 @@ button:disabled { opacity: .4; cursor: default; }
         const nb = document.createElement('div'); nb.className = 'actions'; nb.style.justifyContent = 'center';
         nb.innerHTML = `<button class="btn primary" id="nextLv">つぎの ステージ ▶</button>`;
         document.getElementById('msg').after(nb);
-        document.getElementById('nextLv').onclick = () => { pg.lv++; pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); };
+        document.getElementById('nextLv').onclick = () => { pg.lv++; pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); showGame(); };
       }
       return;
     }

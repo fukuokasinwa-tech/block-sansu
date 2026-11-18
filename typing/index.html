@@ -98,7 +98,7 @@ button:disabled { opacity: .4; cursor: default; }
 .warn { margin: 0; padding: 6px 10px; background: #5a2a3c; color: #fff; font-size: 15px; border: 2px solid var(--pink); }
 
 /* ゲームの ばめん */
-.stage { position: relative; height: 330px; overflow: hidden; border: 3px solid var(--panel-edge); user-select: none; }
+.stage { position: relative; height: min(330px, 42vh); min-height: 230px; overflow: hidden; border: 3px solid var(--panel-edge); user-select: none; }
 .stage.ice { background: linear-gradient(#ffe3ef, #fff6d8 70%, #f4d9a8 70%, #e9c48a); }
 .stage.fruit { background: linear-gradient(#7cc6f2, #cdeefc 72%, #7cc95a 72%, #4e9a2f); }
 .target {
@@ -559,6 +559,8 @@ button:disabled { opacity: .4; cursor: default; }
   function startGame() {
     Object.assign(g, { running: true, targets: makeTargets(g.lv, TOTAL), idx: 0, ok: 0, miss: 0, caught: 0, dropped: 0, fruits: [], spawned: 0, lastSpawn: 0, t0: performance.now(), active: null });
     if (g.game === 'ice') renderIce(); else renderFruitStage();
+    // ゲームの ばめんと キーボードが 1がめんに はいるように
+    card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
   /* アイス */
