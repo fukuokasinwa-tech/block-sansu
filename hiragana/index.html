@@ -169,6 +169,32 @@ button:disabled { opacity: .45; cursor: default; }
   .qcol .picture { padding: 0; }
   .acol .b-line { max-width: 50%; font-size: 13px; }
 }
+
+/* ===== PC・タブレット：がめん いっぱい・スクロール なし ===== */
+@media (min-width: 700px) and (min-height: 540px) {
+  html, body { height: 100%; overflow: hidden; }
+  .wrap { max-width: none; height: 100dvh; padding-block: 8px; gap: 8px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto minmax(0, 1fr) auto; }
+  .wrap > .back-top { grid-row: 1; grid-column: 1; justify-self: start; padding: 4px 10px; font-size: 14px; }
+  .wrap > h1 { grid-row: 1; grid-column: 1; font-size: 24px; }
+  .wrap > h1 small { display: none; }
+  .wrap > section.panel { grid-row: 2; padding: 6px 12px; }
+  .wrap > .tabs { grid-row: 3; }
+  .tabs button { padding: 6px 4px; font-size: 15px; }
+  .wrap > .view { grid-row: 4; min-height: 0; overflow: auto; }
+  .wrap > .parents { grid-row: 5; max-height: 30vh; overflow: auto; padding: 6px 12px; }
+  #view-play { overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+  #view-play .modes button { padding: 4px 8px; font-size: 14px; }
+  #card { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 10px 12px; }
+  .battle { min-height: 130px; }
+}
+@media (min-width: 900px) and (min-height: 540px) and (orientation: landscape) {
+  .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; }
+  .wrap > h1 { grid-column: 1 / -1; }
+  .wrap > section.panel { grid-row: 2; grid-column: 1; }
+  .wrap > .tabs { grid-row: 2; grid-column: 2; }
+  .wrap > .view { grid-row: 3; grid-column: 1 / -1; }
+  .wrap > .parents { grid-row: 4; grid-column: 1 / -1; }
+}
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -599,18 +625,34 @@ button:disabled { opacity: .45; cursor: default; }
   })();
   const PER_ENEMY = 5; // 1たい 5もん。16〜20もんめは ボス
   const factionNow = (offset = 0) => FACTIONS[(((save.hiraStage || 0) + offset) % FACTIONS.length + FACTIONS.length) % FACTIONS.length];
+
+  /* がめんに ぴったり おさめる（PC・タブレット）：はいりきらない ときは すこし ちいさく する */
+  const SHELL_MQ = '(min-width: 700px) and (min-height: 540px)';
+  function fitCard(el) {
+    const inner = el && el.querySelector(':scope > .fit'); if (!inner) return 1;
+    inner.style.zoom = 1;
+    if (!matchMedia(SHELL_MQ).matches) return 1;
+    const cs = getComputedStyle(el);
+    const availH = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const availW = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const z = Math.max(.5, Math.min(1, availH / inner.scrollHeight, availW / inner.scrollWidth));
+    if (z < 1) inner.style.zoom = z.toFixed(3);
+    return z;
+  }
   function setDash(root) {
-    // たちいちに かんけい なく、えの みえている ところどうしが ぶつかる きょりを はかる（うごいている とちゅうでも ずれない ように レイアウトの ばしょで はかる）
+    // えの みえている ところどうしが ぶつかる きょり。ちいさく して いる ときは その ぶん もどす
     const bt = root.querySelector('.battle'); if (!bt) return;
     const hb = bt.querySelector('.b-hero'), eb = bt.querySelector('.b-enemy'), e = bt.querySelector('.b-enemy .spr-e');
     if (!hb || !eb || !e) return;
-    const hr = hb.getBoundingClientRect(), er = eb.getBoundingClientRect();
+    const fit = root.querySelector('.fit'), z = fit ? (parseFloat(fit.style.zoom) || 1) : 1;
+    const hr = hb.getBoundingClientRect(), er = eb.getBoundingClientRect(), ew = e.getBoundingClientRect().width;
     const heroRight = hr.left + hr.width * .8;
-    const enemyLeft = er.left + (er.width - e.offsetWidth) / 2 + e.offsetWidth * .25;
-    const gap = Math.max(20, enemyLeft - heroRight + 4);
+    const enemyLeft = er.left + (er.width - ew) / 2 + ew * .25;
+    const gap = Math.max(16, (enemyLeft - heroRight + 4) / z);
     bt.style.setProperty('--dash', gap + 'px');
     bt.style.setProperty('--edash', -gap + 'px');
   }
+
 
   function battleHTML() {
     const f = factionNow();
@@ -761,13 +803,14 @@ button:disabled { opacity: .45; cursor: default; }
   function render() {
     if (st.done) {
       const ok = st.results.filter(Boolean).length;
-      card.innerHTML = `${dotsHTML()}
+      card.innerHTML = `<div class="fit">${dotsHTML()}
         <div class="feedback good" style="gap:10px"><span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
         <span>${factionNow(-1).name}を ぜんぶ たおした！</span>
         <span style="color:var(--fg);font-size:17px">つぎは「${factionNow().name}」が まっているよ</span>
         <span>${TOTAL}もん できたよ。いっかいで せいかい：${ok}もん</span>
         <span style="color:var(--fg);font-size:17px">もじカード ${cardsOwned()} ／ ${ALL.length}</span></div>
-        <div class="actions"><button class="btn" id="toZukan">🃏 ずかんを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
+        <div class="actions"><button class="btn" id="toZukan">🃏 ずかんを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div></div>`;
+      fitCard(card);
       document.getElementById('again').onclick = () => start(st.mode);
       document.getElementById('toZukan').onclick = () => showView('zukan');
       return;
@@ -780,7 +823,7 @@ button:disabled { opacity: .45; cursor: default; }
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
     const qh = questionHTML(q), cut = qh.indexOf('<div class="choices');
     const qLeft = cut >= 0 ? qh.slice(0, cut) : qh, qChoices = cut >= 0 ? qh.slice(cut) : '';
-    card.innerHTML = `
+    card.innerHTML = `<div class="fit">
       <div class="stage"><span>ステージ ${(save.hiraStage || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
       ${dotsHTML()}
       <div class="qa"><div class="qcol">${qLeft}</div>
@@ -789,7 +832,8 @@ button:disabled { opacity: .45; cursor: default; }
       ${qChoices}
       ${fb}
       ${st.solved ? `<div class="actions"><button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎへ ▶' : 'けっかを みる ▶'}</button></div>` : ''}
-      </div></div>`;
+      </div></div></div>`;
+    fitCard(card);
     const say = document.getElementById('sayBtn');
     if (say) say.onclick = () => speak(q.type === 'word' ? q.word.w : q.target);
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
@@ -838,7 +882,7 @@ button:disabled { opacity: .45; cursor: default; }
   }
   let userMoved = false;
   function showCard() {
-    if (!userMoved) return;
+    if (!userMoved || matchMedia(SHELL_MQ).matches) return;
     const r = card.getBoundingClientRect();
     if (r.top < 0 || r.top > 90) card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
@@ -923,6 +967,7 @@ button:disabled { opacity: .45; cursor: default; }
   renderMe();
   findVoice();
   start('word');
+  window.addEventListener('resize', () => { if (view === 'play' && st.q) { fitCard(card); setDash(card); } });
   pullMe();
 })();
 </script>

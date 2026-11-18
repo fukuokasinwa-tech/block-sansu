@@ -311,6 +311,52 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .qcol .story { font-size: clamp(17px, 1.8vw, 22px); }
   .acol .b-line { max-width: 50%; font-size: 13px; }
 }
+
+/* ===== PC・タブレット：がめん いっぱい・スクロール なし ===== */
+@media (min-width: 700px) and (min-height: 540px) {
+  html, body { height: 100%; overflow: hidden; }
+  .wrap { max-width: none; height: 100dvh; padding-block: 8px; gap: 8px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto minmax(0, 1fr) auto; }
+  .wrap > .back-top { grid-row: 1; grid-column: 1; justify-self: start; padding: 4px 10px; font-size: 14px; }
+  .wrap > h1 { grid-row: 1; grid-column: 1; font-size: 24px; text-align: center; }
+  .wrap > h1 small { display: none; }
+  .hero-panel { grid-row: 2; padding: 8px 10px; gap: 6px; }
+  .hero-panel .hero-row { flex-wrap: nowrap; justify-content: flex-start; gap: 10px; }
+  .hero-panel .hero-img { width: 45px; height: 60px; }
+  .hero-panel .eqs, .hero-panel .inv, .hero-panel #heroInfo .note, .hero-panel .cloud-status { display: none; }
+  .hero-panel .player-actions { justify-content: flex-start; }
+  .wrap > .tabs { grid-row: 3; }
+  .tabs button { padding: 6px 4px; font-size: 14px; }
+  .wrap > .view { grid-row: 4; min-height: 0; overflow: auto; }
+  .wrap > .parents { grid-row: 5; max-height: 30vh; overflow: auto; padding: 6px 12px; }
+  #view-calc { overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+  #view-calc .modes button { padding: 4px 8px; font-size: 14px; }
+  #gearStrip { padding: 6px 10px; gap: 2px; }
+  #gearStrip .gear-row, #gearStrip .strip-head { display: none; }
+  #gearStrip .note { font-size: 13px; }
+  #card { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 10px 12px; }
+  #card .mine-wrap { display: none; }
+  .fit { transform-origin: top left; }
+  .battle { min-height: 130px; }
+}
+/* よこに ひろい ときは ひだりに しゅじんこうと タブ */
+@media (min-width: 900px) and (min-height: 540px) and (orientation: landscape) {
+  .wrap { grid-template-columns: clamp(220px, 21vw, 320px) minmax(0, 1fr); grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: 12px; }
+  .wrap > h1 { grid-column: 2; text-align: left; }
+  .hero-panel { grid-row: 2; grid-column: 1; }
+  .hero-panel .hero-row { flex-direction: column; align-items: center; flex-wrap: nowrap; }
+  .hero-panel .hero-img { width: 84px; height: 112px; }
+  .hero-panel .eqs { display: grid; }
+  .hero-panel .inv { display: flex; }
+  .hero-panel .inv .slot { width: 44px; height: 44px; }
+  .hero-panel .inv .slot .blk { width: 22px; height: 22px; }
+  .hero-panel .inv .slot small { display: none; }
+  .hero-panel .zukan-btn { height: 44px; font-size: 13px; }
+  .hero-panel .player-actions { justify-content: center; }
+  .hero-panel .btn.small { font-size: 13px; padding: 4px 8px; }
+  .wrap > .tabs { grid-row: 3; grid-column: 1; grid-template-columns: 1fr 1fr; }
+  .wrap > .view { grid-row: 1 / 5; grid-column: 2; margin-top: 40px; }
+  .wrap > .parents { grid-row: 4; grid-column: 1; align-self: end; }
+}
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -483,7 +529,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   <a class="back-top" href="../" id="backTop">◀ トップへ もどる</a>
   <h1>ブロック さんすう たんけん<small>もんだいを といて ブロックを ほろう！</small></h1>
 
-  <section class="panel" aria-label="しゅじんこうと もちもの">
+  <section class="panel hero-panel" aria-label="しゅじんこうと もちもの">
     <div class="hero-row">
       <img id="heroImg" class="hero-img" alt="しゅじんこうの ソラ" width="120" height="160">
       <div class="hero-info" id="heroInfo"></div>
@@ -1272,18 +1318,34 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return o + '</svg>';
   }
 
+
+  /* がめんに ぴったり おさめる（PC・タブレット）：はいりきらない ときは すこし ちいさく する */
+  const SHELL_MQ = '(min-width: 700px) and (min-height: 540px)';
+  function fitCard(el) {
+    const inner = el && el.querySelector(':scope > .fit'); if (!inner) return 1;
+    inner.style.zoom = 1;
+    if (!matchMedia(SHELL_MQ).matches) return 1;
+    const cs = getComputedStyle(el);
+    const availH = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const availW = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const z = Math.max(.5, Math.min(1, availH / inner.scrollHeight, availW / inner.scrollWidth));
+    if (z < 1) inner.style.zoom = z.toFixed(3);
+    return z;
+  }
   function setDash(root) {
-    // たちいちに かんけい なく、えの みえている ところどうしが ぶつかる きょりを はかる（うごいている とちゅうでも ずれない ように レイアウトの ばしょで はかる）
+    // えの みえている ところどうしが ぶつかる きょり。ちいさく して いる ときは その ぶん もどす
     const bt = root.querySelector('.battle'); if (!bt) return;
     const hb = bt.querySelector('.b-hero'), eb = bt.querySelector('.b-enemy'), e = bt.querySelector('.b-enemy .spr-e');
     if (!hb || !eb || !e) return;
-    const hr = hb.getBoundingClientRect(), er = eb.getBoundingClientRect();
+    const fit = root.querySelector('.fit'), z = fit ? (parseFloat(fit.style.zoom) || 1) : 1;
+    const hr = hb.getBoundingClientRect(), er = eb.getBoundingClientRect(), ew = e.getBoundingClientRect().width;
     const heroRight = hr.left + hr.width * .8;
-    const enemyLeft = er.left + (er.width - e.offsetWidth) / 2 + e.offsetWidth * .25;
-    const gap = Math.max(20, enemyLeft - heroRight + 4);
+    const enemyLeft = er.left + (er.width - ew) / 2 + ew * .25;
+    const gap = Math.max(16, (enemyLeft - heroRight + 4) / z);
     bt.style.setProperty('--dash', gap + 'px');
     bt.style.setProperty('--edash', -gap + 'px');
   }
+
 
   /* ---------- てき（ステージごとに いちみが かわる。すべて オリジナルの ドットえ） ---------- */
   const pad16 = rows => rows.map(r => (r + '................').slice(0, 16));
@@ -1371,7 +1433,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     renderGearStrip();
     if (st.done) {
       const ok = st.results.filter(Boolean).length;
-      card.innerHTML = `${mineHTML()}
+      card.innerHTML = `<div class="fit">${mineHTML()}
         <div class="feedback good" style="gap:10px">
           <span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
           <span>${(st.fac || factionNow()).name}を ぜんぶ たおした！</span>
@@ -1381,7 +1443,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
           <span>ブロックを ${TOTAL}こ ほったよ。いっかいで せいかい：${ok}もん</span>
           <span style="color:var(--fg);font-size:17px">${ok === TOTAL ? 'ぜんぶ いっかいで せいかい！ すごい！' : 'まちがえても、さいごまで できたね！'}</span>
         </div>
-        <div class="actions"><button class="btn" id="toHouse">🏠 けんちくを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
+        <div class="actions"><button class="btn" id="toHouse">🏠 けんちくを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div></div>`;
+      fitCard(card);
       document.getElementById('again').onclick = () => start(st.mode);
       document.getElementById('toHouse').onclick = () => showView('house');
       return;
@@ -1400,7 +1463,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>${esc(nameOf(save))}の すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
 
-    card.innerHTML = `
+    card.innerHTML = `<div class="fit">
       <div class="stage-label"><span>ステージ ${(save.stageNo || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
       <div class="qa"><div class="qcol">
       ${q.kind === 'cherry' ? `
@@ -1423,7 +1486,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       </div>
       </div></div>
       ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}
-      <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div>`;
+      <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div></div>`;
+    fitCard(card);
     setDash(card);
     const fxNow = st.fx;
     st.breaking = false; st.fx = ''; unlockMsg = '';
@@ -1487,7 +1551,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
   let userMoved = false;
   function showCard() {
-    if (!userMoved) return;
+    if (!userMoved || matchMedia(SHELL_MQ).matches) return;
     const r = card.getBoundingClientRect();
     if (r.top < 0 || r.top > 90) card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
@@ -2266,6 +2330,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   renderInv();
   renderHero();
   start('add10');
+  window.addEventListener('resize', () => { if (view === 'calc') { fitCard(card); setDash(card); } });
   setCloudState('');
   if (cloudOn()) pull();
   if (firstRun) showNameForm('p1', false, false);

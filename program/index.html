@@ -143,6 +143,18 @@ button:disabled { opacity: .4; cursor: default; }
 .parents h2 { color: #24323c; font-size: 17px; }
 .parents p { margin: 8px 0 0; max-width: 65ch; }
 @media (max-width: 460px) { .panel { padding: 12px 10px; } }
+/* ===== PC・タブレット：がめん いっぱい・スクロール なし ===== */
+@media (min-width: 700px) and (min-height: 540px) {
+  html, body { height: 100%; overflow: hidden; }
+  .wrap { max-width: none; height: 100dvh; padding-block: 8px; gap: 8px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; }
+  .wrap > .back-top { grid-row: 1; grid-column: 1; justify-self: start; padding: 4px 10px; font-size: 14px; }
+  .wrap > h1 { grid-row: 1; grid-column: 1; font-size: 24px; }
+  .wrap > h1 small { display: none; }
+  .wrap > section.panel { grid-row: 2; padding: 6px 12px; gap: 6px; }
+  #game { grid-row: 3; min-height: 0; overflow: hidden; padding: 10px 12px; }
+  .wrap > .parents { grid-row: 4; max-height: 30vh; overflow: auto; padding: 6px 12px; }
+  .me .name { font-size: 18px; }
+}
 @media (prefers-reduced-motion: reduce) { .hero { transition: none; } .hero.bump { animation: none; } }
 </style>
 </head>
@@ -414,14 +426,15 @@ button:disabled { opacity: .4; cursor: default; }
   }
   function renderGame() {
     const L = LV[pg.lv - 1], m = parseMap(L);
-    const cs = Math.min(56, Math.floor((Math.min(window.innerWidth, 860) - 70) / m.W));
+    const wide = matchMedia('(min-width: 761px)').matches;
+    const cs = Math.max(30, Math.min(72, Math.floor((wide ? window.innerWidth * .45 : window.innerWidth - 70) / m.W), Math.floor((window.innerHeight * (wide ? .55 : .4)) / m.H)));
     const used = countBlocks(pg.prog);
     let cells = '';
     m.cells.forEach((ch, k) => {
       const cls = ch === '#' ? 'rock' : ch === '~' ? 'water' : ch === 'G' ? 'goal' : '';
       cells += `<div class="cell ${cls}">${ch === '*' ? '<span class="it">⭐</span>' : ''}</div>`;
     });
-    document.getElementById('game').innerHTML = `
+    document.getElementById('game').innerHTML = `<div class="fit">
       <div class="mission">ステージ ${pg.lv}「${esc(L.n)}」<small>${m.stars.length ? '⭐を ぜんぶ とって ' : ''}🚩 ゴールまで うごかそう。${L.tip ? esc(L.tip) : ''}</small></div>
       <div class="play">
         <div class="mapwrap">
@@ -440,7 +453,8 @@ button:disabled { opacity: .4; cursor: default; }
             <button class="btn" id="clearBtn">🗑 ぜんぶ けす</button>
           </div>
         </div>
-      </div>`;
+      </div></div>`;
+    fitCard(document.getElementById('game'));
     bind();
   }
   function bind() {
@@ -481,7 +495,19 @@ button:disabled { opacity: .4; cursor: default; }
     document.getElementById('clearBtn').onclick = () => { if (!pg.running) { pg.prog = []; pg.target = []; pg.msg = ''; renderGame(); } };
   }
 
-  function showGame() { document.getElementById('game').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  function showGame() { if (matchMedia(SHELL_MQ).matches) return; document.getElementById('game').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  const SHELL_MQ = '(min-width: 700px) and (min-height: 540px)';
+  function fitCard(el) {
+    const inner = el && el.querySelector(':scope > .fit'); if (!inner) return 1;
+    inner.style.zoom = 1;
+    if (!matchMedia(SHELL_MQ).matches) return 1;
+    const cs = getComputedStyle(el);
+    const availH = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const availW = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const z = Math.max(.5, Math.min(1, availH / inner.scrollHeight, availW / inner.scrollWidth));
+    if (z < 1) inner.style.zoom = z.toFixed(3);
+    return z;
+  }
   /* じっこう */
   function* exec(list, path, ctx) {
     for (let i = 0; i < list.length; i++) {

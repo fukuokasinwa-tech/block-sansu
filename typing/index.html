@@ -137,6 +137,34 @@ button:disabled { opacity: .4; cursor: default; }
 .pop { position: absolute; z-index: 4; font-family: var(--num); font-weight: 800; font-size: 20px; color: #fff; text-shadow: 2px 2px 0 #000; pointer-events: none; animation: pop 1s steps(8) forwards; }
 @keyframes pop { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
 
+/* ===== PC・タブレット：がめん いっぱい・スクロール なし ===== */
+@media (min-width: 700px) and (min-height: 540px) {
+  html, body { height: 100%; overflow: hidden; }
+  .wrap { max-width: none; height: 100dvh; padding-block: 8px; gap: 8px; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto minmax(0, 1fr) auto auto; }
+  .wrap > .back-top { grid-row: 1; grid-column: 1; justify-self: start; padding: 4px 10px; font-size: 14px; }
+  .wrap > h1 { grid-row: 1; grid-column: 1; font-size: 24px; }
+  .wrap > h1 small { display: none; }
+  .wrap > section.panel:not(.kbp) { grid-row: 2; padding: 6px 12px; }
+  .wrap > .tabs { grid-row: 3; }
+  .tabs button { padding: 6px 4px; font-size: 15px; }
+  #card { grid-row: 4; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; }
+  #card .stage { flex: 1 1 auto; height: auto; min-height: 160px; }
+  .kbp { grid-row: 5; padding: 8px; gap: 4px; }
+  .kb button { height: clamp(30px, 5.4vh, 46px); width: clamp(28px, 5vw, 56px); }
+  .wrap > .parents { grid-row: 6; max-height: 30vh; overflow: auto; padding: 6px 12px; }
+}
+@media (min-width: 900px) and (min-height: 540px) and (orientation: landscape) {
+  .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto auto; }
+  .wrap > h1 { grid-column: 1 / -1; }
+  .wrap > section.panel:not(.kbp) { grid-row: 2; grid-column: 1; }
+  .wrap > .tabs { grid-row: 2; grid-column: 2; }
+  #card { grid-row: 3; grid-column: 1 / -1; }
+  .kbp { grid-row: 4; grid-column: 1 / -1; }
+  .wrap > .parents { grid-row: 5; grid-column: 1 / -1; }
+}
+.caps { display: inline-flex; gap: 4px; align-items: center; }
+.caps button { font-family: var(--num); font-weight: 800; font-size: 14px; padding: 3px 10px; color: var(--fg); cursor: pointer; background: var(--key); border: 3px solid var(--panel-edge); }
+.caps button[aria-pressed="true"] { background: #4f8f35; }
 /* キーボード */
 .kb { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .kb .row { display: flex; gap: 4px; }
@@ -187,6 +215,7 @@ button:disabled { opacity: .4; cursor: default; }
     <div class="me">
       <div><span class="note">あそぶ ひと：</span><span class="name" id="meName"></span></div>
       <div class="note" id="meLv"></div>
+      <div class="caps" role="group" aria-label="もじの おおきさ"><span class="note">ひょうじ：</span><button id="capsLo" data-caps="0">abc こもじ</button><button id="capsUp" data-caps="1">ABC おおもじ</button></div>
     </div>
   </section>
 
@@ -197,7 +226,7 @@ button:disabled { opacity: .4; cursor: default; }
 
   <main class="panel" id="card"></main>
 
-  <section class="panel">
+  <section class="panel kbp">
     <div class="kb" id="kb" aria-label="がめんの キーボード"></div>
     <div class="legend"><span><i style="background:var(--f-pinky)"></i>こゆび</span><span><i style="background:var(--f-ring)"></i>くすりゆび</span><span><i style="background:var(--f-middle)"></i>なかゆび</span><span><i style="background:var(--f-index)"></i>ひとさしゆび</span><span>f と j の ぼうが「ホームポジション」</span></div>
   </section>
@@ -510,7 +539,7 @@ button:disabled { opacity: .4; cursor: default; }
     .forEach(([ks, f]) => [...ks].forEach(k => { FINGER[k] = f; }));
   function renderKB() {
     document.getElementById('kb').innerHTML = ROWS.map(r => `<div class="row">${[...r].map(k =>
-      `<button type="button" class="${FINGER[k] || ''}${k === 'f' || k === 'j' ? ' home' : ''}" data-k="${k}" id="key-${k === ';' ? 'semi' : k === ',' ? 'comma' : k === '.' ? 'dot' : k === '/' ? 'slash' : k === '-' ? 'minus' : k}" aria-label="${k}">${k}</button>`).join('')}</div>`).join('');
+      `<button type="button" class="${FINGER[k] || ''}${k === 'f' || k === 'j' ? ' home' : ''}" data-k="${k}" id="key-${k === ';' ? 'semi' : k === ',' ? 'comma' : k === '.' ? 'dot' : k === '/' ? 'slash' : k === '-' ? 'minus' : k}" aria-label="${k}">${show(k)}</button>`).join('')}</div>`).join('');
   }
   function lightKey(k) {
     document.querySelectorAll('#kb button.next').forEach(b => b.classList.remove('next'));
@@ -523,6 +552,18 @@ button:disabled { opacity: .4; cursor: default; }
     if (b) { b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 120); }
   }
 
+  /* おおもじ／こもじ（ひょうじ だけ。うつ ときは どちらでも よい） */
+  const UP = () => !!save.typing.caps;
+  const show = t => UP() ? String(t).toUpperCase() : String(t);
+  function renderCaps() {
+    document.querySelectorAll('[data-caps]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.caps) === (UP() ? 1 : 0))));
+  }
+  document.querySelector('.caps').addEventListener('click', e => {
+    const b = e.target.closest('[data-caps]'); if (!b) return;
+    save.typing.caps = b.dataset.caps === '1'; persist(); renderCaps(); renderKB();
+    if (g.running && g.game === 'ice') renderIce(); else if (g.running) g.fruits.forEach(x => !x.gone && drawFruitText(x));
+    const tg = document.getElementById('tgt'); if (!g.running && tg) renderIdle();
+  });
   /* ---------- ゲーム ---------- */
   const TOTAL = 20;
   const lvOf = game => Math.max(1, save.typing[game] || 1);
@@ -559,8 +600,8 @@ button:disabled { opacity: .4; cursor: default; }
   function startGame() {
     Object.assign(g, { running: true, targets: makeTargets(g.lv, TOTAL), idx: 0, ok: 0, miss: 0, caught: 0, dropped: 0, fruits: [], spawned: 0, lastSpawn: 0, t0: performance.now(), active: null });
     if (g.game === 'ice') renderIce(); else renderFruitStage();
-    // ゲームの ばめんと キーボードが 1がめんに はいるように
-    card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    // ゲームの ばめんと キーボードが 1がめんに はいるように（せまい がめん だけ）
+    if (!matchMedia('(min-width: 700px) and (min-height: 540px)').matches) card.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
   /* アイス */
@@ -580,8 +621,8 @@ button:disabled { opacity: .4; cursor: default; }
       ${g.ime ? '<p class="warn">にほんご にゅうりょくが オンに なって いるみたい。「えいすう」に きりかえてね</p>' : ''}
       <div class="stage ice">
         <div class="target${fx === 'miss' ? ' shake' : ''}" id="tgt">
-          <div class="kana">${end ? '🍦 20だん！' : t.latin ? esc(t.text) : `<span style="color:#2f8f5b">${esc(g.m.kanaDone())}</span>${esc(t.text.slice(g.m.kanaDone().length))}`}</div>
-          ${t.latin || end ? '' : `<div class="roma"><span class="done">${esc(gd.done)}</span>${gd.rest ? `<span class="next">${esc(gd.rest[0])}</span>${esc(gd.rest.slice(1))}` : ''}</div>`}
+          <div class="kana">${end ? '🍦 20だん！' : t.latin ? esc(show(t.text)) : `<span style="color:#2f8f5b">${esc(g.m.kanaDone())}</span>${esc(t.text.slice(g.m.kanaDone().length))}`}</div>
+          ${t.latin || end ? '' : `<div class="roma"><span class="done">${esc(show(gd.done))}</span>${gd.rest ? `<span class="next">${esc(show(gd.rest[0]))}</span>${esc(show(gd.rest.slice(1)))}` : ''}</div>`}
         </div>
         <div class="tower${fx === 'miss' ? ' wobble' : ''}"><div class="cone"></div>${scoops}</div>
         <div class="count">${g.idx}だん</div>
@@ -635,7 +676,8 @@ button:disabled { opacity: .4; cursor: default; }
   function drawFruitText(f) {
     const done = f.tg.latin ? f.m.typedRoma : f.m.kanaDone();
     const all = f.tg.text;
-    f.el.querySelector('.ft').innerHTML = `<span class="done">${esc(done)}</span>${esc(all.slice(done.length))}${f.tg.latin ? '' : `<br><small style="font-family:var(--num);font-size:13px;color:#9aa0a8">${esc(f.m.guide().done)}<b style="color:#c43c30">${esc(f.m.guide().rest)}</b></small>`}`;
+    const sh = x => f.tg.latin ? show(x) : x;
+    f.el.querySelector('.ft').innerHTML = `<span class="done">${esc(sh(done))}</span>${esc(sh(all.slice(done.length)))}${f.tg.latin ? '' : `<br><small style="font-family:var(--num);font-size:13px;color:#9aa0a8">${esc(show(f.m.guide().done))}<b style="color:#c43c30">${esc(show(f.m.guide().rest))}</b></small>`}`;
     f.el.classList.toggle('active', g.active === f);
   }
   function updateHud() {
@@ -737,7 +779,7 @@ button:disabled { opacity: .4; cursor: default; }
     renderIdle();
   };
 
-  renderKB(); renderMe(); renderIdle(); pullMe();
+  renderCaps(); renderKB(); renderMe(); renderIdle(); pullMe();
 })();
 </script>
 </body>
