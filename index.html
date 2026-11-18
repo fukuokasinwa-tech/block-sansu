@@ -190,7 +190,7 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
       text: 'きいて えらぶ・えと ことば・ごじゅうおん・なぞりがき。もじカードを あつめよう！', ready: true },
     { id: 'kokugo', title: 'カタカナ・かんじ たんけん', tag: 'こくご', text: 'カタカナ・かんじ・ことばの ゲーム。', ready: false },
     { id: 'typing', href: 'typing/', title: 'タイピング たんけん', tag: 'タイピング', text: '🍦 アイス タイピング と 🍎 フルーツ タイピング。ステージごとに レベルアップ！', ready: true },
-    { id: 'program', title: 'プログラミング たんけん', tag: 'プログラミング', text: 'めいれいブロックを ならべて キャラクターを うごかそう。', ready: false }
+    { id: 'program', href: 'program/', title: 'プログラミング たんけん', tag: 'プログラミング', text: 'めいれいブロックを ならべて しゅじんこうを ゴールへ。じゅんばん・くりかえし・もしも を まなぼう！', ready: true }
   ];
 
   function render() {
@@ -208,6 +208,7 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
       const head = `<div class="game-top">${icon}<div><h3>${g.title}</h3><span class="tag">${g.tag}</span></div></div><p>${g.text}</p>`;
       if (!g.ready) return `<div class="game soon">${head}<span class="soon-badge">じゅんびちゅう</span></div>`;
       const prog = !sv ? '' : g.id === 'sansu' ? `<span class="prog">${esc(nameOf(sv))}：${sansuProgress(sv)}</span>`
+        : g.id === 'program' ? `<span class="prog">${esc(nameOf(sv))}：ステージ ${Math.min(((sv.prog || {}).lv) || 1, 17)} ／ 17 ・ ★ ${Object.values((sv.prog || {}).stars || {}).reduce((a, b) => a + b, 0)}</span>`
         : g.id === 'typing' ? `<span class="prog">${esc(nameOf(sv))}：アイス Lv${(sv.typing || {}).ice || 1} ・ フルーツ Lv${(sv.typing || {}).fruit || 1}</span>`
         : g.id === 'hiragana' ? `<span class="prog">${esc(nameOf(sv))}：もじカード ${Object.keys(sv.hira || {}).filter(k => sv.hira[k] > 0).length} ／ 71</span>` : '';
       return `<a class="game" href="${g.href}" id="go-${g.id}">${head}${prog}<span class="play">▶ あそぶ</span></a>`;

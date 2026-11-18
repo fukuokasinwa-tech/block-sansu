@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#30343a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="まなびランド">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>プログラミング たんけん</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=M+PLUS+Rounded+1c:wght@700;800&display=swap">
+<style>
+/* Layout: さんすうと おなじ せかい。うえに ステージえらび、まんなかに マップ、したに めいれいブロックの パレットと プログラム。 */
+:root {
+  --sky-top: #7cc6f2;
+  --sky-bot: #cdeefc;
+  --panel: #30343a;
+  --panel-edge: #17191c;
+  --panel-hi: #4b5058;
+  --slot: #22252a;
+  --fg: #f3f1e6;
+  --muted: #b9bcb3;
+  --yellow: #ffd23f;
+  --green: #6ccf4a;
+  --red: #ff6b5b;
+  --blue: #63b0ff;
+  --key: #6b7078;
+  --key-hi: #8d929a;
+  --key-lo: #45494f;
+  --c-move: #4f9bea;
+  --c-turn: #9b6cf0;
+  --c-loop: #ff9d2e;
+  --c-if: #3fae8c;
+  --text: "Klee One", "UD デジタル 教科書体 N-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --num: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+body {
+  background: linear-gradient(var(--sky-top), var(--sky-bot) 520px, var(--sky-bot));
+  background-color: var(--sky-bot);
+  color: var(--fg); font-family: var(--text); font-weight: 600; font-size: 17px; line-height: 1.7;
+}
+.wrap {
+  max-width: 860px; margin: 0 auto; padding-block: 18px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 14px;
+}
+h1 {
+  font-family: var(--num); font-weight: 800; margin: 0; line-height: 1.2; text-align: center;
+  font-size: clamp(28px, 7.5vw, 44px); color: var(--fg); word-break: keep-all; text-wrap: balance;
+  text-shadow: 3px 3px 0 #2b2f35, -2px -2px 0 #2b2f35, 2px -2px 0 #2b2f35, -2px 2px 0 #2b2f35;
+}
+h1 small { display: block; font-size: .42em; color: #24323c; text-shadow: none; letter-spacing: .08em; margin-top: 4px; }
+h2 { font-family: var(--num); font-weight: 800; font-size: 20px; margin: 0; color: var(--yellow); }
+.panel {
+  background: var(--panel); border: 4px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--panel-hi), inset -3px -3px 0 var(--panel-edge);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.note { margin: 0; color: var(--muted); font-size: 15px; }
+.back-top {
+  align-self: flex-start; font-family: var(--num); font-weight: 800; font-size: 16px; color: var(--fg); text-decoration: none;
+  background: var(--key); border: 3px solid var(--panel-edge); padding: 6px 14px;
+  box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.btn, .lvs button {
+  font-family: var(--num); font-weight: 800; color: var(--fg); cursor: pointer;
+  background: var(--key); border: 3px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.btn { font-size: 17px; padding: 9px 16px; }
+.btn.primary, .lvs button[aria-pressed="true"] { background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+button:disabled { opacity: .4; cursor: default; }
+.me { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; }
+.me .name { font-family: var(--num); font-weight: 800; font-size: 22px; color: var(--yellow); }
+.lvs { display: flex; flex-wrap: wrap; gap: 4px; }
+.lvs button { font-size: 14px; padding: 3px 6px; min-width: 44px; line-height: 1.2; }
+.lvs button small { display: block; font-size: 10px; color: var(--yellow); letter-spacing: -1px; }
+.mission { font-family: var(--num); font-weight: 800; font-size: 18px; }
+.mission small { display: block; font-family: var(--text); font-weight: 600; font-size: 15px; color: var(--muted); }
+
+.play { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.mapwrap { flex: 1 1 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.map { position: relative; display: inline-grid; max-width: 100%; gap: 0; border: 4px solid var(--panel-edge); background: #4e9a2f; }
+.cell { width: var(--cs); height: var(--cs); position: relative; background: #7cc95a; box-shadow: inset -2px -2px 0 rgba(0,0,0,.12), inset 2px 2px 0 rgba(255,255,255,.18); }
+.cell.rock { background: #8d8f92; box-shadow: inset -4px -4px 0 #6a6c70, inset 4px 4px 0 #b0b2b5; }
+.cell.water { background: #4f9bea; box-shadow: inset 0 -6px 0 #3a7fd0; }
+.cell .it { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cs) * .55); }
+.cell.goal::before { content: ""; position: absolute; left: 30%; top: 14%; width: 4px; height: 70%; background: #4a2f1d; }
+.cell.goal::after { content: ""; position: absolute; left: calc(30% + 4px); top: 14%; width: 38%; height: 28%; background: #ff5f8f; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.hero { position: absolute; width: var(--cs); height: var(--cs); display: flex; align-items: center; justify-content: center; transition: left .32s steps(4), top .32s steps(4); z-index: 2; }
+.hero img { height: 88%; image-rendering: pixelated; }
+.hero .dir { position: absolute; width: 0; height: 0; border: 9px solid transparent; }
+.hero .dir.d0 { top: -6px; left: 50%; margin-left: -9px; border-bottom: 12px solid #ff3d3d; border-top: 0; }
+.hero .dir.d1 { right: -6px; top: 50%; margin-top: -9px; border-left: 12px solid #ff3d3d; border-right: 0; }
+.hero .dir.d2 { bottom: -6px; left: 50%; margin-left: -9px; border-top: 12px solid #ff3d3d; border-bottom: 0; }
+.hero .dir.d3 { left: -6px; top: 50%; margin-top: -9px; border-right: 12px solid #ff3d3d; border-left: 0; }
+.hero.bump { animation: bump .4s steps(4); }
+@keyframes bump { 25% { transform: translateX(4px); } 75% { transform: translateX(-4px); } }
+.msg { width: 100%; min-height: 1.6em; text-align: center; font-family: var(--num); font-weight: 800; font-size: 18px; margin: 0; }
+.msg.good { color: var(--green); } .msg.bad { color: var(--red); }
+
+.code { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.palette { display: flex; flex-wrap: wrap; gap: 6px; }
+.pal { font-family: var(--num); font-weight: 800; font-size: 15px; color: #fff; border: 3px solid var(--panel-edge); padding: 8px 10px; cursor: pointer; text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
+.pal.move, .blk.move { background: var(--c-move); }
+.pal.turn, .blk.turn { background: var(--c-turn); }
+.pal.loop, .blk.loop { background: var(--c-loop); }
+.pal.cond, .blk.cond { background: var(--c-if); }
+.prog { background: var(--slot); border: 3px solid var(--panel-edge); padding: 8px; min-height: 120px; display: flex; flex-direction: column; gap: 4px; }
+.prog.target { outline: 3px dashed var(--yellow); outline-offset: -6px; }
+.blk { display: flex; flex-direction: column; border: 2px solid var(--panel-edge); color: #fff; font-family: var(--num); font-weight: 800; font-size: 15px; text-shadow: 1px 1px 0 rgba(0,0,0,.35); }
+.blk .bh { display: flex; align-items: center; gap: 6px; padding: 5px 6px 5px 10px; cursor: pointer; }
+.blk .bh .lab { flex: 1; }
+.blk .x { border: 2px solid var(--panel-edge); background: rgba(0,0,0,.25); color: #fff; font-weight: 800; width: 30px; height: 28px; cursor: pointer; font-family: var(--num); }
+.blk .nbtn { border: 2px solid var(--panel-edge); background: #fff; color: #333; width: 28px; height: 26px; font-weight: 800; cursor: pointer; }
+.blk .body { margin: 0 0 6px 16px; background: rgba(0,0,0,.22); padding: 4px; min-height: 34px; display: flex; flex-direction: column; gap: 4px; border-left: 4px solid rgba(255,255,255,.4); }
+.blk .body.target { outline: 3px dashed var(--yellow); outline-offset: -2px; }
+.blk.running > .bh { box-shadow: 0 0 0 3px var(--yellow); }
+.hintin { font-size: 12px; color: rgba(255,255,255,.75); padding: 2px 4px; }
+.counter { font-family: var(--num); font-weight: 700; font-size: 15px; color: var(--muted); }
+.counter b { color: var(--yellow); }
+.counter b.over { color: var(--red); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.stars { color: var(--yellow); font-size: 26px; letter-spacing: 2px; }
+
+.parents { background: rgba(255,255,255,.85); border: 3px solid #24323c; padding: 14px 18px; color: #24323c; font-size: 15px; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.75; }
+.parents summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.parents summary::-webkit-details-marker { display: none; }
+.parents summary::before { content: "▶"; font-size: 13px; }
+.parents[open] summary::before { content: "▼"; }
+.parents h2 { color: #24323c; font-size: 17px; }
+.parents p { margin: 8px 0 0; max-width: 65ch; }
+@media (max-width: 460px) { .panel { padding: 12px 10px; } }
+@media (prefers-reduced-motion: reduce) { .hero { transition: none; } .hero.bump { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back-top" href="../" id="backTop">◀ トップへ もどる</a>
+  <h1>プログラミング たんけん<small>めいれいブロックを ならべて ゴールを めざそう！</small></h1>
+
+  <section class="panel">
+    <div class="me">
+      <div><span class="note">あそぶ ひと：</span><span class="name" id="meName"></span></div>
+      <div class="note" id="meProg"></div>
+    </div>
+    <div class="lvs" id="lvs" aria-label="ステージ"></div>
+  </section>
+
+  <main class="panel" id="game"></main>
+
+  <details class="parents">
+    <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
+    <p>命令ブロックを並べて主人公を動かし、旗（ゴール）を目指すプログラミングの入門ゲームです。小学校のプログラミング教育で大切な「順次（順番に命令する）」「反復（くりかえし）」「分岐（もしも〜なら）」の3つを、ステージ1〜8で順次、9〜13で反復、14〜17で分岐の順に体験できます。星（⭐）があるステージは、星を全部取ってからゴールします。</p>
+    <p>ブロックを押すとプログラムに入り、「くりかえし」「もしも」「ゴールまで」の黄色い枠を押すと、その中に入れられます。少ないブロックでクリアすると★が3つになります。「じっこう」で1つずつ動き、どのブロックを実行しているかが光ります。うまくいかないときは、どこでぶつかったかを見て直すこと（デバッグ）も練習になります。クリアすると、算数・ひらがな・タイピングと共通の「けんちく」のブロックが増え、主人公の武器の種類も増えていきます。</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- プレイヤーと ほぞん（ほかの ゲームと きょうつう） ---------- */
+  const PLAYERS_KEY = 'block-sansu-players';
+  const keyOf = id => id === 'p1' ? 'block-sansu-v1' : 'block-sansu-v1-' + id;
+  let players = null;
+  try { players = JSON.parse(localStorage.getItem(PLAYERS_KEY) || 'null'); } catch (e) {}
+  if (!players || !Array.isArray(players.list) || !players.list.length) players = { list: ['p1'], current: 'p1' };
+  if (!players.list.includes(players.current)) players.current = players.list[0];
+  try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (e) {}
+  const pid = players.current;
+  function loadSave() {
+    let sv = {};
+    try { sv = JSON.parse(localStorage.getItem(keyOf(pid)) || '{}') || {}; } catch (e) {}
+    if (!sv.prog || typeof sv.prog !== 'object') sv.prog = { lv: 1, stars: {} };
+    if (!sv.prog.stars) sv.prog.stars = {};
+    return sv;
+  }
+  let save = loadSave();
+  const nameOf = () => save.name || 'ソラ';
+  let cloud = null;
+  try { cloud = JSON.parse(localStorage.getItem('block-sansu-cloud') || 'null'); } catch (e) {}
+  const cloudOn = () => !!(cloud && cloud.url && cloud.key);
+  let pushTimer = null;
+  function persist() {
+    save.updated = Date.now();
+    try { localStorage.setItem(keyOf(pid), JSON.stringify(save)); } catch (e) {}
+    if (!cloudOn()) return;
+    if (!Array.isArray(cloud.pending)) cloud.pending = [];
+    if (!cloud.pending.includes(pid)) cloud.pending.push(pid);
+    try { localStorage.setItem('block-sansu-cloud', JSON.stringify(cloud)); } catch (e) {}
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(cloud.url, { method: 'POST', body: JSON.stringify({ key: cloud.key, players: [{ id: pid, name: save.name || '', updated: save.updated, data: JSON.stringify(save) }] }) });
+        const j = await res.json();
+        if (j.ok) { cloud.pending = cloud.pending.filter(x => x !== pid); try { localStorage.setItem('block-sansu-cloud', JSON.stringify(cloud)); } catch (e) {} }
+      } catch (e) {}
+    }, 1500);
+  }
+  async function pullMe() {
+    if (!cloudOn()) return;
+    try {
+      const res = await fetch(cloud.url + (cloud.url.includes('?') ? '&' : '?') + 'action=list&key=' + encodeURIComponent(cloud.key));
+      const j = await res.json();
+      if (!j.ok) return;
+      const r = (j.players || []).find(p => p.id === pid);
+      if (r && r.data !== '__deleted__' && (r.updated || 0) > (save.updated || 0)) {
+        try { localStorage.setItem(keyOf(pid), r.data); } catch (e) {}
+        save = loadSave(); renderMe(); renderLvs(); if (!pg.running) renderGame();
+      } else if (r && (save.updated || 0) > (r.updated || 0)) persist();
+    } catch (e) {}
+  }
+
+  /* @@HERO-SHARED-START しゅじんこう・そうび・きせかえ（さんすう と ひらがな で おなじ。さんすうで かえたら ひらがなにも コピーする） */
+  // そうびの シリーズ：どの もんだいも 1つめ（6こ）が そろうと 2つめの シリーズが はじまる。むずかしい もんだいほど つよい
+  const GEAR = [
+    { mode: 'add10', label: 'たしざん 10まで', series: 'はっぱ', pal: { x: '#7cc95a', h: '#c4f0a6', d: '#3f7f2c' } },
+    { mode: 'sub10', label: 'ひきざん 10まで', series: 'くも', pal: { x: '#e6edf5', h: '#ffffff', d: '#9aa9bb' } },
+    { mode: 'addC', label: 'くりあがり', series: 'そら', pal: { x: '#4f9bea', h: '#b5dcff', d: '#2a5f9e' } },
+    { mode: 'mix', label: 'まぜこぜ', series: 'たいよう', pal: { x: '#ff9d2e', h: '#ffd88a', d: '#b8611a' } },
+    { mode: 'cherry', label: 'さくらんぼ', series: 'さくら', pal: { x: '#ff8fb8', h: '#ffd3e4', d: '#c24f7d' } },
+    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } },
+    { mode: 'add10', tier: 2, label: 'たしざん 10まで', series: 'ほのお', pal: { x: '#ff6a3d', h: '#ffd08a', d: '#a8321a' } },
+    { mode: 'sub10', tier: 2, label: 'ひきざん 10まで', series: 'こおり', pal: { x: '#9fe3ff', h: '#ffffff', d: '#4a9fcf' } },
+    { mode: 'addC', tier: 2, label: 'くりあがり', series: 'かみなり', pal: { x: '#ffe14d', h: '#fff7c2', d: '#b89a12' } },
+    { mode: 'mix', tier: 2, label: 'まぜこぜ', series: 'ほしぞら', pal: { x: '#2b3a8f', h: '#ffd23f', d: '#151d4f' } },
+    { mode: 'cherry', tier: 2, label: 'さくらんぼ', series: 'はなかんむり', pal: { x: '#ff7eb6', h: '#fff0f6', d: '#3f9a4a' } },
+    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } }
+  ];
+  const PIECES = ['ぶき', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
+  GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
+  const SLOT_LABELS = ['ぶき', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
+  const PER = 3; // 3もん せいかいで そうびが 1こ
+  const gearCount = (ti, sv = save) => {
+    const n = Math.floor(((sv.mc || {})[GEAR[ti].mode] || 0) / PER);
+    return GEAR[ti].tier === 2 ? Math.min(6, Math.max(0, n - 6)) : Math.min(6, n);
+  };
+  const autoBest = (sv = save) => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti, sv) > j) best = ti; }); return best; });
+  // ぶきの しゅるい（ステージを クリアした かずで ふえる。さんすう＋ひらがな＋ドラゴン）
+  const WEAPONS = [
+    { id: 'sword', n: 'けん', need: 0, s: ['......hx', '.....hxd', '....hxd.', '...hxd..', 'd.hxd...', '.dxd....', '.kd.....', 'k.......'] },
+    { id: 'staff', n: 'つえ', need: 1, s: ['.....hh.', '....hxxh', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......'] },
+    { id: 'bow', n: 'ゆみ', need: 2, s: ['...xx...', '..x..k..', '.x...k..', '.x...k..', '.x...k..', '..x..k..', '...xx...', '........'] },
+    { id: 'axe', n: 'おの', need: 3, s: ['.xxx....', 'xhxxk...', 'xxxxk...', '.xx.k...', '....k...', '....k...', '....k...', '....k...'] },
+    { id: 'hammer', n: 'ハンマー', need: 5, s: ['xxxxxx..', 'xhhhhx..', 'xxxxxx..', '..k.....', '..k.....', '..k.....', '..k.....', '..k.....'] },
+    { id: 'spear', n: 'やり', need: 7, s: ['......hx', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......', '........'] }
+  ];
+  // こもの（ずかんの かずで ふえる）
+  const ACCS = [
+    { id: 'cape', n: 'マント', need: 10 },
+    { id: 'bag', n: 'リュック', need: 20 },
+    { id: 'glasses', n: 'めがね', need: 30 },
+    { id: 'crownAcc', n: 'おうかんの かざり', need: 'crown' }
+  ];
+  const PETS = [
+    { id: 'dog', n: 'いぬ', need: 40, s: ['......k.', 'b....bbb', 'bb..bbbb', '.bbbbbb.', '.bbbbbb.', '.b.bb.b.', '.b.bb.b.', '........'], p: { b: '#a0662f', k: '#22252a' } },
+    { id: 'cat', n: 'ねこ', need: 55, s: ['.g...g..', '.gg.gg..', '.ggggg..', '.gwgwg..', '.ggggg.g', '..ggg..g', '.ggggggg', '.g.g.g..'], p: { g: '#9aa3ad', w: '#22252a' } },
+    { id: 'bird', n: 'ことり', need: 70, s: ['........', '..yyy...', '.ykyyo..', '.yyyyy..', 'yyyyy...', '.yyy....', '..o.o...', '........'], p: { y: '#ffd23f', k: '#22252a', o: '#ff9d2e' } }
+  ];
+  const HAIRS = [{ id: 'short', n: 'みじかい' }, { id: 'long', n: 'ながい' }, { id: 'spiky', n: 'ツンツン' }, { id: 'pony', n: 'ポニーテール' }];
+  const HAIR_COLORS = ['#4a2f1d', '#1d1d22', '#d9a43a', '#c8443a', '#7a5fd6'];
+  const stageClears = (sv = save) => (sv.stageNo || 0) + (sv.hiraStage || 0) + (sv.dragonWins || 0) + (sv.typeClears || 0) + (sv.progClears || 0);
+  const itemCount = (sv = save) => Object.keys(sv.inv || {}).filter(k => sv.inv[k] > 0 && k !== 'red' && k !== 'blue').length;
+  const unlockedW = (w, sv = save) => stageClears(sv) >= w.need;
+  const unlockedA = (a, sv = save) => a.need === 'crown' ? ((sv.inv || {}).crown || 0) > 0 : itemCount(sv) >= a.need;
+  function outfitOf(sv = save) {
+    const o = Object.assign({ slots: [null, null, null, null, null, null], weapon: 'sword', hair: 'short', hairColor: 0, cape: false, bag: false, glasses: false, crownAcc: false, pet: null }, sv.outfit || {});
+    if (!Array.isArray(o.slots) || o.slots.length !== 6) o.slots = [null, null, null, null, null, null];
+    return o;
+  }
+  // きている そうび（じぶんで えらんだ もの → なければ いちばん つよい もの）
+  const equipped = (sv = save) => {
+    const a = autoBest(sv), o = outfitOf(sv);
+    return a.map((v, j) => { const c = o.slots[j]; if (c === null || c === undefined) return v; if (c === -1) return -1; return GEAR[c] && gearCount(c, sv) > j ? c : v; });
+  };
+  function drawHero(eq, sv = save) {
+    const o = outfitOf(sv);
+    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
+    const g = c.getContext('2d');
+    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
+    const skin = '#f2c9a0', hair = HAIR_COLORS[o.hairColor] || HAIR_COLORS[0], shirt = '#e9574f', shorts = '#3a6fd4';
+    const acc = id => o[id] && unlockedA(ACCS.find(a => a.id === id), sv);
+    if (acc('cape')) { R(3, 8, 10, 13, '#c8443a'); R(3, 8, 10, 1, '#8f2a22'); }
+    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
+    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
+    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
+    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
+    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
+    if (o.hair === 'long') { R(3, 2, 1, 8, hair); R(12, 2, 1, 8, hair); }
+    if (o.hair === 'pony') { R(12, 2, 2, 2, hair); R(13, 4, 1, 5, hair); }
+    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
+    if (o.hair === 'spiky') { R(3, 0, 1, 2, hair); R(12, 0, 1, 2, hair); R(8, 2, 3, 1, hair); }
+    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
+    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
+    if (acc('glasses')) { R(5, 4, 2, 2, '#22252a'); R(8, 4, 2, 2, '#22252a'); R(7, 4, 1, 1, '#22252a'); R(5, 4, 1, 1, '#9fd8f5'); R(8, 4, 1, 1, '#9fd8f5'); }
+    const P = ti => GEAR[ti].pal;
+    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
+    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
+    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
+    if (acc('bag')) { R(12, 9, 2, 6, '#8a5a2f'); R(12, 9, 2, 1, '#5e3b1c'); }
+    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
+    if (acc('crownAcc')) { R(5, 0, 6, 2, '#f2c230'); R(7, 0, 2, 1, '#e0245e'); }
+    if (eq[0] >= 0) {
+      const p = P(eq[0]), k = '#4a2f1d';
+      const w = (WEAPONS.find(x => x.id === o.weapon && unlockedW(x, sv)) || WEAPONS[0]).id;
+      if (w === 'sword') { R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, k); }
+      if (w === 'staff') { R(1, 5, 1, 13, k); R(-1, 2, 3, 3, p.x); R(-1, 2, 1, 1, p.h); }
+      if (w === 'bow') { R(-1, 4, 1, 10, p.x); R(0, 3, 1, 1, p.x); R(0, 14, 1, 1, p.x); R(1, 4, 1, 10, '#eeeeee'); }
+      if (w === 'axe') { R(1, 4, 1, 14, k); R(-2, 4, 3, 4, p.x); R(-2, 4, 1, 4, p.h); }
+      if (w === 'hammer') { R(1, 5, 1, 13, k); R(-1, 2, 5, 3, p.x); R(-1, 2, 5, 1, p.h); }
+      if (w === 'spear') { R(1, 2, 1, 16, k); R(0, 0, 3, 2, p.x); R(1, 0, 1, 1, p.h); }
+    }
+    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
+    return c.toDataURL();
+  }
+  const petCache = {};
+  function petURL(id) {
+    if (petCache[id]) return petCache[id];
+    const pt = PETS.find(p => p.id === id); if (!pt) return '';
+    const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d');
+    pt.s.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.' && pt.p[ch]) { g.fillStyle = pt.p[ch]; g.fillRect(x, y, 1, 1); } }));
+    return (petCache[id] = c.toDataURL());
+  }
+  function petHTML(sv = save) {
+    const o = outfitOf(sv), pt = PETS.find(p => p.id === o.pet);
+    return pt && unlockedA(pt, sv) ? `<img class="pet" src="${petURL(pt.id)}" alt="${pt.n}">` : '';
+  }
+  /* @@HERO-SHARED-END */
+
+  /* ---------- ステージ（ぜんぶ オリジナル）。S=スタート G=ゴール #=いわ ~=みず *=ほし ---------- */
+  // dir: 0=うえ 1=みぎ 2=した 3=ひだり
+  const LV = [
+    { n: 'まっすぐ すすもう', map: ['S..G'], dir: 1, pal: ['f'], par: 3, tip: '「すすむ」を 3こ ならべて「じっこう」を おそう' },
+    { n: 'もっと とおくへ', map: ['S....G'], dir: 1, pal: ['f'], par: 5 },
+    { n: 'みぎに まがろう', map: ['S..', '..G'], dir: 1, pal: ['f', 'r'], par: 4, tip: '「みぎを むく」は その ばしょで むきだけ かわるよ' },
+    { n: 'いわを よけて', map: ['G..', '#..', 'S..'], dir: 1, pal: ['f', 'l', 'r'], par: 6 },
+    { n: 'まわりみち', map: ['S.#.G', '..#..', '.....'], dir: 1, pal: ['f', 'l', 'r'], par: 11 },
+    { n: 'いけを よけて', map: ['S~~G', '.~~.', '....'], dir: 1, pal: ['f', 'l', 'r'], par: 10 },
+    { n: 'ほしを とろう', map: ['S.*.', '...G'], dir: 1, pal: ['f', 'l', 'r'], par: 5, tip: '⭐を ぜんぶ とってから ゴールしよう' },
+    { n: 'ほしと いわ', map: ['..*..', 'S.#.G', '.....'], dir: 1, pal: ['f', 'l', 'r'], par: 10 },
+    { n: 'くりかえし で らくちん', map: ['S.......G'], dir: 1, pal: ['f', 'rep'], par: 2, max: 3, tip: '「くりかえす」の なかに「すすむ」を いれて、かいすうを 8に しよう' },
+    { n: 'かいだん', map: ['S.##', '#..#', '##..', '###G'], dir: 1, pal: ['f', 'l', 'r', 'rep'], par: 5, max: 6, tip: '「すすむ・みぎ・すすむ・ひだり」を くりかえそう' },
+    { n: 'ほしを ひろいながら', map: ['S.*.*.*.G'], dir: 1, pal: ['f', 'rep'], par: 3, max: 4 },
+    { n: 'しかくく まわる', map: ['*..*', '.##.', '.##.', 'S..G'], dir: 0, pal: ['f', 'l', 'r', 'rep'], par: 5, max: 6 },
+    { n: 'ジグザグ', map: ['S....', '####.', 'G....'], dir: 1, pal: ['f', 'l', 'r', 'rep'], par: 7, max: 8 },
+    { n: 'もしも かべ なら', map: ['S...', '###.', 'G...'], dir: 1, pal: ['f', 'l', 'r', 'if', 'until'], par: 4, max: 5, tip: '「ゴールまで くりかえす」の なかに「もしも まえが ふさがって いたら → みぎ」と「すすむ」を いれよう' },
+    { n: 'ひだりに まがる もしも', map: ['G...', '###.', 'S...'], dir: 1, pal: ['f', 'l', 'r', 'if', 'until'], par: 4, max: 5 },
+    { n: 'うずまき', map: ['S....', '####.', '.G#..', '.###.', '.....'], dir: 1, pal: ['f', 'l', 'r', 'if', 'until'], par: 4, max: 6 },
+    { n: 'うずまきの ほし', map: ['S....', '####.', '.G#..', '.###.', '*...*'], dir: 1, pal: ['f', 'l', 'r', 'if', 'until', 'rep'], par: 4, max: 6 }
+  ];
+  const BLOCKS = {
+    f: { lab: '⬆ すすむ', cls: 'move' },
+    l: { lab: '↺ ひだりを むく', cls: 'turn' },
+    r: { lab: '↻ みぎを むく', cls: 'turn' },
+    rep: { lab: '🔁 くりかえす', cls: 'loop' },
+    if: { lab: '❓ もしも まえが ふさがって いたら', cls: 'cond' },
+    until: { lab: '🏁 ゴールまで くりかえす', cls: 'loop' }
+  };
+  const DX = [0, 1, 0, -1], DY = [-1, 0, 1, 0];
+
+  const pg = { lv: Math.min(save.prog.lv || 1, LV.length), prog: [], target: [], running: false, msg: '', msgCls: '' };
+  const countBlocks = list => list.reduce((a, b) => a + 1 + (b.body ? countBlocks(b.body) : 0), 0);
+  function parseMap(L) {
+    const H = L.map.length, Wd = Math.max(...L.map.map(r => r.length));
+    const m = { W: Wd, H, cells: [], stars: [] };
+    L.map.forEach((row, y) => [...row.padEnd(Wd, '#')].forEach((ch, x) => {
+      m.cells.push(ch);
+      if (ch === 'S') m.start = { x, y };
+      if (ch === 'G') m.goal = { x, y };
+      if (ch === '*') m.stars.push(x + ',' + y);
+    }));
+    return m;
+  }
+  const cellAt = (m, x, y) => x < 0 || y < 0 || x >= m.W || y >= m.H ? '#' : m.cells[y * m.W + x];
+  const blocked = (m, x, y) => { const c = cellAt(m, x, y); return c === '#' || c === '~'; };
+
+  function renderMe() {
+    document.getElementById('meName').textContent = nameOf();
+    const st = Object.values(save.prog.stars).reduce((a, b) => a + b, 0);
+    document.getElementById('meProg').textContent = `ステージ ${Math.min(save.prog.lv, LV.length)} ／ ${LV.length} ・ ★ ${st}`;
+  }
+  function renderLvs() {
+    const open = Math.min(save.prog.lv || 1, LV.length);
+    document.getElementById('lvs').innerHTML = LV.map((L, i) => {
+      const n = i + 1, s = save.prog.stars[n] || 0;
+      return `<button data-lv="${n}" aria-pressed="${n === pg.lv}" ${n > open ? 'disabled' : ''} title="${L.n}">${n}<small>${s ? '★'.repeat(s) : n > open ? '🔒' : '・'}</small></button>`;
+    }).join('');
+    document.querySelectorAll('#lvs [data-lv]').forEach(b => { b.onclick = () => { if (pg.running) return; pg.lv = Number(b.dataset.lv); pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); }; });
+  }
+
+  /* プログラムの ひょうじ */
+  const pathKey = p => p.join('.');
+  function listAt(path) { let l = pg.prog; for (const i of path) l = l[i].body; return l; }
+  function progHTML(list, base) {
+    return list.map((b, i) => {
+      const path = base.concat(i), B = BLOCKS[b.t];
+      const head = `<div class="bh" data-sel="${pathKey(path)}"><span class="lab">${B.lab}${b.t === 'rep' ? ` <button class="nbtn" data-n="-1" data-p="${pathKey(path)}" aria-label="へらす">−</button> ${b.n}かい <button class="nbtn" data-n="1" data-p="${pathKey(path)}" aria-label="ふやす">＋</button>` : ''}${b.t === 'if' ? '' : ''}</span><button class="x" data-del="${pathKey(path)}" aria-label="けす">×</button></div>`;
+      const body = b.body ? `<div class="body${pathKey(pg.target) === pathKey(path) ? ' target' : ''}" data-sel="${pathKey(path)}">${progHTML(b.body, path)}<span class="hintin">${pathKey(pg.target) === pathKey(path) ? '▼ ここに はいるよ' : 'タップすると ここに いれられるよ'}</span></div>` : '';
+      return `<div class="blk ${B.cls}" id="b-${pathKey(path).replace(/\./g, '-')}">${head}${body}</div>`;
+    }).join('');
+  }
+  function renderGame() {
+    const L = LV[pg.lv - 1], m = parseMap(L);
+    const cs = Math.min(56, Math.floor((Math.min(window.innerWidth, 860) - 70) / m.W));
+    const used = countBlocks(pg.prog);
+    let cells = '';
+    m.cells.forEach((ch, k) => {
+      const cls = ch === '#' ? 'rock' : ch === '~' ? 'water' : ch === 'G' ? 'goal' : '';
+      cells += `<div class="cell ${cls}">${ch === '*' ? '<span class="it">⭐</span>' : ''}</div>`;
+    });
+    document.getElementById('game').innerHTML = `
+      <div class="mission">ステージ ${pg.lv}「${esc(L.n)}」<small>${m.stars.length ? '⭐を ぜんぶ とって ' : ''}🚩 ゴールまで うごかそう。${L.tip ? esc(L.tip) : ''}</small></div>
+      <div class="play">
+        <div class="mapwrap">
+          <div class="map" id="map" style="--cs:${cs}px;grid-template-columns:repeat(${m.W}, ${cs}px)">${cells}
+            <div class="hero" id="hero" style="left:${m.start.x * cs}px;top:${m.start.y * cs}px"><img src="${drawHero(equipped())}" alt="しゅじんこう"><span class="dir d${L.dir}"></span></div>
+          </div>
+          <p class="msg ${pg.msgCls}" id="msg" aria-live="polite">${pg.msg}</p>
+        </div>
+        <div class="code">
+          <div class="palette" aria-label="めいれいブロック">${L.pal.map(k => `<button class="pal ${BLOCKS[k].cls}" data-add="${k}" id="add-${k}">${BLOCKS[k].lab}</button>`).join('')}</div>
+          <div class="counter">ブロック <b class="${L.max && used > L.max ? 'over' : ''}">${used}</b>${L.max ? ` ／ ${L.max}こ まで` : 'こ'}　★★★ は ${L.par}こ いない</div>
+          <div class="prog${pg.target.length ? '' : ' target'}" id="prog" data-sel="root">${pg.prog.length ? progHTML(pg.prog, []) : '<span class="note">うえの ブロックを おすと ここに ならぶよ</span>'}</div>
+          <div class="actions">
+            <button class="btn primary" id="runBtn" ${pg.running ? 'disabled' : ''}>▶ じっこう</button>
+            <button class="btn" id="resetBtn">↺ もとに もどす</button>
+            <button class="btn" id="clearBtn">🗑 ぜんぶ けす</button>
+          </div>
+        </div>
+      </div>`;
+    bind();
+  }
+  function bind() {
+    const L = LV[pg.lv - 1];
+    document.querySelectorAll('[data-add]').forEach(b => { b.onclick = () => {
+      if (pg.running) return;
+      const t = b.dataset.add, blk = { t };
+      if (t === 'rep') { blk.n = 3; blk.body = []; }
+      if (t === 'if' || t === 'until') blk.body = [];
+      const list = listAt(pg.target);
+      list.push(blk);
+      if (blk.body) pg.target = pg.target.concat(list.length - 1);
+      pg.msg = ''; renderGame();
+    }; });
+    document.getElementById('prog').onclick = e => {
+      if (pg.running) return;
+      const del = e.target.closest('[data-del]');
+      if (del) {
+        const path = del.dataset.del.split('.').map(Number), i = path.pop();
+        listAt(path).splice(i, 1);
+        if (pathKey(pg.target).startsWith(del.dataset.del)) pg.target = path;
+        renderGame(); return;
+      }
+      const nb = e.target.closest('[data-n]');
+      if (nb) {
+        const path = nb.dataset.p.split('.').map(Number), i = path.pop(), b = listAt(path)[i];
+        b.n = Math.max(2, Math.min(9, b.n + Number(nb.dataset.n))); renderGame(); return;
+      }
+      const sel = e.target.closest('[data-sel]');
+      if (sel) {
+        if (sel.dataset.sel === 'root') pg.target = [];
+        else { const path = sel.dataset.sel.split('.').map(Number); const b = listAt(path.slice(0, -1))[path[path.length - 1]]; pg.target = b.body ? path : path.slice(0, -1); }
+        renderGame();
+      }
+    };
+    document.getElementById('runBtn').onclick = run;
+    document.getElementById('resetBtn').onclick = () => { if (!pg.running) { pg.msg = ''; renderGame(); } };
+    document.getElementById('clearBtn').onclick = () => { if (!pg.running) { pg.prog = []; pg.target = []; pg.msg = ''; renderGame(); } };
+  }
+
+  /* じっこう */
+  function* exec(list, path, ctx) {
+    for (let i = 0; i < list.length; i++) {
+      if (ctx.end) return;
+      const b = list[i], p = path.concat(i);
+      if (b.t === 'f' || b.t === 'l' || b.t === 'r') {
+        ctx.steps++;
+        if (ctx.steps > 200) { ctx.end = 'loop'; return; }
+        if (b.t === 'l') ctx.dir = (ctx.dir + 3) % 4;
+        if (b.t === 'r') ctx.dir = (ctx.dir + 1) % 4;
+        if (b.t === 'f') {
+          const nx = ctx.x + DX[ctx.dir], ny = ctx.y + DY[ctx.dir];
+          const c = cellAt(ctx.m, nx, ny);
+          if (c === '#' || c === '~') { ctx.end = c === '~' ? 'water' : (nx < 0 || ny < 0 || nx >= ctx.m.W || ny >= ctx.m.H ? 'edge' : 'rock'); yield p; return; }
+          ctx.x = nx; ctx.y = ny;
+          ctx.got.add(nx + ',' + ny);
+          if (nx === ctx.m.goal.x && ny === ctx.m.goal.y && ctx.m.stars.every(s => ctx.got.has(s))) { ctx.end = 'win'; yield p; return; }
+        }
+        yield p;
+      } else if (b.t === 'rep') {
+        for (let k = 0; k < b.n && !ctx.end; k++) { yield p; yield* exec(b.body, p, ctx); }
+      } else if (b.t === 'if') {
+        yield p;
+        if (blocked(ctx.m, ctx.x + DX[ctx.dir], ctx.y + DY[ctx.dir])) yield* exec(b.body, p, ctx);
+      } else if (b.t === 'until') {
+        let guard = 0;
+        while (!ctx.end && guard++ < 60) { yield p; if (!b.body.length) { ctx.end = 'loop'; return; } yield* exec(b.body, p, ctx); }
+        if (!ctx.end) ctx.end = 'loop';
+      }
+    }
+  }
+  function run() {
+    if (pg.running || !pg.prog.length) return;
+    const L = LV[pg.lv - 1], m = parseMap(L);
+    if (L.max && countBlocks(pg.prog) > L.max) { pg.msg = `ブロックが おおすぎるよ（${L.max}こ まで）。「くりかえす」を つかって へらそう`; pg.msgCls = 'bad'; renderGame(); return; }
+    pg.msg = ''; renderGame();
+    pg.running = true; document.getElementById('runBtn').disabled = true;
+    const ctx = { m, x: m.start.x, y: m.start.y, dir: L.dir, got: new Set(), steps: 0, end: '' };
+    const it = exec(pg.prog, [], ctx);
+    const cs = parseFloat(getComputedStyle(document.getElementById('map')).getPropertyValue('--cs'));
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const step = () => {
+      const r = it.next();
+      document.querySelectorAll('.blk.running').forEach(e => e.classList.remove('running'));
+      if (r.done) { setTimeout(() => finish(ctx), 300); return; }
+      const el = document.getElementById('b-' + pathKey(r.value).replace(/\./g, '-')); if (el) el.classList.add('running');
+      const h = document.getElementById('hero');
+      h.style.left = ctx.x * cs + 'px'; h.style.top = ctx.y * cs + 'px';
+      h.querySelector('.dir').className = 'dir d' + ctx.dir;
+      // ほしを とる
+      document.querySelectorAll('#map .cell').forEach((c, k) => { const key = (k % m.W) + ',' + Math.floor(k / m.W); const it2 = c.querySelector('.it'); if (ctx.got.has(key) && it2) it2.remove(); });
+      if (ctx.end) { if (ctx.end !== 'win') h.classList.add('bump'); setTimeout(() => finish(ctx), reduce ? 100 : 500); return; }
+      setTimeout(step, reduce ? 150 : 420);
+    };
+    setTimeout(step, 200);
+  }
+  function finish(ctx) {
+    pg.running = false;
+    const L = LV[pg.lv - 1];
+    document.querySelectorAll('.blk.running').forEach(e => e.classList.remove('running'));
+    if (ctx.end === 'win') {
+      const used = countBlocks(pg.prog), stars = used <= L.par ? 3 : used <= L.par + 2 ? 2 : 1;
+      const first = !save.prog.stars[pg.lv];
+      const better = stars > (save.prog.stars[pg.lv] || 0);
+      const wBefore = WEAPONS.filter(w => unlockedW(w)).length;
+      if (better) save.prog.stars[pg.lv] = stars;
+      if (first) save.progClears = (save.progClears || 0) + 1;
+      save.built = (save.built || 0) + (first ? stars * 2 : 1);
+      if (pg.lv >= (save.prog.lv || 1) && pg.lv < LV.length) save.prog.lv = pg.lv + 1;
+      persist();
+      const newW = WEAPONS.filter(w => unlockedW(w)).slice(wBefore).map(w => w.n);
+      pg.msgCls = 'good';
+      pg.msg = `ゴール！ <span class="stars">${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}</span><br>${stars < 3 ? `ブロックを ${L.par}こ いないに すると ★★★ だよ。` : 'すごい！ いちばん みじかい プログラム！'}${first ? `　けんちくの ブロック ＋${stars * 2}` : ''}${newW.length ? `<br>🗡 あたらしい ぶき「${newW.join('・')}」が つかえるよ` : ''}`;
+      renderMe(); renderLvs(); renderGame();
+      const g = document.getElementById('game');
+      if (pg.lv < LV.length) {
+        const nb = document.createElement('div'); nb.className = 'actions'; nb.style.justifyContent = 'center';
+        nb.innerHTML = `<button class="btn primary" id="nextLv">つぎの ステージ ▶</button>`;
+        document.getElementById('msg').after(nb);
+        document.getElementById('nextLv').onclick = () => { pg.lv++; pg.prog = []; pg.target = []; pg.msg = ''; renderLvs(); renderGame(); };
+      }
+      return;
+    }
+    pg.msgCls = 'bad';
+    pg.msg = { rock: 'いわに ぶつかっちゃった！ どこで まがるか かんがえよう', water: 'いけに おちそう！ よけて すすもう', edge: 'その さきは みちが ないよ', loop: 'ずっと くりかえして とまらないよ。ゴールに つける かな？' }[ctx.end]
+      || (ctx.m.goal && ctx.x === ctx.m.goal.x && ctx.y === ctx.m.goal.y ? 'ゴール…でも ⭐が のこって いるよ！' : 'ゴールまで とどかなかった。ブロックを たしてみよう');
+    const msg = document.getElementById('msg'); msg.className = 'msg bad'; msg.innerHTML = pg.msg;
+    document.getElementById('runBtn').disabled = false;
+  }
+
+  window.addEventListener('resize', () => { if (!pg.running) renderGame(); });
+  renderMe(); renderLvs(); renderGame(); pullMe();
+})();
+</script>
+</body>
+</html>
