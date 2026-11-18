@@ -271,6 +271,33 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
 }
 .back-top:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+/* さくらんぼの おてつだい（レベル・ちいさな けいさん・ブロックの うごき） */
+.lvpick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 15px; }
+.lvpick .btn[aria-pressed="true"] { background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; }
+.lvpick small { color: var(--muted); }
+.viz { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: center; }
+.viz-lbl { font-size: 13px; color: var(--muted); text-align: center; margin-top: 2px; }
+.viz-cap { margin: 0; text-align: center; color: var(--yellow); font-size: 17px; }
+.loose { display: flex; flex-wrap: wrap; gap: 3px; max-width: 170px; min-height: 30px; }
+.loose .blk { width: 30px; height: 30px; }
+.loose span, .frame i { position: relative; }
+.loose span.mv, .frame i.mv { outline: 3px solid var(--cherry); outline-offset: -1px; }
+.frame.full { outline: 3px solid var(--yellow); }
+.frame i.empty-slot { outline: 2px dashed var(--yellow); outline-offset: -4px; }
+.csteps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.csteps li { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px; }
+.csteps .eq { font-family: var(--num); font-weight: 800; font-size: clamp(26px, 7vw, 34px); }
+.csteps .sbox { display: inline-flex; min-width: 1.6em; justify-content: center; border: 3px dashed var(--muted); background: var(--slot); color: var(--yellow); padding: 0 .1em; }
+.csteps .sbox.act { border: 3px solid var(--yellow); }
+.csteps .sbox.ok { border: 3px solid var(--green); color: var(--green); }
+.csteps small { color: var(--yellow); font-size: 15px; }
+.lvmsg { color: var(--yellow); font-size: 17px; }
+@media (prefers-reduced-motion: no-preference) {
+  .frame i.in .blk { animation: hop .7s steps(7); }
+  @keyframes hop { from { transform: translate(90px, -40px) scale(.5); opacity: .2; } to { transform: none; opacity: 1; } }
+  .frame i.out .blk { animation: away .6s steps(5); }
+  @keyframes away { from { opacity: 1; transform: none; } to { opacity: .3; transform: translateY(-6px); } }
+}
 /* しゅじんこう・そうび・ずかん */
 .hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
 .hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
@@ -398,6 +425,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   <details class="parents" id="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
     <div class="parents-body">
+    <p>さくらんぼ計算は「おてつだい レベル」で手助けの量が変わります。レベル1は、さくらんぼのあとの計算を小さな2つの計算（7＋3＝10 → 10＋2＝12、16−8なら 10−8＝2 → 2＋6＝8）に分けて1つずつ答え、10こ入る「はこ」にブロックが移って10のまとまりができる様子も見せます。レベル2は小さな計算だけ、レベル3は答えだけです。3問続けて1回で正解するとレベルが上がり、まちがえると1つ下がります（自分で選ぶこともできます）。「わけかた」のクイズでは「10の ともだち（7は あと いくつで 10）」「10と いくつ（10と4で14・14は10と4）」も練習でき、さくらんぼ計算の土台になります。</p>
     <p>「🍒 さくらんぼ」は、さくらんぼ計算の書き方そのものを練習する問題です（7＋5なら、5の下のさくらんぼに3が入っていて、もう1つのさくらんぼと□の答えを入れます。ひきざんは13を10といくつに分けます）。どの種類も20問ずつ、ランダムに出題し、同じ問題や答え・数が同じ問題が続かないようにしています。</p>
     <p>はじめて開くと、主人公の名前を決める画面が出ます（あとから「✎ なまえを かえる」で変えられます）。きょうだいなど複数人で使うときは「👥 プレイヤー こうたい」で、プレイヤーを最大6人まで作れます。そうび・ずかん・おうちの進み具合は、プレイヤーごとに別々に、正解するたびに自動で保存されます（保存先はこの端末のブラウザです。別の端末やブラウザとは共有されません。ブラウザの履歴・サイトデータを消すと記録も消えます）。</p>
     <p>主人公（名前を決めないときは「ソラ」）は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・ぼうし・ふく・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「はっぱ」、ひきざん（10まで）は「くも」、くりあがりは「そら」、まぜこぜは「たいよう」、さくらんぼは「さくら」、くりさがりは「にじ」シリーズと、難しい問題ほど強いそうびになります。</p>
@@ -732,6 +760,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (st.mode === 'mix' && q.type === prev.type)))));
     st.hist.push(key(q));
     st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false; st.blank = 0; st.vals = ['', ''];
+    st.anim = 0; st.lvMsg = '';
+    st.qLv = cherryLv();
+    st.steps = q.kind === 'cherry' ? stepsFor(q, st.qLv) : [];
     render();
   }
 
@@ -851,13 +882,72 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return s + '</div>';
   }
 
+  /* さくらんぼの あとの けいさんを わかりやすく：レベル1＝ちいさな けいさん＋ブロック、レベル2＝ちいさな けいさん、レベル3＝こたえだけ */
+  const cherryLv = () => Math.min(3, Math.max(1, save.cherryLv || 1));
+  function stepsFor(q, lv) {
+    const st0 = { type: 'berry', ans: q.berry };
+    if (lv >= 3) return [st0, { type: 'final', ans: q.ans }];
+    if (q.op === '+') return [st0,
+      { type: 'eq', text: `${q.a} ＋ ${q.given} ＝`, ans: 10, note: '10の まとまりが できた！', ask: `まず ${q.a}と ${q.given}で 10を つくろう` },
+      { type: 'eq', text: `10 ＋ ${q.berry} ＝`, ans: q.ans, note: `10と ${q.berry}で ${q.ans}`, ask: `10と のこりの ${q.berry}を あわせよう` }];
+    return [st0,
+      { type: 'eq', text: `10 − ${q.b} ＝`, ans: 10 - q.b, note: '10の まとまりから ひいたよ', ask: `まず 10から ${q.b}を ひこう` },
+      { type: 'eq', text: `${10 - q.b} ＋ ${q.berry} ＝`, ans: q.ans, note: `のこりの ${10 - q.b}と ${q.berry}で ${q.ans}`, ask: `のこりの ${10 - q.b}と ${q.berry}を あわせよう` }];
+  }
+  function cherryAsk(q) {
+    if (st.solved) return 'できたね！';
+    const cur = st.steps[st.blank];
+    if (cur.type === 'berry') return q.op === '+' ? `${q.a}は あと ${q.given}で 10。<br>${q.b}を ${q.given}と いくつに わける？` : `${q.a}を 10と いくつに わける？`;
+    if (cur.type === 'eq') return cur.ask + '。';
+    return `${q.op === '+' ? `${q.a}＋${q.given}＝10、10＋${q.berry}は？` : `10−${q.b}＝${10 - q.b}、${10 - q.b}＋${q.berry}は？`}<br>□に こたえを いれよう。`;
+  }
+  function cherryStepsHTML() {
+    const rows = st.steps.map((sp, k) => {
+      if (sp.type !== 'eq' || k > st.blank && !st.solved) return '';
+      const done = st.solved || k < st.blank;
+      const val = done ? sp.ans : (st.input || '');
+      return `<li class="${done ? 'done' : 'cur'}"><span class="eq">${sp.text} <b class="sbox${done ? ' ok' : ' act'}">${val || '&nbsp;'}</b></span>${done ? `<small>${sp.note}</small>` : ''}</li>`;
+    }).join('');
+    return rows ? `<ol class="csteps">${rows}</ol>` : '';
+  }
+  function cherryVizHTML(q) {
+    const phase = st.solved ? st.steps.length : st.blank;
+    const justMoved = st.anim === 2;
+    let frame = [], loose = [], cap = '';
+    if (q.op === '+') {
+      for (let k = 0; k < q.a; k++) frame.push({ c: 'red' });
+      if (phase >= 2) for (let k = 0; k < q.given; k++) frame.push({ c: 'blue', cls: justMoved ? 'in' : '' });
+      const nLoose = phase >= 2 ? q.berry : q.b;
+      for (let k = 0; k < nLoose; k++) loose.push({ c: 'blue', cls: phase === 1 && k < q.given ? 'mv' : '' });
+      cap = phase === 0 ? `はこに ${q.a}こ、ばらが ${q.b}こ` : phase === 1 ? `ピンクの わくの ${q.given}こを はこに うつすと…？` : phase === 2 ? `はこが いっぱい（10）！ ばらは ${q.berry}こ` : `10と ${q.berry}で ${q.ans}`;
+    } else {
+      for (let k = 0; k < 10; k++) frame.push({ c: 'red', cls: phase >= 2 && k >= 10 - q.b ? ('x' + (justMoved ? ' out' : '')) : (phase === 1 && k >= 10 - q.b ? 'mv' : '') });
+      for (let k = 0; k < q.berry; k++) loose.push({ c: 'red' });
+      cap = phase === 0 ? `${q.a}は いっぱいの はこ（10）と ばら` : phase === 1 ? `はこの 10から ${q.b}こ とるよ（ピンクの わく）` : phase === 2 ? `はこに ${10 - q.b}こ のこった` : `${10 - q.b}と ばらの ${q.berry}で ${q.ans}`;
+    }
+    let cells = '';
+    for (let k = 0; k < 10; k++) { const c = frame[k]; cells += c ? `<i class="${c.cls || ''}">${B(c.c)}</i>` : '<i></i>'; }
+    const full = q.op === '+' ? phase >= 2 : phase < 2;
+    return `<div class="viz" aria-hidden="true">
+      <div><div class="frame${full ? ' full' : ''}">${cells}</div><div class="viz-lbl">10こ はいる はこ</div></div>
+      <div><div class="loose">${loose.map(l => `<span class="${l.cls || ''}">${B(l.c)}</span>`).join('')}</div><div class="viz-lbl">ばら</div></div>
+    </div><p class="viz-cap">${cap}</p>`;
+  }
+  function lvPickerHTML() {
+    const lv = cherryLv();
+    return `<div class="lvpick"><span>🍒 おてつだい レベル</span>${[1, 2, 3].map(n =>
+      `<button class="btn small" data-lv="${n}" aria-pressed="${n === lv}">${n}</button>`).join('')}
+      <small>${['', 'ブロックと ちいさな けいさん', 'ちいさな けいさん', 'こたえだけ'][lv]}</small></div>`;
+  }
+
   function cherryQuestionSVG(q) {
     const xs = [62, 120, 170, 220, 280];
     const toks = [q.a, q.op === '+' ? '+' : '−', q.b, '='];
     const si = q.op === '+' ? 2 : 0, x = xs[si];
+    const cur = st.steps[st.blank] || {};
     const v0 = st.blank > 0 || st.solved ? q.berry : (st.input || '');
-    const v1 = st.solved ? q.ans : (st.blank === 1 ? st.input : '');
-    const act = j => !st.solved && st.blank === j;
+    const v1 = st.solved ? q.ans : (cur.type === 'final' ? st.input : '');
+    const act = j => !st.solved && (j === 0 ? st.blank === 0 : cur.type === 'final');
     let o = `<svg class="cq" viewBox="0 0 320 172" role="img" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b}。${q.op === '+' ? q.b : q.a}を ${q.given}と いくつに わける？">`;
     toks.forEach((t, k) => { o += `<text x="${xs[k]}" y="62" font-size="46" text-anchor="middle">${t}</text>`; });
     o += `<rect class="box${act(1) ? ' act' : ''}${st.solved ? ' ok' : ''}" x="251" y="20" width="58" height="56" rx="4"/>`;
@@ -889,6 +979,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       : `<span class="ans${st.input ? ' filled' : ''}">${st.input || '&nbsp;'}</span>`;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！ ブロックを ほったよ！'}</span>
+      ${st.lvMsg === 'up' ? `<span class="lvmsg">⬆ おてつだい レベル ${cherryLv()} に アップ！ ${cherryLv() === 3 ? 'つぎは こたえだけで やってみよう' : 'つぎは ちいさな けいさんだけ'}</span>` : ''}
+      ${st.lvMsg === 'down' ? `<span class="lvmsg">おてつだい レベル ${cherryLv()} で もういちど たしかめよう</span>` : ''}
       ${dropHTML(st.got, st.gotNew)}
       ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>${esc(nameOf(save))}の すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
@@ -897,11 +989,12 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <div class="stage-label"><span>だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⛏ せいかいで ブロックが ほれるよ</span></div>
       ${mineHTML()}
       ${q.kind === 'cherry' ? `
-      <p class="story">🍒 さくらんぼ けいさん<br>${st.solved ? 'できたね！' : st.blank === 0
-        ? `${q.op === '+' ? `${q.a}は あと ${q.given}で 10。<br>${q.b}を ${q.given}と いくつに わける？` : `${q.a}を 10と いくつに わける？`}`
-        : `${q.op === '+' ? `${q.a}＋${q.given}＝10、10＋${q.berry}は？` : `10−${q.b}＝${10 - q.b}、${10 - q.b}＋${q.berry}は？`}<br>□に こたえを いれよう。`}</p>
+      ${lvPickerHTML()}
+      <p class="story">🍒 さくらんぼ けいさん<br>${cherryAsk(q)}</p>
       <div class="cq-wrap">${cherryQuestionSVG(q)}</div>
-      <p class="note" style="text-align:center">${st.solved ? '' : st.blank === 0 ? 'きいろの さくらんぼに はいる かずを いれてね' : 'きいろの □に こたえを いれてね'}</p>` : `
+      ${st.qLv === 1 ? cherryVizHTML(q) : ''}
+      ${st.qLv <= 2 ? cherryStepsHTML() : ''}
+      <p class="note" style="text-align:center">${st.solved ? '' : st.steps[st.blank].type === 'berry' ? 'きいろの さくらんぼに はいる かずを いれてね' : st.steps[st.blank].type === 'eq' ? 'きいろの □に はいる かずを いれてね' : 'きいろの □に こたえを いれてね'}</p>` : `
       ${storyHTML(q)}
       ${pictureHTML(q)}
       <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>`}
@@ -913,6 +1006,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       </div>
       ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}`;
     st.breaking = false;
+    card.querySelectorAll('[data-lv]').forEach(b => { b.onclick = () => {
+      save.cherryLv = Number(b.dataset.lv); save.cherryStreak = 0; persist();
+      if (!st.solved && st.q.kind === 'cherry' && st.blank === 0) { st.qLv = cherryLv(); st.steps = stepsFor(st.q, st.qLv); }
+      render();
+    }; });
     const h = document.getElementById('hint'); if (h) h.onclick = () => { st.hint = true; render(); };
     const n = document.getElementById('next'); if (n) { n.onclick = advance; n.focus({ preventScroll: true }); }
   }
@@ -923,18 +1021,30 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (k === 'del') st.input = st.input.slice(0, -1);
     else if (k === 'go') {
       if (!st.input) return;
-      if (st.q.kind === 'cherry' && st.blank === 0) {
-        if (Number(st.input) === st.q.berry) { st.blank = 1; st.input = ''; st.vals[0] = String(st.q.berry); }
-        else { st.wrong = true; st.hint = true; st.input = ''; }
-      } else if (Number(st.input) === st.q.ans) {
+      const cherry = st.q.kind === 'cherry';
+      const cur = cherry ? st.steps[st.blank] : null;
+      st.anim = 0;
+      if (cherry && st.blank < st.steps.length - 1) {
+        if (Number(st.input) === cur.ans) { st.blank++; st.input = ''; st.anim = st.blank; }
+        else { st.wrong = true; st.hint = st.qLv >= 3; st.input = ''; }
+      } else if (Number(st.input) === (cherry ? cur.ans : st.q.ans)) {
         st.solved = true; st.results[st.i] = !st.wrong; st.breaking = true;
+        if (cherry) st.anim = st.steps.length;
+        st.lvMsg = '';
+        if (cherry) {
+          // レベル：3もん つづけて いっかいで せいかい → アップ、まちがえたら 1つ ダウン
+          let lv = cherryLv();
+          if (st.wrong) { save.cherryStreak = 0; if (lv > 1) { lv--; st.lvMsg = 'down'; } }
+          else { save.cherryStreak = (save.cherryStreak || 0) + 1; if (save.cherryStreak >= 3 && lv < 3) { lv++; save.cherryStreak = 0; st.lvMsg = 'up'; } }
+          save.cherryLv = lv;
+        }
         const ti = tiOf(st.mode), before = gearCount(ti);
         save.mc[st.mode] = (save.mc[st.mode] || 0) + 1;
         st.got = rewardFor(st.q); st.gotNew = gain(st.got);
         const after = gearCount(ti);
         st.newGear = after > before ? [ti, after - 1] : null;
         renderHero(!!st.newGear);
-      } else { st.wrong = true; st.hint = true; st.input = ''; }
+      } else { st.wrong = true; st.hint = !cherry || st.qLv >= 3; st.input = ''; }
     } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
     render();
   }
@@ -983,35 +1093,75 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     renderQuiz();
   }
 
+  // クイズの しゅるい：いくつと いくつ／10の ともだち（7は あと いくつで 10）／10と いくつ（10と 4で いくつ・14は 10と いくつ）
+  const QUIZ_TYPES = [
+    { id: 'split', label: 'いくつと いくつ' },
+    { id: 'ten', label: '10の ともだち' },
+    { id: 'teen', label: '10と いくつ' },
+    { id: 'qmix', label: 'まぜこぜ' }
+  ];
+  sq.mode = 'split';
+  function makeQuiz(mode) {
+    const t = mode === 'qmix' ? pick(['split', 'ten', 'teen']) : mode;
+    if (t === 'split') { const n = rnd(2, 9), a = rnd(1, n - 1); return { t, n, a, ans: n - a, key: `s${n}-${a}` }; }
+    if (t === 'ten') { const a = rnd(1, 9); return { t, n: 10, a, ans: 10 - a, key: `t${a}` }; }
+    const k = rnd(1, 9);
+    return Math.random() < .5 ? { t, sub: 'make', n: 10 + k, a: 10, b: k, ans: 10 + k, key: `m${k}` }
+                              : { t, sub: 'part', n: 10 + k, a: 10, ans: k, key: `p${k}` };
+  }
   function newQuiz() {
     sq.hist = sq.hist || [];
-    let n, a, tries = 0;
-    do { n = Math.random() < .4 ? 10 : rnd(2, 10); a = rnd(1, n - 1); tries++; }
-    while (tries < 200 && (sq.hist.includes(n + '-' + a) || (n === sq.n && tries < 100) || n - a === sq.n - sq.a));
-    sq.hist = sq.hist.concat(n + '-' + a).slice(-12);
-    Object.assign(sq, { n, a, input: '', solved: false, wrong: false });
+    const prev = sq.q;
+    let q, tries = 0;
+    do { q = makeQuiz(sq.mode); tries++; }
+    while (tries < 200 && (sq.hist.includes(q.key) || (prev && (q.ans === prev.ans || (sq.mode === 'qmix' && q.t === prev.t)))));
+    sq.hist = sq.hist.concat(q.key).slice(-8);
+    Object.assign(sq, { q, n: q.n, a: q.a, input: '', solved: false, wrong: false });
+  }
+  function quizText(q) {
+    if (q.t === 'split') return `${q.n}は ${q.a}と いくつ？`;
+    if (q.t === 'ten') return `${q.a}は あと いくつで 10に なる？`;
+    return q.sub === 'make' ? `10と ${q.b}で いくつ？` : `${q.n}は 10と いくつ？`;
   }
   function quizSVG() {
-    const b = sq.solved ? sq.n - sq.a : (sq.input || '?');
-    return `<svg class="quiz-svg" viewBox="0 0 200 140" role="img" aria-label="${sq.n}は ${sq.a}と いくつ">
-      <text x="100" y="40" font-size="40" text-anchor="middle">${sq.n}</text>
+    const q = sq.q, v = sq.solved ? q.ans : (sq.input || '?');
+    const make = q.t === 'teen' && q.sub === 'make';
+    const top = make ? v : q.n, right = make ? q.b : v;
+    return `<svg class="quiz-svg" viewBox="0 0 200 140" role="img" aria-label="${quizText(q)}">
+      <text class="${make ? 'q' : ''}" x="100" y="40" font-size="40" text-anchor="middle">${top}</text>
       <path class="stem" d="M100 50 L66 92 M100 50 L134 92"/>
       <circle class="berry" cx="66" cy="112" r="22"/><circle class="berry" cx="134" cy="112" r="22"/>
-      <text x="66" y="122" font-size="28" text-anchor="middle">${sq.a}</text>
-      <text class="q" x="134" y="122" font-size="28" text-anchor="middle">${b}</text></svg>`;
+      <text x="66" y="122" font-size="28" text-anchor="middle">${q.a}</text>
+      <text class="${make ? '' : 'q'}" x="134" y="122" font-size="28" text-anchor="middle">${right}</text></svg>`;
+  }
+  // ヒントの え：10の はこ と ばら
+  function quizPicture(q) {
+    if (q.t === 'split') return `<div style="display:flex;justify-content:center">${drow(q.a, q.n - q.a)}</div>`;
+    let cells = '';
+    const filled = q.t === 'ten' ? q.a : 10;
+    for (let k = 0; k < 10; k++) cells += k < filled ? `<i>${B('red')}</i>` : '<i class="empty-slot"></i>';
+    const loose = q.t === 'teen' ? Array.from({ length: q.n - 10 }, () => B('blue')).join('') : '';
+    return `<div class="viz"><div><div class="frame">${cells}</div><div class="viz-lbl">10こ はいる はこ</div></div>
+      ${loose ? `<div><div class="loose">${loose}</div><div class="viz-lbl">ばら</div></div>` : ''}</div>
+      <p class="viz-cap">${q.t === 'ten' ? `あいて いる マスを かぞえよう` : `はこ（10）と ばらを あわせて かぞえよう`}</p>`;
   }
   function renderQuiz() {
-    if (!sq.n) newQuiz();
-    const q = document.getElementById('quiz');
+    if (!sq.q) newQuiz();
+    const q = sq.q;
+    const el = document.getElementById('quiz');
+    const sentence = q.t === 'split' ? `${q.n}は ${q.a}と ${q.ans}` : q.t === 'ten' ? `${q.a}と ${q.ans}で 10` : q.sub === 'make' ? `10と ${q.b}で ${q.ans}` : `${q.n}は 10と ${q.ans}`;
     let fb = '';
-    if (sq.solved) fb = `<div class="feedback good"><span>せいかい！ ${sq.n}は ${sq.a}と ${sq.n - sq.a}</span>${dropHTML(sq.got, sq.gotNew)}</div>`;
-    else if (sq.wrong) fb = `<div class="feedback try"><span>おしい！ うえの ひょうの「${sq.n}」を みてみよう。</span></div>`;
-    q.innerHTML = `<h2>わけかた クイズ</h2>
-      <p class="story" style="font-size:20px">${sq.n}は ${sq.a}と いくつ？</p>
+    if (sq.solved) fb = `<div class="feedback good"><span>せいかい！ ${sentence}</span>${dropHTML(sq.got, sq.gotNew)}</div>`;
+    else if (sq.wrong) fb = `<div class="feedback try"><span>おしい！ えを みて かぞえてみよう</span></div>`;
+    el.innerHTML = `<h2>わけかた クイズ</h2>
+      <div class="modes" id="qmodes">${QUIZ_TYPES.map(t => `<button id="qm-${t.id}" data-qm="${t.id}" aria-pressed="${t.id === sq.mode}">${t.label}</button>`).join('')}</div>
+      <p class="note">${{ split: '2から 9までの かずを ふたつに わけるよ', ten: 'たして 10に なる くみあわせ。さくらんぼ けいさんで つかうよ', teen: '10と いくつで「じゅう いくつ」。さくらんぼ けいさんで つかうよ', qmix: '3つの クイズが まざって でるよ' }[sq.mode]}</p>
+      <p class="story" style="font-size:21px">${quizText(q)}</p>
       ${quizSVG()}
-      ${sq.wrong && !sq.solved ? `<div style="display:flex;justify-content:center">${drow(sq.a, sq.n - sq.a)}</div>` : ''}
+      ${(sq.wrong || q.t !== 'split') && !sq.solved || sq.solved ? quizPicture(q) : ''}
       ${fb}
       ${sq.solved ? '<div class="actions"><button class="btn primary" id="qnext">つぎの クイズ ▶</button></div>' : padHTML('q')}`;
+    el.querySelectorAll('[data-qm]').forEach(b => { b.onclick = () => { sq.mode = b.dataset.qm; sq.hist = []; sq.q = null; renderQuiz(); }; });
     const nx = document.getElementById('qnext'); if (nx) { nx.onclick = () => { newQuiz(); renderQuiz(); }; nx.focus({ preventScroll: true }); }
   }
   function pressQuiz(k) {
@@ -1019,7 +1169,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (k === 'del') sq.input = sq.input.slice(0, -1);
     else if (k === 'go') {
       if (!sq.input) return;
-      if (Number(sq.input) === sq.n - sq.a) { sq.solved = true; sq.got = roll(DROP.quiz); sq.gotNew = gain(sq.got); }
+      if (Number(sq.input) === sq.q.ans) { sq.solved = true; sq.got = roll(DROP.quiz); sq.gotNew = gain(sq.got); }
       else { sq.wrong = true; sq.input = ''; }
     } else if (sq.input.length < 2) sq.input = (sq.input === '0' ? '' : sq.input) + k;
     renderQuiz();
