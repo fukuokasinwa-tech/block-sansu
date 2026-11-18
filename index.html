@@ -13,7 +13,7 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>ブロック さんすう たんけん</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=M+PLUS+Rounded+1c:wght@700;800&display=swap">
 <style>
 /* Layout: そら の はいけいに、いしの パネル。うえに もちもの、タブで「けいさん／わけかた／おうち」を きりかえる。ひとつの ゲームの みため（ライト・ダークとも おなじ）。 */
 :root {
@@ -34,7 +34,8 @@
   --key: #6b7078;
   --key-hi: #8d929a;
   --key-lo: #45494f;
-  --pixel: "DotGothic16", "Hiragino Maru Gothic ProN", "Yu Gothic", monospace;
+  --pixel: "Klee One", "UD デジタル 教科書体 N-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --num: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -44,7 +45,8 @@ body {
   color: var(--fg);
   font-family: var(--pixel);
   font-size: 17px;
-  line-height: 1.7;
+  font-weight: 600;
+  line-height: 1.75;
 }
 .wrap {
   max-width: 780px; margin: 0 auto;
@@ -216,6 +218,15 @@ tr.ten { background: rgba(255, 210, 63, .1); }
 .parents h2 { color: #24323c; font-size: 17px; margin-bottom: 6px; font-family: var(--pixel); }
 .parents p { margin: 0 0 8px; max-width: 65ch; }
 .parents p:last-child { margin-bottom: 0; }
+
+
+/* よみやすい もじ：かずと ボタンは まるゴシック、ぶんしょうは きょうかしょたい */
+h1, h2, .expr, .ans, .op, .pad button, .chips button, .tabs button, .modes button, .btn,
+.inv .slot b, .story b, .splits .lbl, tbody th, td.pairs, .split-head, .steps .n, svg text, .stage-label {
+  font-family: var(--num); font-weight: 800;
+}
+h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
+.modes button, .tabs button, .btn { font-weight: 700; }
 
 @media (max-width: 460px) {
   .panel { padding: 14px 12px; }
