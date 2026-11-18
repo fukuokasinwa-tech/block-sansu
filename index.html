@@ -88,7 +88,7 @@ h2 { font-family: var(--pixel); font-weight: 400; font-size: 21px; margin: 0; co
 .inv .slot.got { animation: got .6s steps(3); }
 @keyframes got { 0%, 100% { border-color: var(--panel-edge); } 50% { border-color: var(--yellow); } }
 
-.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .tabs button, .modes button, .chips button, .btn, .pad button {
   font-family: var(--pixel); color: var(--fg); cursor: pointer;
   background: var(--key); border: 3px solid var(--panel-edge);
@@ -235,7 +235,51 @@ h1, h2, .expr, .ans, .op, .pad button, .chips button, .tabs button, .modes butto
 h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .modes button, .tabs button, .btn { font-weight: 700; }
 
+.cq-wrap { display: flex; justify-content: center; }
+.cq { width: 360px; max-width: 100%; height: auto; display: block; }
+.cq .box { fill: var(--slot); stroke: var(--muted); stroke-width: 3; stroke-dasharray: 6 4; }
+.cq .box.act, .cq .berry.act { stroke: var(--yellow); stroke-width: 4; stroke-dasharray: none; }
+.cq .box.ok, .cq .berry.ok { stroke: var(--green); stroke-dasharray: none; }
+.cq text.v { fill: var(--yellow); }
+/* しゅじんこう・そうび・ずかん */
+.hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
+.hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
+.hero-img.flash { animation: got 1s steps(4); outline: 3px solid var(--yellow); }
+.hero-info { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.hero-name { font-family: var(--num); font-weight: 800; font-size: 24px; color: var(--yellow); }
+.eqs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.eqs .es { background: var(--slot); border: 2px solid var(--panel-edge); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 58px; padding: 2px 0; }
+.eqs .es .blk { width: 30px; height: 30px; margin: auto 0 0; }
+.eqs .es small { font-size: 11px; line-height: 1.2; color: var(--muted); }
+.blk.spr { box-shadow: none; }
+.gear-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.gslot { background: var(--slot); border: 2px solid var(--panel-edge); padding: 6px 2px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; min-width: 0; }
+.gslot .blk { width: 36px; height: 36px; }
+.gslot small { font-size: 12px; line-height: 1.3; }
+.gslot small.cnt { color: var(--yellow); font-family: var(--num); }
+.gslot.locked .blk { filter: brightness(0); opacity: .4; }
+.gslot.locked small { color: var(--muted); }
+.gslot.next { border-color: var(--yellow); }
+.gearstrip { gap: 8px; padding: 14px; }
+.strip-head { font-size: 17px; }
+.strip-head b { font-family: var(--num); }
+.series { color: var(--yellow); font-family: var(--num); font-weight: 800; }
+.series-box { display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; border-bottom: 2px dashed var(--panel-hi); }
+.zukan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; }
+.zukan-btn {
+  font-family: var(--num); font-weight: 800; font-size: 16px; color: var(--fg); cursor: pointer; padding: 0 12px; height: 64px;
+  background: var(--key); border: 3px solid var(--panel-edge); box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.zukan-btn b { color: var(--yellow); }
+.drop { flex-wrap: wrap; justify-content: center; }
+.drop .new { flex-basis: 100%; color: var(--cherry); font-size: 16px; }
+.gear-get { display: inline-flex; align-items: center; gap: 8px; color: var(--yellow); font-size: 18px; text-align: left; }
+.gear-get .blk { width: 36px; height: 36px; flex: none; }
+
 @media (max-width: 460px) {
+  .tabs { grid-template-columns: repeat(3, 1fr); }
+  .gear-row { grid-template-columns: repeat(3, 1fr); }
+  .zukan-btn { height: 52px; }
   .panel { padding: 14px 12px; }
   .blk { width: 30px; height: 30px; }
   .inv .slot { width: 52px; height: 52px; }
@@ -256,14 +300,20 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 <div class="wrap">
   <h1>ブロック さんすう たんけん<small>もんだいを といて ブロックを ほろう！</small></h1>
 
-  <section class="panel" aria-label="もちもの">
+  <section class="panel" aria-label="ソラと もちもの">
+    <div class="hero-row">
+      <img id="heroImg" class="hero-img" alt="しゅじんこうの ソラ" width="120" height="160">
+      <div class="hero-info" id="heroInfo"></div>
+    </div>
     <div class="inv" id="inv"></div>
   </section>
 
   <nav class="tabs" id="tabs" aria-label="あそびかた">
     <button id="t-calc" data-view="calc" aria-pressed="true">⛏ けいさん</button>
     <button id="t-split" data-view="split" aria-pressed="false">🍒 わけかた</button>
+    <button id="t-gear" data-view="gear" aria-pressed="false">⚔ そうび</button>
     <button id="t-house" data-view="house" aria-pressed="false">🏠 おうち</button>
+    <button id="t-zukan" data-view="zukan" aria-pressed="false">📖 ずかん</button>
   </nav>
 
   <div id="view-calc" class="view">
@@ -272,8 +322,10 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <button id="m-sub10" data-mode="sub10">ひきざん 10まで</button>
       <button id="m-addC" data-mode="addC">くりあがり</button>
       <button id="m-subC" data-mode="subC">くりさがり</button>
+      <button id="m-cherry" data-mode="cherry">🍒 さくらんぼ</button>
       <button id="m-mix" data-mode="mix">まぜこぜ</button>
     </nav>
+    <section class="panel gearstrip" id="gearStrip" aria-label="もらえる そうび"></section>
     <main class="panel" id="card"></main>
   </div>
 
@@ -291,6 +343,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <section class="panel" id="quiz"></section>
   </div>
 
+  <div id="view-gear" class="view" hidden>
+    <section class="panel" id="gearView"></section>
+  </div>
+
+  <div id="view-zukan" class="view" hidden>
+    <section class="panel" id="zukanView"></section>
+  </div>
+
   <div id="view-house" class="view" hidden>
     <section class="panel" id="house"></section>
   </div>
@@ -298,6 +358,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   <details class="parents" id="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
     <div class="parents-body">
+    <p>「🍒 さくらんぼ」は、さくらんぼ計算の書き方そのものを練習する問題です（7＋5なら、5の下のさくらんぼに3が入っていて、もう1つのさくらんぼと□の答えを入れます。ひきざんは13を10といくつに分けます）。どの種類も20問ずつ、ランダムに出題し、同じ問題や答え・数が同じ問題が続かないようにしています。</p>
+    <p>主人公の「ソラ」は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・かぶと・よろい・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「き・かわ」、ひきざん（10まで）は「いし・くさり」、くりあがりは「てつ」、まぜこぜは「きん」、くりさがりは「ほうせき」と、難しい問題ほど強いそうびになります。</p>
+    <p>正解するたびにブロックやアイテム（全40種類）も1つ手に入り、「ずかん」に記録されます。やさしい問題ではブロックや「きのぼう」などの★のアイテム、難しい問題ほど★★★・★★★★のレアなアイテムが出やすくなります。</p>
     <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
     <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
     <p>「わけかた」では、1から10までの数を2つに分ける方法（いくつといくつ）を図と表ですべて見られます。10は「1と9・2と8・3と7・4と6・5と5・6と4・7と3・8と2・9と1」の9とおりです。「あわせて10」の組み合わせは、くりあがり・くりさがりでそのまま使います。クイズでも練習できます。</p>
@@ -308,55 +371,237 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 
 <script>
 (() => {
-  /* ---------- ドットえの ブロック ---------- */
-  const PAL = {
-    grass: { c: ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'], top: ['#5fb33c', '#4e9a2f', '#6cc447'] },
-    dirt:  { c: ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'] },
-    wood:  { c: ['#6b4423', '#8a5a2f', '#7a4f29'] },
-    stone: { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'] },
-    gold:  { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'], sp: ['#f2c230', '#ffe07a'], rate: .22 },
-    gem:   { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'], sp: ['#3fd6d0', '#9ff3ef'], rate: .22 },
-    red:   { c: ['#d9483b', '#c43c30', '#e35a4c'] },
-    blue:  { c: ['#3a78d4', '#2f68be', '#4a8ae0'] },
-    glass: { c: ['#bfe9fb', '#d9f3fd', '#a8dcf2'] }
-  };
-  const NAMES = { grass: 'くさ', dirt: 'つち', wood: 'き', stone: 'いし', gold: 'きん', gem: 'ほうせき' };
-  const INV_KINDS = ['grass', 'dirt', 'wood', 'stone', 'gold', 'gem'];
+  /* ---------- ブロック・アイテム（40しゅるい）の ドットえ ---------- */
+  // t: 1=よくでる 2=ときどき 3=レア 4=すごくレア
+  const ST = ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'];
+  const DIRT = ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'];
+  const ITEMS = [
+    { id: 'grass',  n: 'くさ',     t: 1, g: 'top', c: DIRT, top: ['#5fb33c', '#4e9a2f', '#6cc447'] },
+    { id: 'dirt',   n: 'つち',     t: 1, c: DIRT },
+    { id: 'wood',   n: 'き',       t: 1, g: 'log', c: ['#6b4423', '#8a5a2f', '#7a4f29'] },
+    { id: 'stone',  n: 'いし',     t: 1, c: ST },
+    { id: 'sand',   n: 'すな',     t: 1, c: ['#e8d8a0', '#dccb8e', '#f0e2b0', '#d2bf80'] },
+    { id: 'gravel', n: 'じゃり',   t: 1, c: ['#8a8380', '#6f6966', '#a29a96', '#5c5654', '#b3aaa5'] },
+    { id: 'clay',   n: 'ねんど',   t: 1, c: ['#a3a9b8', '#99a0af', '#adb3c1'] },
+    { id: 'leaves', n: 'はっぱ',   t: 1, c: ['#3f8f2f', '#2f7524', '#4ea33a', '#24601b'] },
+    { id: 'planks', n: 'いた',     t: 1, g: 'plank', c: ['#b8864b', '#a87a42', '#c49356'], line: '#7d5a2e' },
+    { id: 'cobble', n: 'ごろいし', t: 1, g: 'cobble', c: ST, line: '#55575b' },
+    { id: 'stick',  n: 'きのぼう', t: 1, s: ['......lb', '.....lb.', '....lb..', '...lb...', '..lb....', '.lb.....', 'lb......', 'b.......'], p: { b: '#6b4423', l: '#b07a45' } },
+    { id: 'ice',    n: 'こおり',   t: 2, g: 'shine', c: ['#9fd0f5', '#8cc3ee', '#b2dcf8'] },
+    { id: 'glass',  n: 'ガラス',   t: 2, g: 'shine', c: ['#bfe9fb', '#d9f3fd', '#a8dcf2'] },
+    { id: 'brick',  n: 'レンガ',   t: 2, g: 'brick', c: ['#b4523a', '#a34830', '#c25d43'], line: '#d8cfc4' },
+    { id: 'coal',   n: 'せきたん', t: 2, c: ST, sp: ['#222222', '#3a3a3a'] },
+    { id: 'iron',   n: 'てつ',     t: 2, c: ST, sp: ['#e3c6a8', '#d4a983'] },
+    { id: 'copper', n: 'どう',     t: 2, c: ST, sp: ['#e07a3e', '#3fae8c'] },
+    { id: 'cactus', n: 'サボテン', t: 2, g: 'log', c: ['#2f7d32', '#3f9a3f', '#4aab47'] },
+    { id: 'pumpkin',n: 'かぼちゃ', t: 2, g: 'log', c: ['#c76a12', '#e8891f', '#f09a2c'] },
+    { id: 'wool',   n: 'ようもう', t: 2, c: ['#f4f1ea', '#e8e4da', '#fbfaf6'] },
+    { id: 'apple',  n: 'りんご',   t: 2, s: ['...bg...', '..bgg...', '.rrrrrr.', 'rrwrrrrr', 'rwrrrrrr', 'rrrrrrrr', '.rrrrrr.', '..rr.rr.'], p: { r: '#e5484d', g: '#3fa34d', b: '#7a5230', w: '#ffb3b0' } },
+    { id: 'fish',   n: 'さかな',   t: 2, s: ['........', '..bbb...', '.bbbbb.d', 'bwkbbbdd', 'bbbbbbdd', '.bbbbb.d', '..bbb...', '........'], p: { b: '#3b82c4', d: '#2c6aa6', w: '#ffffff', k: '#112233' } },
+    { id: 'egg',    n: 'たまご',   t: 2, s: ['...ww...', '..wwww..', '.wwwwww.', '.wwwwws.', 'wwwwwwss', 'wwwwwwss', '.wwwwss.', '..ssss..'], p: { w: '#fbf6ea', s: '#dccfb3' } },
+    { id: 'carrot', n: 'にんじん', t: 2, s: ['.....g.g', '......g.', '.....oo.', '....ooo.', '...ooo..', '..ooo...', '.oo.....', 'o.......'], p: { o: '#f08a24', g: '#3fa34d' } },
+    { id: 'bread',  n: 'パン',     t: 2, s: ['........', '..llll..', '.lbbbbl.', 'lbbbbbbl', 'lbbbbbbl', 'bbbbbbbb', '.bbbbbb.', '........'], p: { b: '#c9822f', l: '#e8b15c' } },
+    { id: 'gold',   n: 'きん',     t: 3, c: ST, sp: ['#f2c230', '#ffe07a'] },
+    { id: 'ruby',   n: 'ルビー',   t: 3, c: ST, sp: ['#e0245e', '#ff6b93'] },
+    { id: 'magma',  n: 'マグマ',   t: 3, c: ['#7a1f0f', '#5e1609', '#93280f'], sp: ['#ff8a1f', '#ffd23f'] },
+    { id: 'cake',   n: 'ケーキ',   t: 3, s: ['...r....', '...w....', '.wwwwww.', 'wpwpwpww', 'wwwwwwww', 'bbbbbbbb', 'wwwwwwww', 'bbbbbbbb'], p: { r: '#e5484d', w: '#fffaf0', p: '#ff8fb1', b: '#8a5a36' } },
+    { id: 'star',   n: 'ほし',     t: 3, s: ['...yy...', '...yy...', 'yyyyyyyy', '.yyyyyy.', '..yyyy..', '.yyyyyy.', '.yy..yy.', 'y......y'], p: { y: '#ffd23f' } },
+    { id: 'heart',  n: 'ハート',   t: 3, s: ['........', '.rr..rr.', 'rwrrrrrr', 'rwrrrrrr', 'rrrrrrrr', '.rrrrrr.', '..rrrr..', '...rr...'], p: { r: '#ff4d6d', w: '#ffc2cf' } },
+    { id: 'key',    n: 'かぎ',     t: 3, s: ['.yyy....', 'y...y...', 'y...y...', '.yyy....', '..y.....', '..yyy...', '..y.....', '..yy....'], p: { y: '#f2c230' } },
+    { id: 'pickaxe',n: 'つるはし', t: 3, s: ['.gggggg.', 'g..bb..g', '...bb...', '...bb...', '...bb...', '...bb...', '...bb...', '...bb...'], p: { g: '#b9c2cc', b: '#8a5a2f' } },
+    { id: 'shovel', n: 'スコップ', t: 3, s: ['...bb...', '...bb...', '...bb...', '...bb...', '..gggg..', '..gggg..', '..gggg..', '...gg...'], p: { g: '#b9c2cc', b: '#8a5a2f' } },
+    { id: 'torch',  n: 'たいまつ', t: 3, s: ['...y....', '..yoy...', '..yoy...', '...b....', '...b....', '...b....', '...b....', '...b....'], p: { y: '#ffd23f', o: '#ff8a1f', b: '#8a5a2f' } },
+    { id: 'book',   n: 'ほん',     t: 3, s: ['.rrrrrr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rrrrrr.', '........'], p: { r: '#c0392b', w: '#fbf6ea', d: '#555555' } },
+    { id: 'coin',   n: 'コイン',   t: 3, s: ['..yyyy..', '.yooooy.', 'yoyyyyoy', 'yoyooyoy', 'yoyooyoy', 'yoyyyyoy', '.yooooy.', '..yyyy..'], p: { y: '#ffd23f', o: '#d99a00' } },
+    { id: 'gem',    n: 'ほうせき', t: 4, c: ST, sp: ['#3fd6d0', '#9ff3ef'] },
+    { id: 'crystal',n: 'クリスタル', t: 4, s: ['...cc...', '..cwcc..', '.cwcccd.', '.cwcccd.', '.ccccdd.', '..cccd..', '...cd...', '........'], p: { c: '#7fd8ff', w: '#e8fbff', d: '#3a9bd0' } },
+    { id: 'crown',  n: 'おうかん', t: 4, s: ['........', 'y..yy..y', 'yy.yy.yy', 'yyyyyyyy', 'yryyyyry', 'yyyyyyyy', 'oooooooo', '........'], p: { y: '#ffd23f', r: '#e0245e', o: '#d99a00' } }
+  ];
+  const EXTRA = [
+    { id: 'red',  c: ['#d9483b', '#c43c30', '#e35a4c'] },
+    { id: 'blue', c: ['#3a78d4', '#2f68be', '#4a8ae0'] }
+  ];
+  /* そうび：むずかしい もんだいほど つよい そうび */
+  const GEAR = [
+    { mode: 'add10', label: 'たしざん 10まで', series: 'き・かわ', pal: { x: '#a8794a', h: '#d1a36b', d: '#6b4423' },
+      names: ['きの けん', 'かわの ぼうし', 'かわの ふく', 'かわの ズボン', 'かわの ブーツ', 'きの たて'] },
+    { mode: 'sub10', label: 'ひきざん 10まで', series: 'いし・くさり', pal: { x: '#8d9196', h: '#c9cdd2', d: '#55595e' },
+      names: ['いしの けん', 'くさりの かぶと', 'くさりの よろい', 'くさりの ズボン', 'くさりの ブーツ', 'いしの たて'] },
+    { mode: 'addC', label: 'くりあがり', series: 'てつ', pal: { x: '#d5dbe2', h: '#ffffff', d: '#8f99a4' },
+      names: ['てつの けん', 'てつの かぶと', 'てつの よろい', 'てつの ズボン', 'てつの ブーツ', 'てつの たて'] },
+    { mode: 'mix', label: 'まぜこぜ', series: 'きん', pal: { x: '#f2c230', h: '#ffe58a', d: '#b88a12' },
+      names: ['きんの けん', 'きんの かぶと', 'きんの よろい', 'きんの ズボン', 'きんの ブーツ', 'きんの たて'] },
+    { mode: 'cherry', label: 'さくらんぼ', series: 'ほしのいし', pal: { x: '#9b6cf0', h: '#d6c2ff', d: '#5b3aa8' },
+      names: ['ほしのいしの けん', 'ほしのいしの かぶと', 'ほしのいしの よろい', 'ほしのいしの ズボン', 'ほしのいしの ブーツ', 'ほしのいしの たて'] },
+    { mode: 'subC', label: 'くりさがり', series: 'ほうせき', pal: { x: '#3fd6d0', h: '#b5f7f4', d: '#1f8f8b' },
+      names: ['ほうせきの けん', 'ほうせきの かぶと', 'ほうせきの よろい', 'ほうせきの ズボン', 'ほうせきの ブーツ', 'ほうせきの たて'] }
+  ];
+  const SLOT_LABELS = ['けん', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
+  const PER = 3; // 3もん せいかいで そうびが 1こ
+  const GEAR_MASK = [
+    ['......hx', '.....hxd', '....hxd.', '...hxd..', 'd.hxd...', '.dxd....', '.kd.....', 'k.......'],
+    ['........', '.hhhhhx.', 'hxxxxxxd', 'xx....xd', 'xx....xd', 'x......d', '........', '........'],
+    ['xx....xx', 'xhxddxhx', 'xxxxxxxx', '.xhxxxx.', '.xxxxxd.', '.xxxxxd.', '.dddddd.', '........'],
+    ['.dddddd.', '.xhxxxx.', '.xx..xx.', '.xh..xx.', '.xx..xx.', '.xx..xd.', '.xd..xd.', '........'],
+    ['........', '........', '.hx..hx.', '.xx..xx.', '.xx..xx.', 'xxd.xxd.', 'ddd.ddd.', '........'],
+    ['dxxxxxxd', 'dxhhxxxd', 'dxhxxxxd', 'dxxhhxxd', 'dxxhhxxd', '.dxxxxd.', '..dxxd..', '...dd...']
+  ];
+  const GEAR_SPR = [];
+  GEAR.forEach((g, ti) => GEAR_MASK.forEach((m, j) => GEAR_SPR.push({ id: `g${ti}_${j}`, s: m, p: Object.assign({ k: '#4a2f1d' }, g.pal) })));
+  const G = (ti, j) => `<span class="blk spr t-g${ti}_${j}"></span>`;
+  const BY = {}; ITEMS.forEach(it => { BY[it.id] = it; });
+  const NAMES = {}; ITEMS.forEach(it => { NAMES[it.id] = it.n; });
+  const STARS = t => '★'.repeat(t);
   (function makeTextures() {
     let css = '';
-    for (const kind in PAL) {
+    for (const it of ITEMS.concat(EXTRA, GEAR_SPR)) {
       const c = document.createElement('canvas'); c.width = c.height = 8;
       const g = c.getContext('2d');
-      let seed = [...kind].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) >>> 0, 7);
+      let seed = [...it.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) >>> 0, 7);
       const r = () => { seed = (seed * 1103515245 + 12345) >>> 0; return (seed >>> 8) / 16777216; };
-      const p = PAL[kind], pk = a => a[Math.floor(r() * a.length)];
+      const pk = a => a[Math.floor(r() * a.length)];
       for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
-        let col;
-        if (p.top && (y < 2 || (y === 2 && r() < .5))) col = pk(p.top);
-        else if (kind === 'wood') col = x % 3 === 0 ? p.c[0] : pk(p.c.slice(1));
-        else if (kind === 'glass') col = (x === y || x === y + 1) ? '#ffffff' : pk(p.c);
-        else if (p.sp && r() < p.rate) col = pk(p.sp);
-        else col = pk(p.c);
-        g.fillStyle = col; g.fillRect(x, y, 1, 1);
+        let col = null;
+        if (it.s) { const ch = (it.s[y] || '')[x]; col = ch && ch !== '.' ? it.p[ch] : null; }
+        else if (it.g === 'top' && (y < 2 || (y === 2 && r() < .5))) col = pk(it.top);
+        else if (it.g === 'log') col = x % 3 === 0 ? it.c[0] : pk(it.c.slice(1));
+        else if (it.g === 'shine') col = (x === y || x === y + 1) ? '#ffffff' : pk(it.c);
+        else if (it.g === 'plank') col = y % 3 === 2 ? it.line : pk(it.c);
+        else if (it.g === 'brick') col = (y % 4 === 3 || (x + (Math.floor(y / 4) % 2) * 2) % 4 === 3) ? it.line : pk(it.c);
+        else if (it.g === 'cobble') col = ((x * 3 + y * 5) % 7 === 0 || r() < .12) ? it.line : pk(it.c);
+        else if (it.sp && r() < .22) col = pk(it.sp);
+        else col = pk(it.c);
+        if (col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); }
       }
-      css += `.t-${kind}{background-image:url(${c.toDataURL()})}`;
+      css += `.t-${it.id}{background-image:url(${c.toDataURL()})}`;
     }
     const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
   })();
-  const B = kind => `<span class="blk t-${kind}"></span>`;
+  const B = kind => `<span class="blk${BY[kind] && BY[kind].s ? ' spr' : ''} t-${kind}"></span>`;
+
+  function roll(weights) {
+    let x = Math.random() * weights.reduce((a, b) => a + b, 0), tier = 1;
+    for (let k = 0; k < 4; k++) { x -= weights[k]; if (x < 0) { tier = k + 1; break; } }
+    return pick(ITEMS.filter(it => it.t === tier)).id;
+  }
+  // もんだいの むずかしさ：1=たしざん10まで 2=ひきざん10まで 3=くりあがり 4=くりさがり
+  const diffOf = q => q.op === '+' ? (q.ans > 10 ? 3 : 1) : (q.a > 10 && q.b > q.a - 10 ? 4 : 2);
+  const DROP = { 1: [100, 0, 0, 0], 2: [65, 35, 0, 0], 3: [0, 55, 40, 5], 4: [0, 20, 55, 25], quiz: [70, 30, 0, 0] };
+  const rewardFor = q => roll(DROP[diffOf(q)]);
 
   /* ---------- セーブ（この たんまつ だけ） ---------- */
   const SAVE_KEY = 'block-sansu-v1';
-  let save = { inv: { grass: 0, dirt: 0, wood: 0, stone: 0, gold: 0, gem: 0 }, built: 0, houses: 0 };
+  let save = { inv: { grass: 0, dirt: 0, wood: 0, stone: 0, gold: 0, gem: 0 }, built: 0, houses: 0, recent: [], mc: {} };
   try { const raw = localStorage.getItem(SAVE_KEY); if (raw) save = Object.assign(save, JSON.parse(raw)); } catch (e) {}
+  if (!Array.isArray(save.recent)) save.recent = [];
+  if (!save.mc || typeof save.mc !== 'object') save.mc = {};
+  if (!save.recent.length) save.recent = Object.keys(save.inv).filter(k => save.inv[k] > 0 && BY[k]);
   const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} };
+  const owned = () => ITEMS.filter(it => (save.inv[it.id] || 0) > 0).length;
   let lastGot = null;
-  function gain(kind) { save.inv[kind] = (save.inv[kind] || 0) + 1; save.built++; lastGot = kind; persist(); renderInv(); }
+  function gain(kind) {
+    const isNew = !(save.inv[kind] > 0);
+    save.inv[kind] = (save.inv[kind] || 0) + 1; save.built++;
+    save.recent = [kind].concat(save.recent.filter(k => k !== kind)).slice(0, 6);
+    lastGot = kind; persist(); renderInv();
+    return isNew;
+  }
+  function dropHTML(kind, isNew) {
+    const it = BY[kind];
+    return `<span class="drop">${B(kind)} ${it.n}（${STARS(it.t)}）を ゲット！${isNew ? '<span class="new">あたらしい！ずかんに のったよ</span>' : ''}</span>`;
+  }
 
   function renderInv() {
-    document.getElementById('inv').innerHTML = INV_KINDS.map(k =>
-      `<div class="slot${k === lastGot ? ' got' : ''}" title="${NAMES[k]}">${B(k)}<small>${NAMES[k]}</small><b>${save.inv[k] || 0}</b></div>`).join('');
+    const slots = [];
+    for (let k = 0; k < 6; k++) {
+      const id = save.recent[k];
+      slots.push(id ? `<div class="slot${id === lastGot ? ' got' : ''}" title="${NAMES[id]}">${B(id)}<small>${NAMES[id]}</small><b>${save.inv[id] || 0}</b></div>` : '<div class="slot"></div>');
+    }
+    document.getElementById('inv').innerHTML = slots.join('') +
+      `<button class="zukan-btn" id="toZukan">📖 ずかん <b>${owned()}</b> ／ ${ITEMS.length}</button>`;
+    document.getElementById('toZukan').onclick = () => showView('zukan');
     lastGot = null;
+  }
+
+  /* ---------- しゅじんこう ソラ ---------- */
+  const tiOf = mode => GEAR.findIndex(g => g.mode === mode);
+  const gearCount = ti => Math.min(6, Math.floor((save.mc[GEAR[ti].mode] || 0) / PER));
+  const equipped = () => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti) > j) best = ti; }); return best; });
+  const gearTotal = () => GEAR.reduce((a, g, ti) => a + gearCount(ti), 0);
+  function drawHero(eq) {
+    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
+    const g = c.getContext('2d');
+    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
+    const skin = '#f2c9a0', hair = '#4a2f1d', shirt = '#e9574f', shorts = '#3a6fd4';
+    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
+    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
+    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
+    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
+    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
+    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
+    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
+    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
+    const P = ti => GEAR[ti].pal;
+    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
+    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
+    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
+    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
+    if (eq[0] >= 0) { const p = P(eq[0]); R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, '#4a2f1d'); }
+    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
+    return c.toDataURL();
+  }
+  function renderHero(flash) {
+    const eq = equipped();
+    const img = document.getElementById('heroImg');
+    img.src = drawHero(eq);
+    img.classList.toggle('flash', !!flash);
+    document.getElementById('heroInfo').innerHTML = `
+      <div><span class="hero-name">ソラ</span> <span class="note">そうび ${gearTotal()} ／ ${GEAR.length * 6}</span></div>
+      <div class="eqs">${eq.map((ti, j) => `<div class="es" title="${ti >= 0 ? GEAR[ti].names[j] : SLOT_LABELS[j] + '：なし'}">${ti >= 0 ? G(ti, j) : ''}<small>${SLOT_LABELS[j]}</small></div>`).join('')}</div>
+      <p class="note">${gearTotal() ? 'もんだいを とくと そうびが ふえて すがたが かわるよ。' : 'いまは Tシャツと たんパン。もんだいを ${PER}もん とくと そうびが もらえるよ！'}</p>`;
+  }
+  function gearRowHTML(ti, highlightNext) {
+    const cnt = gearCount(ti);
+    return `<div class="gear-row">${GEAR[ti].names.map((nm, j) =>
+      `<div class="gslot${j < cnt ? '' : ' locked'}${highlightNext && j === cnt ? ' next' : ''}">${G(ti, j)}<small>${nm}</small></div>`).join('')}</div>`;
+  }
+  const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★' };
+  function renderGearStrip() {
+    const ti = tiOf(st.mode), g = GEAR[ti], cnt = gearCount(ti), mc = save.mc[g.mode] || 0;
+    document.getElementById('gearStrip').innerHTML = `
+      <div class="strip-head"><b>${g.label}</b> で もらえる もの</div>
+      <p class="note">そうび：<b class="series">${g.series}</b> シリーズ（${PER}もん せいかいで 1こ）・ アイテム：${RARITY_TEXT[g.mode]}</p>
+      ${gearRowHTML(ti, true)}
+      <p class="note">${cnt >= 6 ? 'この シリーズは ぜんぶ そろったよ！ つぎは もっと むずかしい もんだいに チャレンジ！' : `つぎの「${g.names[cnt]}」まで あと <b class="series">${PER - (mc % PER)}</b>もん`}</p>`;
+  }
+  function renderGearView() {
+    document.getElementById('gearView').innerHTML = `
+      <h2>そうび いちらん</h2>
+      <p class="note">むずかしい もんだいほど つよい そうびが もらえるよ。どの もんだいも ${PER}もん せいかいで 1こ。</p>
+      ${GEAR.map((g, ti) => `<div class="series-box">
+        <div class="strip-head"><b>${g.label}</b> → <span class="series">${g.series}</span> シリーズ　${gearCount(ti)} ／ 6</div>
+        ${gearRowHTML(ti, true)}</div>`).join('')}
+      <h2>もんだいごとに でる アイテム</h2>
+      <div class="tablewrap"><table><thead><tr><th>もんだい</th><th>でる アイテムの レアど</th></tr></thead><tbody>
+        <tr><td>たしざん 10まで</td><td>★（ブロック・きのぼう など）</td></tr>
+        <tr><td>ひきざん 10まで</td><td>★〜★★</td></tr>
+        <tr><td>くりあがり</td><td>★★〜★★★、たまに ★★★★</td></tr>
+        <tr><td>くりさがり</td><td>★★〜★★★★（★★★★が いちばん でやすい）</td></tr>
+        <tr><td>さくらんぼ</td><td>★★〜★★★★（くりあがり・くりさがりと おなじ）</td></tr>
+        <tr><td>まぜこぜ</td><td>でた もんだいの むずかしさで きまる</td></tr>
+        <tr><td>わけかた クイズ</td><td>★〜★★</td></tr>
+      </tbody></table></div>`;
+  }
+  function renderZukan() {
+    const list = ITEMS.slice().sort((a, b) => a.t - b.t);
+    document.getElementById('zukanView').innerHTML = `
+      <h2>ずかん　${owned()} ／ ${ITEMS.length}</h2>
+      <p class="note">★が おおいほど レア。むずかしい もんだいで でやすいよ。</p>
+      ${[1, 2, 3, 4].map(t => `<div class="strip-head"><span class="series">${STARS(t)}</span> ${['', 'よく でる', 'ときどき でる', 'レア', 'すごく レア'][t]}</div>
+        <div class="zukan-grid">${list.filter(it => it.t === t).map(it => {
+          const n = save.inv[it.id] || 0;
+          return `<div class="gslot${n ? '' : ' locked'}">${B(it.id)}<small>${n ? it.n : '？？？'}</small><small class="cnt">${n ? '×' + n : ''}</small></div>`;
+        }).join('')}</div>`).join('')}`;
   }
 
   /* ---------- けいさん ---------- */
@@ -372,26 +617,41 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const pick = a => a[Math.floor(Math.random() * a.length)];
 
   function makeQ(mode) {
-    if (mode === 'mix') mode = pick(['add10', 'sub10', 'addC', 'subC']);
-    let a, b, op;
+    if (mode === 'mix') mode = pick(['add10', 'sub10', 'addC', 'subC', 'cherry']);
+    const type = mode;
+    let a, b, op, kind = '';
+    if (mode === 'cherry') { kind = 'cherry'; mode = Math.random() < .5 ? 'addC' : 'subC'; }
     if (mode === 'add10') { op = '+'; a = rnd(1, 8); b = rnd(1, 10 - a); }
     if (mode === 'sub10') { op = '-'; a = rnd(3, 10); b = rnd(1, a - 1); }
     if (mode === 'addC')  { op = '+'; a = rnd(2, 9); b = rnd(Math.max(2, 11 - a), 9); }
     if (mode === 'subC')  { op = '-'; a = rnd(11, 18); b = rnd(a - 9, 9); }
-    return { a, b, op, ans: op === '+' ? a + b : a - b, theme: pick(THEMES) };
+    const q = { a, b, op, kind, type, ans: op === '+' ? a + b : a - b, theme: pick(THEMES) };
+    if (kind === 'cherry') {
+      // たしざん：うしろの かずを わける（7＋5 → 5を 3と 2）／ひきざん：まえの かずを 10と いくつに わける
+      q.given = op === '+' ? 10 - a : 10;
+      q.berry = op === '+' ? b - (10 - a) : a - 10;
+    }
+    return q;
   }
 
   const st = { mode: 'add10', i: 0, results: [], q: null, input: '', solved: false, wrong: false, hint: false, done: false, breaking: false };
   const card = document.getElementById('card');
 
   function start(mode) {
-    st.mode = mode; st.i = 0; st.results = []; st.done = false;
+    st.mode = mode; st.i = 0; st.results = []; st.done = false; st.hist = [];
     document.querySelectorAll('#modes button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
     next();
   }
   function next() {
-    let q; do { q = makeQ(st.mode); } while (st.q && q.a === st.q.a && q.b === st.q.b && q.op === st.q.op);
-    st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false;
+    // ランダムに だす。おなじ もんだい・にた もんだい（こたえ や かずが おなじ）が つづかないように する
+    const key = x => `${x.kind}${x.a}${x.op}${x.b}`;
+    const prev = st.q;
+    let q, tries = 0;
+    do { q = makeQ(st.mode); tries++; }
+    while (tries < 400 && (st.hist.includes(key(q)) ||
+      (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (st.mode === 'mix' && q.type === prev.type)))));
+    st.hist.push(key(q));
+    st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false; st.blank = 0; st.vals = ['', ''];
     render();
   }
 
@@ -453,7 +713,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
                  `${N(q.a)} ＋ ${N(q.b)} ＝ ${H(q.ans)}`];
         cap = 'マスは 10こ。ぜんぶ うまると 10。';
       } else {
-        const splitB = q.a >= q.b;
+        const splitB = q.kind === 'cherry' || q.a >= q.b;
         const big = splitB ? q.a : q.b, small = splitB ? q.b : q.a;
         const need = 10 - big, rest = small - need;
         const [bc, sc] = splitB ? ['a', 'b'] : ['b', 'a'];
@@ -511,7 +771,25 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return s + '</div>';
   }
 
+  function cherryQuestionSVG(q) {
+    const xs = [40, 95, 150, 205, 262];
+    const toks = [q.a, q.op === '+' ? '+' : '−', q.b, '='];
+    const si = q.op === '+' ? 2 : 0, x = xs[si];
+    const v0 = st.blank > 0 || st.solved ? q.berry : (st.input || '');
+    const v1 = st.solved ? q.ans : (st.blank === 1 ? st.input : '');
+    const act = j => !st.solved && st.blank === j;
+    let o = `<svg class="cq" viewBox="0 0 300 172" role="img" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b}。${q.op === '+' ? q.b : q.a}を ${q.given}と いくつに わける？">`;
+    toks.forEach((t, k) => { o += `<text x="${xs[k]}" y="62" font-size="46" text-anchor="middle">${t}</text>`; });
+    o += `<rect class="box${act(1) ? ' act' : ''}${st.solved ? ' ok' : ''}" x="234" y="20" width="58" height="56" rx="4"/>`;
+    o += `<text class="v" x="263" y="64" font-size="40" text-anchor="middle">${v1}</text>`;
+    o += `<path class="stem" d="M${x} 74 L${x - 30} 112 M${x} 74 L${x + 30} 112"/>`;
+    o += `<circle class="berry" cx="${x - 30}" cy="138" r="27"/><text x="${x - 30}" y="150" font-size="32" text-anchor="middle">${q.given}</text>`;
+    o += `<circle class="berry ${act(0) ? 'act' : ''}${st.blank > 0 || st.solved ? ' ok' : ''}" cx="${x + 30}" cy="138" r="27"/><text class="v" x="${x + 30}" y="150" font-size="32" text-anchor="middle">${v0}</text>`;
+    return o + '</svg>';
+  }
+
   function render() {
+    renderGearStrip();
     if (st.done) {
       const ok = st.results.filter(Boolean).length;
       card.innerHTML = `${mineHTML()}
@@ -531,15 +809,22 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       : `<span class="ans${st.input ? ' filled' : ''}">${st.input || '&nbsp;'}</span>`;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！ ブロックを ほったよ！'}</span>
-      <span class="drop">${B(STAGE[st.i])} ${NAMES[STAGE[st.i]]} を 1こ ゲット！</span></div>`;
+      ${dropHTML(st.got, st.gotNew)}
+      ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>ソラの すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
 
     card.innerHTML = `
       <div class="stage-label"><span>だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⛏ せいかいで ブロックが ほれるよ</span></div>
       ${mineHTML()}
+      ${q.kind === 'cherry' ? `
+      <p class="story">🍒 さくらんぼ けいさん<br>${st.solved ? 'できたね！' : st.blank === 0
+        ? `${q.op === '+' ? `${q.a}は あと ${q.given}で 10。<br>${q.b}を ${q.given}と いくつに わける？` : `${q.a}を 10と いくつに わける？`}`
+        : `${q.op === '+' ? `${q.a}＋${q.given}＝10、10＋${q.berry}は？` : `10−${q.b}＝${10 - q.b}、${10 - q.b}＋${q.berry}は？`}<br>□に こたえを いれよう。`}</p>
+      <div class="cq-wrap">${cherryQuestionSVG(q)}</div>
+      <p class="note" style="text-align:center">${st.solved ? '' : st.blank === 0 ? 'きいろの さくらんぼに はいる かずを いれてね' : 'きいろの □に こたえを いれてね'}</p>` : `
       ${storyHTML(q)}
       ${pictureHTML(q)}
-      <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>
+      <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>`}
       ${fb}
       ${st.solved ? '' : padHTML('c')}
       <div class="actions">
@@ -558,9 +843,17 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (k === 'del') st.input = st.input.slice(0, -1);
     else if (k === 'go') {
       if (!st.input) return;
-      if (Number(st.input) === st.q.ans) {
+      if (st.q.kind === 'cherry' && st.blank === 0) {
+        if (Number(st.input) === st.q.berry) { st.blank = 1; st.input = ''; st.vals[0] = String(st.q.berry); }
+        else { st.wrong = true; st.hint = true; st.input = ''; }
+      } else if (Number(st.input) === st.q.ans) {
         st.solved = true; st.results[st.i] = !st.wrong; st.breaking = true;
-        gain(STAGE[st.i]);
+        const ti = tiOf(st.mode), before = gearCount(ti);
+        save.mc[st.mode] = (save.mc[st.mode] || 0) + 1;
+        st.got = rewardFor(st.q); st.gotNew = gain(st.got);
+        const after = gearCount(ti);
+        st.newGear = after > before ? [ti, after - 1] : null;
+        renderHero(!!st.newGear);
       } else { st.wrong = true; st.hint = true; st.input = ''; }
     } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
     render();
@@ -611,8 +904,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
 
   function newQuiz() {
-    let n, a; do { n = rnd(2, 10); a = rnd(1, n - 1); } while (n === sq.n && a === sq.a);
-    if (Math.random() < .4) n = 10, a = rnd(1, 9);
+    sq.hist = sq.hist || [];
+    let n, a, tries = 0;
+    do { n = Math.random() < .4 ? 10 : rnd(2, 10); a = rnd(1, n - 1); tries++; }
+    while (tries < 200 && (sq.hist.includes(n + '-' + a) || (n === sq.n && tries < 100) || n - a === sq.n - sq.a));
+    sq.hist = sq.hist.concat(n + '-' + a).slice(-12);
     Object.assign(sq, { n, a, input: '', solved: false, wrong: false });
   }
   function quizSVG() {
@@ -628,7 +924,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (!sq.n) newQuiz();
     const q = document.getElementById('quiz');
     let fb = '';
-    if (sq.solved) fb = `<div class="feedback good"><span>せいかい！ ${sq.n}は ${sq.a}と ${sq.n - sq.a}</span><span class="drop">${B('gem')} ほうせき を 1こ ゲット！</span></div>`;
+    if (sq.solved) fb = `<div class="feedback good"><span>せいかい！ ${sq.n}は ${sq.a}と ${sq.n - sq.a}</span>${dropHTML(sq.got, sq.gotNew)}</div>`;
     else if (sq.wrong) fb = `<div class="feedback try"><span>おしい！ うえの ひょうの「${sq.n}」を みてみよう。</span></div>`;
     q.innerHTML = `<h2>わけかた クイズ</h2>
       <p class="story" style="font-size:20px">${sq.n}は ${sq.a}と いくつ？</p>
@@ -643,7 +939,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (k === 'del') sq.input = sq.input.slice(0, -1);
     else if (k === 'go') {
       if (!sq.input) return;
-      if (Number(sq.input) === sq.n - sq.a) { sq.solved = true; gain('gem'); }
+      if (Number(sq.input) === sq.n - sq.a) { sq.solved = true; sq.got = roll(DROP.quiz); sq.gotNew = gain(sq.got); }
       else { sq.wrong = true; sq.input = ''; }
     } else if (sq.input.length < 2) sq.input = (sq.input === '0' ? '' : sq.input) + k;
     renderQuiz();
@@ -692,9 +988,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   function showView(v) {
     view = v;
     document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
-    ['calc', 'split', 'house'].forEach(id => { document.getElementById('view-' + id).hidden = id !== v; });
+    ['calc', 'split', 'gear', 'house', 'zukan'].forEach(id => { document.getElementById('view-' + id).hidden = id !== v; });
     if (v === 'split') renderSplit();
     if (v === 'house') renderHouse();
+    if (v === 'gear') renderGearView();
+    if (v === 'zukan') renderZukan();
   }
   document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
   document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b) start(b.dataset.mode); };
@@ -717,6 +1015,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   });
 
   renderInv();
+  renderHero();
   start('add10');
 })();
 </script>
