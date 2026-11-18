@@ -1439,7 +1439,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   document.getElementById('playersBtn').onclick = () => showPlayers();
 
   /* ---------- ☁ Google スプレッドシートに ほぞん（たんまつを こえて ひきつぐ） ---------- */
-  const CLOUD_URL = ''; // Apps Script の ウェブアプリ URL（あいことばは ここに かかない）
+  const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbzQ9w527mQzmHt8ugUZSHejIUhsZ1tSQjntiVkNLMz26U73pnZ1Gt7BRwbgdmnqIYY4Mw/exec'; // Apps Script の ウェブアプリ URL（あいことばは ここに かかない）
   const CLOUD_KEY = 'block-sansu-cloud';
   let cloud = { url: CLOUD_URL, key: '', linked: false, pending: [] };
   try { const raw = localStorage.getItem(CLOUD_KEY); if (raw) cloud = Object.assign(cloud, JSON.parse(raw)); } catch (e) {}
@@ -1543,8 +1543,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     ob.innerHTML = `<h2>☁ スプレッドシートに つなぐ</h2>
       <p class="note">おうちの かたへ：Google スプレッドシートに きろくを ほぞんすると、たんまつが かわっても つづきから あそべます。じゅんびの しかたは リポジトリの CLOUD-SETUP.md を みてください。</p>
       <form id="cloudForm" class="nameform">
-        <label for="cloudUrl">ウェブアプリの URL</label>
-        <input id="cloudUrl" type="url" autocomplete="off" value="${esc(cloud.url || '')}" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:15px">
+        <details ${cloud.url && cloud.url === CLOUD_URL ? '' : 'open'}><summary class="note">ウェブアプリの URL（ふつうは かえなくて だいじょうぶ）</summary>
+        <input id="cloudUrl" type="url" autocomplete="off" value="${esc(cloud.url || CLOUD_URL)}" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:14px;margin-top:6px" aria-label="ウェブアプリの URL">
+        </details>
         <label for="cloudKey">あいことば</label>
         <input id="cloudKey" type="text" autocomplete="off" value="${esc(cloud.key || '')}" style="font-size:20px">
         <p class="note" id="cloudMsg" aria-live="polite"></p>
