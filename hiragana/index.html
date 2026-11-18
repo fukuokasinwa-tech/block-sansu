@@ -680,7 +680,7 @@ button:disabled { opacity: .45; cursor: default; }
     const q = st.q;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！'}</span>
-      <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ おうちも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span>
+      <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ たてものも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span>
       ${st.bossCard ? `<span class="reward"><span class="kcard">${esc(st.bossCard)}</span>👑 ボスを たおした ごほうび！「${esc(st.bossCard)}」の カード${st.bossCardNew ? '<span class="new">あたらしい カード！</span>' : ''}</span>` : ''}</div>`;
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
     card.innerHTML = `

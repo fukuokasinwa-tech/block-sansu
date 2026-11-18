@@ -306,6 +306,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .battle.bg-grass { background: linear-gradient(#5aa9d6, #a8dcf5 62%, #6cc447 62%, #4e9a2f); }
 .battle.bg-night { background: linear-gradient(#1d1640, #4b3a8a 62%, #3a2e5c 62%, #2a2145); }
 .battle.bg-factory { background: linear-gradient(#5d6670, #8e98a3 62%, #4a4f57 62%, #3a3e45); }
+.battle.bg-castle { background: linear-gradient(#ff9a5a, #ffd9a0 62%, #8d8f92 62%, #6a6c70); }
 .b-hero { position: relative; z-index: 2; }
 .b-hero img { width: 60px; height: 80px; image-rendering: pixelated; display: block; }
 .b-enemy { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 1; }
@@ -376,6 +377,19 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .b-enemy.boss .spr-e { width: 84px; height: 95px; }
   .b-hero img { width: 48px; height: 64px; }
 }
+/* けんちく */
+.bstage { position: relative; width: 100%; max-width: 560px; margin: 0 auto; aspect-ratio: 4 / 3; border: 3px solid var(--panel-edge); background: #cdeefc; }
+.bstage canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.bcel { position: absolute; left: 50%; top: 10%; transform: translateX(-50%); white-space: nowrap; font-family: var(--num); font-weight: 800; font-size: clamp(20px, 5vw, 28px); color: #fff; text-shadow: 3px 3px 0 #000; pointer-events: none; }
+.bview { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.bpick { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.bcard { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; cursor: pointer; color: var(--fg); font-family: var(--pixel);
+  background: var(--slot); border: 3px solid var(--panel-edge); }
+.bcard img { width: 100%; max-width: 160px; height: auto; aspect-ratio: 4 / 3; image-rendering: auto; border: 2px solid var(--panel-edge); }
+.bcard b { font-family: var(--num); font-size: 15px; }
+.bcard small { color: var(--muted); font-size: 13px; }
+.bcard.cur, .bcard:hover { border-color: var(--yellow); }
+.dragon-note { color: var(--yellow); font-size: 18px; }
 /* しゅじんこう・そうび・ずかん */
 .hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
 .hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
@@ -453,7 +467,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <button id="t-calc" data-view="calc" aria-pressed="true">⛏ けいさん</button>
     <button id="t-split" data-view="split" aria-pressed="false">🍒 わけかた</button>
     <button id="t-gear" data-view="gear" aria-pressed="false">⚔ そうび</button>
-    <button id="t-house" data-view="house" aria-pressed="false">🏠 おうち</button>
+    <button id="t-house" data-view="house" aria-pressed="false">🏠 けんちく</button>
     <button id="t-zukan" data-view="zukan" aria-pressed="false">📖 ずかん</button>
   </nav>
 
@@ -509,7 +523,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <p>はじめて開くと、主人公の名前を決める画面が出ます（あとから「✎ なまえを かえる」で変えられます）。きょうだいなど複数人で使うときは「👥 プレイヤー こうたい」で、プレイヤーを最大6人まで作れます。そうび・ずかん・おうちの進み具合は、プレイヤーごとに別々に、正解するたびに自動で保存されます（保存先はこの端末のブラウザです。別の端末やブラウザとは共有されません。ブラウザの履歴・サイトデータを消すと記録も消えます）。</p>
     <p>主人公（名前を決めないときは「ソラ」）は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・ぼうし・ふく・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「はっぱ」、ひきざん（10まで）は「くも」、くりあがりは「そら」、まぜこぜは「たいよう」、さくらんぼは「さくら」、くりさがりは「にじ」シリーズと、難しい問題ほど強いそうびになります。</p>
     <p>正解するたびにブロックやアイテム（全40種類）も1つ手に入り、「ずかん」に記録されます。やさしい問題ではブロックや「きのぼう」などの★のアイテム、難しい問題ほど★★★・★★★★のレアなアイテムが出やすくなります。</p>
-    <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
+<p>問題に正解するとブロックを1つ掘れて、もちものに入ります。「🏠 けんちく」では、正解した数のブロックで建物を建てられます（算数でもひらがなでも1問正解ごとに1こ）。にわとりごや・いぬごや・わらの家・おかしの家・コンクリートの家・お城など14種類から選べて、ななめから見た立体の絵を、ボタンや指で回して見られます。完成すると花火でお祝いし、「まち」に並べると、にわとり・犬・人・兵隊・電車などが動き出します。夜は窓に明かりがつきます。お城を建てると、次の算数のステージで特別な「ブロックドラゴン」と戦えて、たおすと「おうかん」がもらえます（これまでに建てた家と進み具合はそのまま引きついでいます）。</p>
     <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
     <p>「わけかた」では、1から10までの数を2つに分ける方法（いくつといくつ）を図と表ですべて見られます。10は「1と9・2と8・3と7・4と6・5と5・6と4・7と3・8と2・9と1」の9とおりです。「あわせて10」の組み合わせは、くりあがり・くりさがりでそのまま使います。クイズでも練習できます。</p>
     <p>「ヒント」では答えをかくしたまま考え方を見せ、まちがえると自動でヒントが出ます。キーボードの数字キーと Enter でも答えられます。</p>
@@ -821,6 +835,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
   function start(mode) {
     st.mode = mode; st.i = 0; st.results = []; st.done = false; st.hist = [];
+    st.fac = factionNow();
     if (mode === 'cherry') {
       let ops;
       do { ops = shuffleOps(); } while (/(\+\+\+|---)/.test(ops.join('')));
@@ -1076,8 +1091,17 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         '....yyyyyy......', '....gg..gg......', '....kk..kk......', '................']),
       pal: { y: '#ffd23f', k: '#2a2d33', g: '#9aa3ad', c: '#5fe0ff', d: '#6b7078' },
       bossPal: { g: '#d6453a', y: '#3a3f47', c: '#ffe066', d: '#ffb347' },
-      taunt: ['ピピッ ハズレ ハズレ！', 'ガチャガチャ！ もう いっかい？'], down: 'ぶひんが はずれて バラバラ！' }
+      taunt: ['ピピッ ハズレ ハズレ！', 'ガチャガチャ！ もう いっかい？'], down: 'ぶひんが はずれて バラバラ！' },
+    { id: 'dragon', atk: 'magic', name: 'おしろを ねらう ブロックドラゴン', minion: 'チビドラ', boss: 'ドラゴンキング ガオン', bg: 'castle',
+      mask: pad16([
+        '....hh....hh....', '....gggggggg....', '...gggggggggg...', '...ggwkggwkgg...', '...gggggggggg...', '...ggrrrrrrgg...',
+        '....gggggggg....', '.........gg.....', 'pppp.gyyyyg.pppp', '.ppp.gyyyyg.ppp.', '..pp.gyyyyg.pp..', '.....gyyyyg.....',
+        '.....gggggg.....', '....gg....gg....', '....kk....kk....', '................']),
+      pal: { g: '#4fb85a', h: '#ffd23f', w: '#ffffff', k: '#22252a', r: '#e0245e', p: '#9b6cf0', y: '#ffe9a8' },
+      bossPal: { g: '#d6453a', p: '#ff9d2e', y: '#ffd23f' },
+      taunt: ['ガオー！ まちがいの ほのおだ！', 'ガオガオ〜 もう いっかい！'], down: 'ドラゴンは おとなしく なって とんでいった' }
   ];
+  const ROT = 3; // ふつうの ステージで こうたいする いちみの かず（ドラゴンは おしろを たてた とき だけ）
   (function makeEnemySprites() {
     let css = '';
     FACTIONS.forEach(f => {
@@ -1096,9 +1120,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     const st0 = document.createElement('style'); st0.textContent = css; document.head.appendChild(st0);
   })();
   const PER_ENEMY = 5; // 1たい 5もん（ハート 5こ）。16〜20もんめは ボス
-  const factionNow = (offset = 0) => FACTIONS[(((save.stageNo || 0) + offset) % FACTIONS.length + FACTIONS.length) % FACTIONS.length];
+  const factionNow = () => save.dragonReady ? FACTIONS[ROT] : FACTIONS[((save.stageNo || 0) % ROT + ROT) % ROT];
   function battleHTML() {
-    const f = factionNow();
+    const f = st.fac || factionNow();
     const ei = Math.min(TOTAL / PER_ENEMY - 1, Math.floor(st.i / PER_ENEMY)), boss = ei === TOTAL / PER_ENEMY - 1;
     let solvedIn = 0;
     for (let k = ei * PER_ENEMY; k < (ei + 1) * PER_ENEMY; k++) if (st.results[k] !== undefined) solvedIn++;
@@ -1130,12 +1154,13 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       card.innerHTML = `${mineHTML()}
         <div class="feedback good" style="gap:10px">
           <span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
-          <span>${factionNow(-1).name}を ぜんぶ たおした！</span>
+          <span>${(st.fac || factionNow()).name}を ぜんぶ たおした！</span>
+          ${st.dragonPrize ? `<span class="lvmsg">🐉 おしろを まもった！ とくべつな ごほうび</span>${dropHTML(st.dragonPrize, st.dragonPrizeNew)}` : ''}
           <span style="color:var(--fg);font-size:17px">つぎは「${factionNow().name}」が まっているよ</span>
           <span>ブロックを ${TOTAL}こ ほったよ。いっかいで せいかい：${ok}もん</span>
           <span style="color:var(--fg);font-size:17px">${ok === TOTAL ? 'ぜんぶ いっかいで せいかい！ すごい！' : 'まちがえても、さいごまで できたね！'}</span>
         </div>
-        <div class="actions"><button class="btn" id="toHouse">🏠 おうちを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
+        <div class="actions"><button class="btn" id="toHouse">🏠 けんちくを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
       document.getElementById('again').onclick = () => start(st.mode);
       document.getElementById('toHouse').onclick = () => showView('house');
       return;
@@ -1236,7 +1261,12 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     render();
   }
   function advance() {
-    if (st.i + 1 >= TOTAL) { st.done = true; save.stageNo = (save.stageNo || 0) + 1; persist(); render(); return; }
+    if (st.i + 1 >= TOTAL) {
+      st.done = true; st.dragonPrize = null;
+      if (st.fac && st.fac.id === 'dragon') { save.dragonReady = false; save.dragonWins = (save.dragonWins || 0) + 1; st.dragonPrize = 'crown'; st.dragonPrizeNew = gain('crown'); }
+      else save.stageNo = (save.stageNo || 0) + 1;
+      persist(); render(); return;
+    }
     st.i++; next();
   }
 
@@ -1362,42 +1392,369 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     renderQuiz();
   }
 
-  /* ---------- おうち ---------- */
-  const HOUSE = [
-    '....jj....',
-    '...ssss...',
-    '..ssssss..',
-    '.ssssssss.',
-    '.wwwwwwww.',
-    '.wggwwdww.',
-    '.wggwwdww.',
-    'GGGGGGGGGG'
+  /* ---------- けんちく（たてもの・まち・りったいの え）。え は すべて コードで かく オリジナル ---------- */
+  // いろ（たてものの ブロック）
+  const VCOL = {
+    grass: '#5fb33c', dirt: '#8a5a36', wood: '#7a4f29', plank: '#b8864b', stone: '#8d8f92', cobble: '#76787c',
+    brick: '#b4523a', glass: '#9fd8f5', red: '#c8443a', blue: '#3a6fd4', white: '#efeae0', gold: '#f2c230',
+    leaf: '#3f8f2f', water: '#4f9bea', flag: '#ff6b8a', dark: '#3a3a40', hay: '#e3c25a', hay2: '#c9a640',
+    concrete: '#b9bdc2', concrete2: '#9ea3a9', choco: '#6b3d22', cookie: '#d9a066', icing: '#ff9ec4',
+    candy: '#ff5f8f', mint: '#8fe3c4', cream: '#fff4dc', rail: '#55575c', green2: '#2f7d32'
+  };
+  function Model() {
+    const m = new Map();
+    const api = {
+      set(x, y, z, k) { m.set(x + ',' + y + ',' + z, [x, y, z, k]); return api; },
+      del(x, y, z) { m.delete(x + ',' + y + ',' + z); return api; },
+      box(x0, y0, z0, w, h, d, k) { for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) for (let z = 0; z < d; z++) api.set(x0 + x, y0 + y, z0 + z, k); return api; },
+      ring(x0, y0, z0, w, h, d, k) {
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) for (let z = 0; z < d; z++)
+          if (x === 0 || z === 0 || x === w - 1 || z === d - 1) api.set(x0 + x, y0 + y, z0 + z, k);
+        return api;
+      },
+      // さんかく やね（むねは x の むき）。ends は りょうはしの かべ
+      gable(x0, y0, z0, w, d, k, ends) {
+        for (let i = 0; i * 2 < d; i++) {
+          for (let x = 0; x < w; x++) { api.set(x0 + x, y0 + i, z0 + i, k); api.set(x0 + x, y0 + i, z0 + d - 1 - i, k); }
+          if (ends) for (let z = z0 + i + 1; z <= z0 + d - 2 - i; z++) { api.set(x0, y0 + i, z, ends); api.set(x0 + w - 1, y0 + i, z, ends); }
+        }
+        return api;
+      },
+      list() { return [...m.values()].sort((a, b) => a[1] - b[1] || a[2] - b[2] || a[0] - b[0]); }
+    };
+    return api;
+  }
+  // たてもの いちらん（ブロックの かず＝ひつような せいかいの かず）
+  const BUILDINGS = [
+    { id: 'coop', n: 'にわとりごや', who: 'chicken', make: () => Model().box(0, 0, 0, 4, 1, 3, 'plank').ring(0, 1, 0, 4, 1, 3, 'wood').del(1, 1, 0).box(0, 2, 0, 4, 1, 3, 'red').list() },
+    { id: 'dog', n: 'いぬごや', who: 'dog', make: () => Model().box(0, 0, 0, 3, 1, 3, 'plank').ring(0, 1, 0, 3, 2, 3, 'red').del(1, 1, 0).gable(0, 3, 0, 3, 3, 'blue', 'red').list() },
+    { id: 'wara', n: 'わらの いえ', who: 'person', make: () => Model().box(0, 0, 0, 4, 1, 4, 'dirt').ring(0, 1, 0, 4, 2, 4, 'hay').set(1, 1, 0, 'wood').set(1, 2, 0, 'wood').gable(0, 3, 0, 4, 4, 'hay2', 'hay').list() },
+    { id: 'okashi', n: 'おかしの いえ', who: 'person', make: () => Model().box(0, 0, 0, 4, 1, 4, 'cookie').ring(0, 1, 0, 4, 2, 4, 'choco')
+        .set(1, 1, 0, 'candy').set(1, 2, 0, 'candy').set(2, 2, 0, 'cream').set(0, 2, 2, 'cream').set(3, 2, 1, 'cream')
+        .gable(0, 3, 0, 4, 4, 'icing', 'cookie').set(0, 4, 1, 'mint').set(3, 4, 2, 'candy').list() },
+    { id: 'ie', n: 'さんかく やねの いえ', who: 'person', make: () => Model().box(0, 0, 0, 5, 1, 4, 'cobble').ring(0, 1, 0, 5, 2, 4, 'white')
+        .set(2, 1, 0, 'wood').set(2, 2, 0, 'wood').set(1, 2, 0, 'glass').set(3, 2, 0, 'glass').set(0, 2, 2, 'glass').set(4, 2, 1, 'glass')
+        .gable(0, 3, 0, 5, 4, 'red', 'white').list() },
+    { id: 'log', n: 'ログハウス', who: 'person', make: () => Model().box(0, 0, 0, 5, 1, 4, 'plank').ring(0, 1, 0, 5, 3, 4, 'wood')
+        .set(2, 1, 0, 'plank').set(2, 2, 0, 'plank').set(1, 2, 0, 'glass').set(3, 2, 0, 'glass').gable(0, 4, 0, 5, 4, 'plank', 'wood').list() },
+    { id: 'hiraya', n: 'ひらやの いえ', who: 'person', make: () => Model().box(0, 0, 0, 6, 1, 4, 'stone').ring(0, 1, 0, 6, 2, 4, 'plank')
+        .set(2, 1, 0, 'wood').set(1, 2, 0, 'glass').set(4, 2, 0, 'glass').set(5, 2, 2, 'glass').box(0, 3, 0, 6, 1, 4, 'dark').set(4, 4, 2, 'brick').set(4, 5, 2, 'brick').list() },
+    { id: 'concrete', n: 'コンクリートの いえ', who: 'person', make: () => Model().box(0, 0, 0, 5, 1, 5, 'concrete2').ring(0, 1, 0, 5, 4, 5, 'concrete')
+        .box(1, 2, 0, 3, 1, 1, 'glass').box(1, 4, 0, 3, 1, 1, 'glass').set(4, 2, 2, 'glass').set(4, 4, 2, 'glass').set(2, 1, 0, 'dark')
+        .box(0, 5, 0, 5, 1, 5, 'concrete2').box(1, 6, 1, 2, 1, 2, 'concrete').list() },
+    { id: 'nikai', n: '2かいだての いえ', who: 'person', make: () => Model().box(0, 0, 0, 5, 1, 4, 'cobble').ring(0, 1, 0, 5, 4, 4, 'white')
+        .set(2, 1, 0, 'wood').set(2, 2, 0, 'wood').set(1, 2, 0, 'glass').set(3, 2, 0, 'glass').set(1, 4, 0, 'glass').set(3, 4, 0, 'glass').set(0, 4, 2, 'glass')
+        .gable(0, 5, 0, 5, 4, 'blue', 'white').list() },
+    { id: 'tree', n: 'ツリーハウス', who: 'person', make: () => {
+        const m = Model().box(2, 0, 2, 1, 4, 1, 'wood');
+        for (let x = 0; x < 5; x++) for (let z = 0; z < 5; z++) if (!((x === 0 || x === 4) && (z === 0 || z === 4))) { m.set(x, 3, z, 'leaf'); }
+        m.box(1, 4, 1, 3, 1, 3, 'plank').ring(1, 5, 1, 3, 1, 3, 'plank').del(2, 5, 1).box(1, 6, 1, 3, 1, 3, 'red');
+        return m.list();
+      } },
+    { id: 'fountain', n: 'ふんすい', who: 'fountain', make: () => Model().ring(0, 0, 0, 5, 1, 5, 'stone').box(1, 0, 1, 3, 1, 3, 'water').set(2, 1, 2, 'stone').set(2, 2, 2, 'stone').set(2, 3, 2, 'water').list() },
+    { id: 'tower', n: 'タワー', who: 'person', make: () => {
+        const m = Model().ring(0, 0, 0, 3, 8, 3, 'brick');
+        [2, 4, 6].forEach(y => m.set(1, y, 0, 'glass'));
+        return m.box(0, 8, 0, 3, 1, 3, 'gold').set(1, 9, 1, 'gold').set(1, 10, 1, 'flag').list();
+      } },
+    { id: 'station', n: 'えき', who: 'train', make: () => {
+        const m = Model().box(0, 0, 0, 8, 1, 3, 'concrete').ring(2, 1, 0, 4, 2, 3, 'white').set(3, 1, 0, 'glass').set(4, 1, 0, 'glass').box(1, 3, 0, 6, 1, 3, 'red');
+        for (let x = -1; x < 9; x++) m.set(x, 0, 4, 'rail');
+        return m.list();
+      } },
+    { id: 'castle', n: 'おしろ', who: 'soldier', make: () => {
+        const m = Model().ring(0, 0, 0, 9, 2, 9, 'cobble');
+        for (let x = 0; x < 9; x += 2) { m.set(x, 2, 0, 'cobble'); m.set(x, 2, 8, 'cobble'); }
+        for (let z = 2; z < 8; z += 2) { m.set(0, 2, z, 'cobble'); m.set(8, 2, z, 'cobble'); }
+        [[0, 0], [7, 0], [0, 7], [7, 7]].forEach(([x, z]) => { m.box(x, 0, z, 2, 4, 2, 'stone'); m.set(x, 4, z, 'flag'); });
+        m.del(4, 0, 0).del(4, 1, 0).set(4, 2, 0, 'cobble');
+        m.box(3, 0, 3, 3, 4, 3, 'white').set(4, 2, 3, 'glass').gable(3, 4, 3, 3, 3, 'blue', 'white').set(4, 6, 4, 'gold');
+        return m.list();
+      } }
   ];
-  const HK = { j: 'gem', s: 'stone', w: 'wood', g: 'glass', d: 'dirt', G: 'grass' };
-  const ORDER = [];
-  for (let y = HOUSE.length - 1; y >= 0; y--) for (let x = 0; x < 10; x++) if (HOUSE[y][x] !== '.') ORDER.push(y * 10 + x);
-  function renderHouse() {
-    const need = ORDER.length, placed = Math.min(save.built, need);
-    const placedSet = new Set(ORDER.slice(0, placed));
-    const nextIdx = ORDER[placed];
-    let cells = '';
-    for (let y = 0; y < HOUSE.length; y++) for (let x = 0; x < 10; x++) {
-      const idx = y * 10 + x, ch = HOUSE[y][x];
-      if (ch === '.') cells += '<div class="bc"></div>';
-      else if (placedSet.has(idx)) cells += `<div class="bc">${B(HK[ch])}</div>`;
-      else cells += `<div class="bc ghost${idx === nextIdx ? ' next' : ''}"></div>`;
+  BUILDINGS.forEach(b => { b.vox = b.make(); b.need = b.vox.length; });
+  const BY_B = {}; BUILDINGS.forEach(b => { BY_B[b.id] = b; });
+
+  // セーブ：まえの「おうち」を ひきつぐ（できた おうち＝さんかく やねの いえ、いまの すすみ＝built のまま）
+  function fixBuild() { // プレイヤーを かえた ときも まいかい たしかめる
+    if (!Array.isArray(save.town)) save.town = Array.from({ length: save.houses || 0 }, () => 'ie');
+    if (typeof save.spent !== 'number') save.spent = 0;
+    if (save.project === undefined) save.project = 'ie';
+  }
+  const progress = () => Math.max(0, (save.built || 0) - (save.spent || 0));
+
+  /* りったいの え（ななめから みた ブロック。まわせる） */
+  const hexRGB = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const shade = (h, f) => { const [r, g, b] = hexRGB(h); return `rgb(${Math.min(255, r * f) | 0},${Math.min(255, g * f) | 0},${Math.min(255, b * f) | 0})`; };
+  const isNight = () => { const h = new Date().getHours(); return bv.forceNight !== null ? bv.forceNight : (h >= 19 || h < 6); };
+  const isEvening = () => { const h = new Date().getHours(); return bv.forceNight === null && h >= 17 && h < 19; };
+  function makeView(vox, yaw) {
+    // vox: [x,y,z,kind,state]  state: 1=できた 0=まだ
+    const xs = vox.map(v => v[0]), zs = vox.map(v => v[2]);
+    const cx = (Math.min(...xs) + Math.max(...xs) + 1) / 2, cz = (Math.min(...zs) + Math.max(...zs) + 1) / 2;
+    const c = Math.cos(yaw), s = Math.sin(yaw);
+    const P = (x, y, z) => { const X = (x - cx) * c - (z - cz) * s, Z = (x - cx) * s + (z - cz) * c; return [X, -y * .95 + Z * .5, Z]; };
+    return { P, c, s };
+  }
+  function drawVoxels(ctx, W, H, vox, yaw, zoom, opts = {}) {
+    const { P, c, s } = makeView(vox, yaw);
+    // ばめんに おさまる おおきさ
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    vox.forEach(([x, y, z]) => { for (let i = 0; i < 8; i++) { const p = P(x + (i & 1), y + (i >> 1 & 1), z + (i >> 2 & 1)); minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]); minY = Math.min(minY, p[1]); maxY = Math.max(maxY, p[1]); } });
+    const sc = Math.min(W * .86 / (maxX - minX || 1), H * .8 / (maxY - minY || 1)) * zoom;
+    const ox = W / 2 - (minX + maxX) / 2 * sc, oy = H * .52 - (minY + maxY) / 2 * sc;
+    const S = (x, y, z) => { const p = P(x, y, z); return [ox + p[0] * sc, oy + p[1] * sc, p[2]]; };
+    const solid = new Set(vox.filter(v => v[4]).map(v => v[0] + ',' + v[1] + ',' + v[2]));
+    const order = vox.map(v => ({ v, d: P(v[0] + .5, 0, v[2] + .5)[2] })).sort((a, b) => a.d - b.d || a.v[1] - b.v[1]);
+    const night = opts.night;
+    const sides = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]];
+    const face = (pts, fill, stroke) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.strokeStyle = stroke; ctx.stroke(); } };
+    ctx.lineWidth = Math.max(1, sc / 28);
+    order.forEach(({ v }) => {
+      const [x, y, z, k, done] = v;
+      const key = (a, b, d) => (x + a) + ',' + (y + b) + ',' + (z + d);
+      let base = VCOL[k] || '#999999';
+      if (night && k === 'glass') base = '#ffe48a';
+      const dim = night && k !== 'glass' ? .62 : 1;
+      if (!done) {
+        // まだ つんで いない ブロック：うすい わく
+        const t = [S(x, y + 1, z), S(x + 1, y + 1, z), S(x + 1, y + 1, z + 1), S(x, y + 1, z + 1)];
+        face(t, 'rgba(255,255,255,.10)', 'rgba(255,255,255,.35)');
+        return;
+      }
+      sides.forEach(([nx, , nz]) => {
+        if (nx * s + nz * c <= 0) return; // うらがわ
+        if (solid.has(key(nx, 0, nz))) return; // となりに ブロック
+        const xr = nx === 1 ? x + 1 : x, zr = nz === 1 ? z + 1 : z;
+        const pts = nx !== 0 ? [S(xr, y, z), S(xr, y, z + 1), S(xr, y + 1, z + 1), S(xr, y + 1, z)] : [S(x, y, zr), S(x + 1, y, zr), S(x + 1, y + 1, zr), S(x, y + 1, zr)];
+        const lit = (nx * c - nz * s) > 0 ? .86 : .68;
+        face(pts, shade(base, lit * dim), 'rgba(0,0,0,.22)');
+      });
+      if (!solid.has(key(0, 1, 0))) face([S(x, y + 1, z), S(x + 1, y + 1, z), S(x + 1, y + 1, z + 1), S(x, y + 1, z + 1)], shade(base, 1.1 * dim), 'rgba(0,0,0,.18)');
+    });
+    return { S, sc };
+  }
+
+  /* すむ ひとや どうぶつ（ちいさな ドットえ。オリジナル） */
+  const CRITTERS = {
+    chicken: { s: ['..r.', '.ww.', 'wwwo', '.ww.', '.yy.'], p: { r: '#e0245e', w: '#ffffff', o: '#ff9d2e', y: '#ffb347' } },
+    dog: { s: ['b...', 'bbbb', '.bbbk', '.b.b'], p: { b: '#a0662f', k: '#22252a' } },
+    person: { s: ['.hh.', '.ss.', 'rrrr', '.rr.', '.bb.', '.b.b'], p: { h: '#4a2f1d', s: '#f2c9a0', r: '#4f9bea', b: '#3a3f47' } },
+    soldier: { s: ['.gg.', '.ss.', 'bbbb', '.bb.', '.dd.', '.d.d'], p: { g: '#f2c230', s: '#f2c9a0', b: '#3a6fd4', d: '#22252a' } }
+  };
+  function drawCritter(ctx, kind, x, y, px, flip) {
+    const cr = CRITTERS[kind]; if (!cr) return;
+    const h = cr.s.length, w = 4;
+    cr.s.forEach((row, j) => [...row].forEach((ch, i) => {
+      if (ch === '.' || !cr.p[ch]) return;
+      ctx.fillStyle = cr.p[ch];
+      const ii = flip ? w - 1 - i : i;
+      ctx.fillRect(Math.round(x + (ii - w / 2) * px), Math.round(y + (j - h) * px), Math.ceil(px), Math.ceil(px));
+    }));
+  }
+
+  /* がめんの じょうたい */
+  const bv = { tab: 'build', yaw: -0.65, zoom: 1, forceNight: null, raf: 0, anim: null, critters: [], drag: null, choosing: false, celebrated: {} };
+  function sky(ctx, W, H) {
+    const night = isNight(), eve = isEvening();
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    if (night) { g.addColorStop(0, '#0d1433'); g.addColorStop(1, '#2a3566'); }
+    else if (eve) { g.addColorStop(0, '#ff9a5a'); g.addColorStop(1, '#ffd9a0'); }
+    else { g.addColorStop(0, '#7cc6f2'); g.addColorStop(1, '#d6f0ff'); }
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    if (night) { ctx.fillStyle = '#ffffff'; for (let i = 0; i < 40; i++) ctx.fillRect((i * 97) % W, (i * 53) % (H * .5), 2, 2); }
+    ctx.fillStyle = night ? '#24402a' : '#7cc95a'; ctx.fillRect(0, H * .78, W, H * .22);
+  }
+  function setupCanvas(cv) {
+    const dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect();
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, W: r.width, H: r.height };
+  }
+  // まちの ならべかた
+  function townVoxels() {
+    const vox = [], spots = [];
+    let x0 = 0, z0 = 0, rowD = 0;
+    const ROW_W = 22;
+    save.town.forEach((id, n) => {
+      const b = BY_B[id]; if (!b) return;
+      const w = Math.max(...b.vox.map(v => v[0])) + 2, d = Math.max(...b.vox.map(v => v[2])) + 2;
+      if (x0 + w > ROW_W && x0 > 0) { x0 = 0; z0 += rowD + 2; rowD = 0; }
+      b.vox.forEach(([x, y, z, k]) => vox.push([x + x0, y, z + z0, k, 1]));
+      spots.push({ b, x0, z0, w, d });
+      x0 += w + 2; rowD = Math.max(rowD, d);
+    });
+    return { vox, spots };
+  }
+  function makeCritters(spots) {
+    const list = [];
+    spots.forEach((sp, n) => {
+      const who = sp.b.who;
+      if (who === 'train') list.push({ kind: 'train', x: sp.x0 - 1, z: sp.z0 + 4, x0: sp.x0 - 1, x1: sp.x0 + 8 });
+      else if (who === 'fountain') list.push({ kind: 'drops', x: sp.x0 + 2.5, z: sp.z0 + 2.5, y: 4 });
+      else for (let i = 0; i < (who === 'chicken' ? 2 : 1); i++) list.push({ kind: who, x: sp.x0 + sp.w - .5, z: sp.z0 + Math.random() * sp.d, vx: (Math.random() < .5 ? -1 : 1) * .02, xmin: sp.x0 - 1, xmax: sp.x0 + sp.w, t: n * 13 + i * 7 });
+    });
+    return list;
+  }
+
+  function renderBuild() {
+    fixBuild();
+    const el = document.getElementById('house');
+    cancelAnimationFrame(bv.raf);
+    const pj = save.project && BY_B[save.project];
+    const tabs = `<div class="modes" id="bTabs">
+      <button id="bt-build" data-bt="build" aria-pressed="${bv.tab === 'build'}">🔨 たてる</button>
+      <button id="bt-town" data-bt="town" aria-pressed="${bv.tab === 'town'}">🏘 まち（${save.town.length}）</button>
+    </div>`;
+    if (bv.tab === 'build' && (!pj || bv.choosing)) {
+      el.innerHTML = `<h2>けんちく</h2>${tabs}
+        <p class="story" style="font-size:19px">なにを たてる？ もんだいに 1もん せいかいすると ブロックが 1こ つめるよ。</p>
+        <p class="note">いま もっている ブロック：<b class="series">${progress()}</b>こ（たてものを えらぶと そのまま つかえるよ）</p>
+        <div class="bpick">${BUILDINGS.map(b => `<button class="bcard${save.project === b.id ? ' cur' : ''}" data-b="${b.id}" id="pick-${b.id}">
+          <img src="${thumb(b)}" alt="" width="120" height="90"><b>${b.n}</b><small>${b.need}こ${save.town.includes(b.id) ? ' ・ たてたよ' : ''}</small></button>`).join('')}</div>
+        ${pj ? '<div class="actions"><button class="btn" id="bBack">もどる</button></div>' : ''}`;
+      el.querySelectorAll('[data-b]').forEach(bt => { bt.onclick = () => { save.project = bt.dataset.b; bv.choosing = false; persist(); renderBuild(); }; });
+      const bb = document.getElementById('bBack'); if (bb) bb.onclick = () => { bv.choosing = false; renderBuild(); };
+      bindTabs(el); return;
     }
-    const done = placed >= need;
-    document.getElementById('house').innerHTML = `
-      <h2>おうちづくり ${save.houses ? `（できた おうち：${save.houses}けん）` : ''}</h2>
-      <p class="story" style="font-size:19px">${done ? 'おうちが かんせいしたよ！ おめでとう！' : `ブロックを ほると おうちが できていくよ。<br>あと <b style="color:var(--yellow)">${need - placed}</b>こで かんせい！`}</p>
-      <div class="build" style="grid-template-columns:repeat(10, auto)" aria-label="おうち ${placed}/${need}">${cells}</div>
-      <div class="bar" aria-hidden="true"><span style="width:${Math.round(placed / need * 100)}%"></span></div>
-      <p class="note">${placed} ／ ${need} こ。もんだいに 1もん せいかいすると、1こ つめるよ。</p>
-      <div class="actions">${done ? '<button class="btn primary" id="newHouse">あたらしい おうちを たてる</button>' : '<button class="btn primary" id="goCalc">⛏ ほりに いく</button>'}</div>`;
-    const nh = document.getElementById('newHouse');
-    if (nh) nh.onclick = () => { save.houses++; save.built = Math.max(0, save.built - need); persist(); renderHouse(); };
+    if (bv.tab === 'town') {
+      el.innerHTML = `<h2>けんちく</h2>${tabs}
+        ${save.town.length ? `<p class="note">たてた たてものが ならんで まちに なるよ。ゆびで うごかすと まわせるよ。</p>` : `<p class="story" style="font-size:19px">まだ たてものが ないよ。<br>「🔨 たてる」で たてものを かんせいさせて、まちに かざろう！</p>`}
+        ${save.town.length ? `<div class="bstage"><canvas id="bCanvas" aria-label="まち たてもの ${save.town.length}こ"></canvas></div>${viewBtns()}` : ''}`;
+      bindTabs(el);
+      if (save.town.length) startScene('town');
+      return;
+    }
+    // いま たてている たてもの
+    const need = pj.need, have = Math.min(progress(), need), done = have >= need;
+    el.innerHTML = `<h2>けんちく：${pj.n}</h2>${tabs}
+      <p class="story" style="font-size:19px">${done ? `${pj.n}が かんせい！ おめでとう！` : `あと <b style="color:var(--yellow)">${need - have}</b>こで かんせい！`}</p>
+      <div class="bstage"><canvas id="bCanvas" aria-label="${pj.n} ${have}/${need}"></canvas><div class="bcel" id="bCel" hidden>${pj.n}が かんせい！</div></div>
+      ${viewBtns()}
+      <div class="bar" aria-hidden="true"><span style="width:${Math.round(have / need * 100)}%"></span></div>
+      <p class="note">${have} ／ ${need} こ。もんだいに 1もん せいかいすると 1こ つめるよ（さんすうでも ひらがなでも）。</p>
+      <div class="actions">
+        ${done ? '<button class="btn primary" id="bPlace">🏘 まちに かざる</button>' : '<button class="btn primary" id="goCalc">⛏ ほりに いく</button>'}
+        <button class="btn" id="bChoose">べつの たてものに する</button>
+      </div>`;
+    bindTabs(el);
     const gc = document.getElementById('goCalc'); if (gc) gc.onclick = () => showView('calc');
+    document.getElementById('bChoose').onclick = () => { bv.choosing = true; renderBuild(); };
+    const bp = document.getElementById('bPlace');
+    if (bp) bp.onclick = () => {
+      save.town.push(pj.id); save.spent = (save.spent || 0) + need; if (pj.id === 'ie') save.houses = (save.houses || 0) + 1;
+      if (pj.id === 'castle') save.dragonReady = true;
+      save.project = null; persist();
+      bv.tab = 'town'; bv.choosing = false; renderBuild();
+      if (pj.id === 'castle') setTimeout(() => alertLine('🐉 おしろに ブロックドラゴンが ちかづいて きた！「けいさん」の つぎの ステージで たたかおう！'), 300);
+    };
+    startScene('build', done && !bv.celebrated[pj.id + save.town.length]);
+    if (done) bv.celebrated[pj.id + save.town.length] = true;
+  }
+  function alertLine(text) {
+    const el = document.getElementById('house');
+    const p = document.createElement('p'); p.className = 'story dragon-note'; p.textContent = text;
+    el.insertBefore(p, el.children[2] || null);
+  }
+  function viewBtns() {
+    return `<div class="bview">
+      <button class="btn small" id="vL" aria-label="ひだりに まわす">⟲</button>
+      <button class="btn small" id="vR" aria-label="みぎに まわす">⟳</button>
+      <button class="btn small" id="vIn" aria-label="おおきく">＋</button>
+      <button class="btn small" id="vOut" aria-label="ちいさく">−</button>
+      <button class="btn small" id="vNight">${isNight() ? '☀ ひるに する' : '🌙 よるに する'}</button>
+    </div>`;
+  }
+  function bindTabs(el) {
+    el.querySelectorAll('[data-bt]').forEach(b => { b.onclick = () => { bv.tab = b.dataset.bt; bv.choosing = false; renderBuild(); }; });
+  }
+  const thumbCache = {};
+  function thumb(b) {
+    if (thumbCache[b.id]) return thumbCache[b.id];
+    const cv = document.createElement('canvas'); cv.width = 240; cv.height = 180;
+    const ctx = cv.getContext('2d'); ctx.scale(2, 2);
+    ctx.fillStyle = '#cdeefc'; ctx.fillRect(0, 0, 120, 90);
+    drawVoxels(ctx, 120, 90, b.vox.map(v => v.concat(1)), -0.65, .95);
+    return (thumbCache[b.id] = cv.toDataURL());
+  }
+
+  function startScene(mode, celebrate) {
+    const cv = document.getElementById('bCanvas'); if (!cv) return;
+    const { ctx, W, H } = setupCanvas(cv);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let vox, spots = [];
+    if (mode === 'town') { const t = townVoxels(); vox = t.vox; spots = t.spots; }
+    else { const pj = BY_B[save.project]; const have = Math.min(progress(), pj.need); vox = pj.vox.map((v, i) => v.concat(i < have ? 1 : 0)); spots = have >= pj.need ? [{ b: pj, x0: 0, z0: 0, w: Math.max(...pj.vox.map(v => v[0])) + 2, d: Math.max(...pj.vox.map(v => v[2])) + 2 }] : []; }
+    bv.critters = makeCritters(spots);
+    const t0 = performance.now();
+    const fire = [];
+    let cache = null, cacheKey = '';
+    const frame = now => {
+      if (view !== 'house' || !document.getElementById('bCanvas')) return;
+      const t = (now - t0) / 1000;
+      let vv = vox;
+      const building = celebrate && !reduce && t < 2.6;
+      if (building) { const n = Math.floor(vox.length * Math.min(1, t / 2.4)); vv = vox.map((v, i) => v.slice(0, 4).concat(i < n ? 1 : 0)); }
+      const key = [bv.yaw.toFixed(3), bv.zoom, isNight(), building ? Math.floor(t * 30) : 'f'].join('|');
+      if (key !== cacheKey) {
+        cache = cache || document.createElement('canvas');
+        cache.width = cv.width; cache.height = cv.height;
+        const cc = cache.getContext('2d'); cc.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+        sky(cc, W, H);
+        bv.last = drawVoxels(cc, W, H, vv, bv.yaw, bv.zoom, { night: isNight() });
+        cacheKey = key;
+      }
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(cache, 0, 0); ctx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+      // すむ ひと・どうぶつ・でんしゃ・ふんすい
+      if (!building && bv.last) {
+        const { S, sc } = bv.last;
+        bv.critters.forEach(c => {
+          if (c.kind === 'train') {
+            if (!reduce) { c.x += .03; if (c.x > c.x1) c.x = c.x0; }
+            drawVoxelsAt(ctx, S, sc, [[c.x, 1, c.z, 'red'], [c.x - 1.05, 1, c.z, 'blue'], [c.x - 2.1, 1, c.z, 'blue']]);
+          } else if (c.kind === 'drops') {
+            for (let i = 0; i < 6; i++) {
+              const a = (t * 2 + i / 6) % 1, ang = i * Math.PI / 3;
+              const p = S(c.x + Math.cos(ang) * a * 1.2, c.y + a * 1.2 - a * a * 2.2, c.z + Math.sin(ang) * a * 1.2);
+              ctx.fillStyle = 'rgba(160,220,255,.9)'; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4);
+            }
+          } else {
+            if (!reduce) { c.x += c.vx; if (c.x < c.xmin || c.x > c.xmax) c.vx *= -1; }
+            const hop = reduce ? 0 : Math.abs(Math.sin((t + c.t) * 6)) * sc * .06;
+            const p = S(c.x, 1, c.z);
+            drawCritter(ctx, c.kind, p[0], p[1] - hop, Math.max(1.2, sc / 9), c.vx < 0);
+            if (c.kind === 'chicken' && (Math.floor(t + c.t) % 7 === 0)) { ctx.fillStyle = '#fff4dc'; ctx.fillRect(p[0] + sc * .3, p[1] - sc * .12, sc * .12, sc * .15); }
+          }
+        });
+      }
+      // はなび
+      if (celebrate && !reduce && t > 2.4 && t < 6) {
+        if (fire.length < 120 && Math.random() < .25) { const fx = W * (.2 + Math.random() * .6), fy = H * (.15 + Math.random() * .3), col = ['#ffd23f', '#ff6b8a', '#63b0ff', '#6ccf4a', '#ffffff'][Math.floor(Math.random() * 5)]; for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; fire.push({ x: fx, y: fy, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: 1, col }); } }
+        const celEl = document.getElementById('bCel'); if (celEl) celEl.hidden = false;
+      }
+      for (let i = fire.length - 1; i >= 0; i--) { const f = fire[i]; f.x += f.vx; f.y += f.vy; f.vy += .03; f.life -= .015; if (f.life <= 0) { fire.splice(i, 1); continue; } ctx.globalAlpha = f.life; ctx.fillStyle = f.col; ctx.fillRect(f.x - 2, f.y - 2, 4, 4); ctx.globalAlpha = 1; }
+      if (celebrate && reduce) { const celEl = document.getElementById('bCel'); if (celEl) celEl.hidden = false; }
+      bv.raf = requestAnimationFrame(frame);
+    };
+    bv.raf = requestAnimationFrame(frame);
+    // そうさ：ボタン・ゆびで まわす
+    const turn = d => { bv.yaw += d; };
+    document.getElementById('vL').onclick = () => turn(-Math.PI / 4);
+    document.getElementById('vR').onclick = () => turn(Math.PI / 4);
+    document.getElementById('vIn').onclick = () => { bv.zoom = Math.min(2.4, bv.zoom * 1.2); };
+    document.getElementById('vOut').onclick = () => { bv.zoom = Math.max(.6, bv.zoom / 1.2); };
+    document.getElementById('vNight').onclick = e => { bv.forceNight = !isNight(); e.target.textContent = isNight() ? '☀ ひるに する' : '🌙 よるに する'; };
+    cv.onpointerdown = e => { bv.drag = { x: e.clientX, yaw: bv.yaw }; cv.setPointerCapture(e.pointerId); };
+    cv.onpointermove = e => { if (bv.drag) bv.yaw = bv.drag.yaw + (e.clientX - bv.drag.x) / 90; };
+    cv.onpointerup = cv.onpointercancel = () => { bv.drag = null; };
+  }
+  function drawVoxelsAt(ctx, S, sc, cubes) {
+    cubes.forEach(([x, y, z, k]) => {
+      const top = [S(x, y + 1, z), S(x + 1, y + 1, z), S(x + 1, y + 1, z + 1), S(x, y + 1, z + 1)];
+      const front = [S(x, y, z + 1), S(x + 1, y, z + 1), S(x + 1, y + 1, z + 1), S(x, y + 1, z + 1)];
+      const side = [S(x + 1, y, z), S(x + 1, y, z + 1), S(x + 1, y + 1, z + 1), S(x + 1, y + 1, z)];
+      [[side, .7], [front, .85], [top, 1.1]].forEach(([pts, f]) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fillStyle = shade(VCOL[k], f); ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.stroke(); });
+    });
   }
 
   /* ---------- きりかえ・そうさ ---------- */
@@ -1645,7 +2002,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
     ['calc', 'split', 'gear', 'house', 'zukan'].forEach(id => { document.getElementById('view-' + id).hidden = id !== v; });
     if (v === 'split') renderSplit();
-    if (v === 'house') renderHouse();
+    if (v === 'house') renderBuild();
     if (v === 'gear') renderGearView();
     if (v === 'zukan') renderZukan();
   }
