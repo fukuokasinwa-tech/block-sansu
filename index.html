@@ -263,6 +263,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .nameform label { font-size: 16px; }
 .nameform input { font-family: var(--num); font-weight: 800; font-size: 28px; padding: 10px 12px; width: 100%; color: var(--fg); background: var(--slot); border: 3px solid var(--yellow); }
 .err { color: var(--red); }
+.cloud-box { border-top: 2px dashed var(--panel-hi); padding-top: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.cloud-status { text-align: center; }
 /* しゅじんこう・そうび・ずかん */
 .hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
 .hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
@@ -331,6 +333,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <button class="btn small" id="renameBtn">✎ なまえを かえる</button>
       <button class="btn small" id="playersBtn">👥 プレイヤー こうたい</button>
     </div>
+    <p class="note cloud-status" id="cloudStatus" hidden></p>
     <div class="inv" id="inv"></div>
   </section>
 
@@ -543,7 +546,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   if (!players.list.includes(players.current)) players.current = players.list[0];
   const persistPlayers = () => { try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (e) {} };
   let save = loadSave(players.current);
-  const persist = () => { try { localStorage.setItem(keyOf(players.current), JSON.stringify(save)); } catch (e) {} };
+  // ほぞん：この たんまつ ＋（つないで いれば）Google スプレッドシート
+  function writeSave(id, sv) {
+    sv.updated = Date.now();
+    try { localStorage.setItem(keyOf(id), JSON.stringify(sv)); } catch (e) {}
+    schedulePush(id);
+  }
+  const persist = () => writeSave(players.current, save);
+  const newId = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const nameOf = sv => sv.name || 'ソラ';
   const owned = (sv = save) => ITEMS.filter(it => (sv.inv[it.id] || 0) > 0).length;
   let lastGot = null;
@@ -1063,6 +1073,10 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <div class="actions">
         ${players.list.length < MAX_PLAYERS ? '<button class="btn primary" data-act="new">＋ あたらしい プレイヤー</button>' : `<p class="note">プレイヤーは ${MAX_PLAYERS}にん まで</p>`}
         <button class="btn" data-act="close">とじる</button>
+      </div>
+      <div class="cloud-box">
+        <p class="note">${cloudOn() ? `☁ Google スプレッドシートに つないで います。ほかの たんまつでも おなじ きろくで あそべるよ。` : '☁ たんまつが かわっても きろくを つづけたい ときは（おうちの かた）'}</p>
+        <button class="btn small" data-act="cloud">☁ ${cloudOn() ? 'つなぎかたの せってい' : 'スプレッドシートに つなぐ'}</button>
       </div>`;
     overlay.hidden = false;
   }
@@ -1077,7 +1091,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
           <button type="submit" class="btn primary" id="nameOk">けってい</button>
           ${back ? '<button type="button" class="btn" data-act="back">もどる</button>' : ''}
         </div>
-      </form>`;
+      </form>
+      ${!back && !isNew && !cloudOn() ? `<div class="cloud-box"><p class="note">ほかの たんまつで もう あそんで いる？</p>
+        <button class="btn small" data-act="cloud-from-name">☁ スプレッドシートに つないで つづきから あそぶ</button></div>` : ''}`;
     overlay.hidden = false;
     const input = document.getElementById('nameInput');
     setTimeout(() => input.focus(), 50);
@@ -1087,14 +1103,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       if (!nm) { document.getElementById('nameErr').hidden = false; return; }
       if (isNew) {
         players.list.push(id); persistPlayers();
-        try { localStorage.setItem(keyOf(id), JSON.stringify(Object.assign(loadSave(id), { name: nm }))); } catch (er) {}
+        writeSave(id, Object.assign(loadSave(id), { name: nm }));
         switchPlayer(id);
       } else if (id === players.current) {
         save.name = nm; persist(); renderHero(); closeOverlay();
         if (back) showPlayers();
       } else {
         const o = loadSave(id); o.name = nm;
-        try { localStorage.setItem(keyOf(id), JSON.stringify(o)); } catch (er) {}
+        writeSave(id, o);
         showPlayers();
       }
     };
@@ -1104,11 +1120,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     const id = b.dataset.id, act = b.dataset.act;
     if (act === 'play') switchPlayer(id);
     else if (act === 'rename') showNameForm(id, false, true);
-    else if (act === 'new') showNameForm('p' + Date.now().toString(36), true, true);
+    else if (act === 'new') showNameForm(newId(), true, true);
+    else if (act === 'cloud') showCloudForm();
+    else if (act === 'cloud-from-name') showCloudForm(true);
     else if (act === 'del') showPlayers(id);
     else if (act === 'del-no') showPlayers();
     else if (act === 'del-yes') {
       try { localStorage.removeItem(keyOf(id)); } catch (er) {}
+      pushDeleted(id);
       players.list = players.list.filter(x => x !== id);
       if (players.current === id) { switchPlayer(players.list[0]); showPlayers(); } else { persistPlayers(); showPlayers(); }
     }
@@ -1117,6 +1136,149 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   });
   document.getElementById('renameBtn').onclick = () => showNameForm(players.current, false, false);
   document.getElementById('playersBtn').onclick = () => showPlayers();
+
+  /* ---------- ☁ Google スプレッドシートに ほぞん（たんまつを こえて ひきつぐ） ---------- */
+  const CLOUD_URL = ''; // Apps Script の ウェブアプリ URL（あいことばは ここに かかない）
+  const CLOUD_KEY = 'block-sansu-cloud';
+  let cloud = { url: CLOUD_URL, key: '', linked: false, pending: [] };
+  try { const raw = localStorage.getItem(CLOUD_KEY); if (raw) cloud = Object.assign(cloud, JSON.parse(raw)); } catch (e) {}
+  if (!cloud.url) cloud.url = CLOUD_URL;
+  if (!Array.isArray(cloud.pending)) cloud.pending = [];
+  const saveCloud = () => { try { localStorage.setItem(CLOUD_KEY, JSON.stringify(cloud)); } catch (e) {} };
+  const cloudOn = () => !!(cloud.url && cloud.key);
+  let pushTimer = null, cloudState = '';
+  function setCloudState(t) {
+    cloudState = t;
+    const el = document.getElementById('cloudStatus');
+    if (!el) return;
+    el.hidden = !cloudOn();
+    el.textContent = { saving: '☁ スプレッドシートに ほぞん ちゅう…', saved: '☁ スプレッドシートに ほぞん したよ', offline: '☁ いまは つながらないので この たんまつに ほぞん（あとで おくるよ）', key: '☁ あいことばが ちがうみたい（おうちの かたへ）' }[t] || '☁ スプレッドシートに つないで います';
+  }
+  function schedulePush(id) {
+    if (!cloudOn()) return;
+    if (!cloud.pending.includes(id)) cloud.pending.push(id);
+    saveCloud();
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(flushPush, 1500);
+  }
+  function pushDeleted(id) {
+    if (!cloudOn()) return;
+    cloud.pending = cloud.pending.filter(x => x !== id).concat('-' + id);
+    saveCloud(); clearTimeout(pushTimer); pushTimer = setTimeout(flushPush, 300);
+  }
+  async function flushPush() {
+    if (!cloudOn() || !cloud.pending.length) return;
+    const ids = cloud.pending.slice();
+    const items = ids.map(x => x[0] === '-'
+      ? { id: x.slice(1), name: '', updated: Date.now(), data: '__deleted__' }
+      : (() => { const sv = loadSave(x); return { id: x, name: sv.name || '', updated: sv.updated || Date.now(), data: JSON.stringify(sv) }; })());
+    setCloudState('saving');
+    try {
+      const res = await fetch(cloud.url, { method: 'POST', body: JSON.stringify({ key: cloud.key, players: items }) });
+      const j = await res.json();
+      if (!j.ok) { setCloudState(j.error === 'key' ? 'key' : 'offline'); return; }
+      cloud.pending = cloud.pending.filter(x => !ids.includes(x)); saveCloud();
+      setCloudState('saved');
+    } catch (e) { setCloudState('offline'); }
+  }
+  const hasProgress = sv => (sv.built || 0) > 0 || Object.values(sv.mc || {}).some(n => n > 0);
+  function moveLocal(from, to) {
+    const sv = loadSave(from);
+    try { localStorage.setItem(keyOf(to), JSON.stringify(sv)); localStorage.removeItem(keyOf(from)); } catch (e) {}
+    players.list = players.list.map(x => x === from ? to : x);
+    if (players.current === from) players.current = to;
+  }
+  function removeLocal(id) {
+    try { localStorage.removeItem(keyOf(id)); } catch (e) {}
+    players.list = players.list.filter(x => x !== id);
+  }
+  // スプレッドシートの きろくと この たんまつの きろくを あわせる（あたらしい ほうを のこす）
+  async function pull() {
+    if (!cloudOn()) return false;
+    let j;
+    try {
+      const res = await fetch(cloud.url + (cloud.url.includes('?') ? '&' : '?') + 'action=list&key=' + encodeURIComponent(cloud.key));
+      j = await res.json();
+    } catch (e) { setCloudState('offline'); return false; }
+    if (!j.ok) { setCloudState(j.error === 'key' ? 'key' : 'offline'); return false; }
+    const before = players.current;
+    const remote = new Map((j.players || []).map(p => [p.id, p]));
+    if (!cloud.linked) {
+      // はじめて つなぐ たんまつ：id が かさなったら、あそんだ きろくが あれば べつの id に うつす。なければ スプレッドシートの ほうを つかう
+      players.list.slice().forEach(id => {
+        if (!remote.has(id)) return;
+        if (hasProgress(loadSave(id))) moveLocal(id, newId()); else removeLocal(id);
+      });
+      cloud.linked = true; saveCloud();
+    }
+    const toPush = [];
+    remote.forEach((r, id) => {
+      const has = players.list.includes(id);
+      if (r.data === '__deleted__') { if (has) removeLocal(id); return; }
+      if (!has) {
+        players.list.push(id);
+        try { localStorage.setItem(keyOf(id), r.data); } catch (e) {}
+        return;
+      }
+      const lv = loadSave(id);
+      if ((r.updated || 0) > (lv.updated || 0)) { try { localStorage.setItem(keyOf(id), r.data); } catch (e) {} }
+      else if ((lv.updated || 0) > (r.updated || 0)) toPush.push(id);
+    });
+    players.list.forEach(id => { if (!remote.has(id)) toPush.push(id); });
+    if (!players.list.length) { const id = newId(); players.list.push(id); writeSave(id, loadSave(id)); }
+    if (!players.list.includes(players.current)) players.current = players.list[0];
+    persistPlayers();
+    save = loadSave(players.current);
+    renderInv(); renderHero();
+    if (players.current !== before) start(st.mode);
+    if (view !== 'calc') showView(view);
+    toPush.forEach(id => { if (!cloud.pending.includes(id)) cloud.pending.push(id); });
+    saveCloud();
+    setCloudState('saved');
+    if (cloud.pending.length) await flushPush();
+    return true;
+  }
+  function showCloudForm(fromFirst) {
+    ob.innerHTML = `<h2>☁ スプレッドシートに つなぐ</h2>
+      <p class="note">おうちの かたへ：Google スプレッドシートに きろくを ほぞんすると、たんまつが かわっても つづきから あそべます。じゅんびの しかたは リポジトリの CLOUD-SETUP.md を みてください。</p>
+      <form id="cloudForm" class="nameform">
+        <label for="cloudUrl">ウェブアプリの URL</label>
+        <input id="cloudUrl" type="url" autocomplete="off" value="${esc(cloud.url || '')}" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:15px">
+        <label for="cloudKey">あいことば</label>
+        <input id="cloudKey" type="text" autocomplete="off" value="${esc(cloud.key || '')}" style="font-size:20px">
+        <p class="note" id="cloudMsg" aria-live="polite"></p>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="cloudOk">つなぐ</button>
+          ${cloudOn() ? '<button type="button" class="btn" id="cloudOff">つなぐのを やめる</button>' : ''}
+          <button type="button" class="btn" id="cloudBack">もどる</button>
+        </div>
+      </form>`;
+    overlay.hidden = false;
+    const msg = document.getElementById('cloudMsg');
+    document.getElementById('cloudBack').onclick = () => fromFirst ? showNameForm(players.current, false, false) : showPlayers();
+    const off = document.getElementById('cloudOff');
+    if (off) off.onclick = () => { cloud.key = ''; cloud.linked = false; cloud.pending = []; saveCloud(); setCloudState(''); showPlayers(); };
+    document.getElementById('cloudForm').onsubmit = async e => {
+      e.preventDefault();
+      const url = document.getElementById('cloudUrl').value.trim();
+      const key = document.getElementById('cloudKey').value.trim();
+      if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)) { msg.textContent = 'URL は https://script.google.com/ から はじまるものを いれてください。'; return; }
+      if (!key) { msg.textContent = 'あいことばを いれてください。'; return; }
+      msg.textContent = 'たしかめて います…';
+      try {
+        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=ping&key=' + encodeURIComponent(key));
+        const j = await res.json();
+        if (!j.ok) { msg.textContent = j.error === 'key' ? 'あいことばが ちがいます。Apps Script の AIKOTOBA と おなじに してください。' : 'つなげませんでした。'; return; }
+      } catch (er) { msg.textContent = 'つなげませんでした。URL と、デプロイの「アクセスできるユーザー：全員」を たしかめてください。'; return; }
+      if (cloud.url !== url) cloud.linked = false;
+      cloud.url = url; cloud.key = key; saveCloud();
+      msg.textContent = 'つながりました。きろくを あわせて います…';
+      const ok = await pull();
+      if (ok) showPlayers(); else msg.textContent = 'きろくを よみこめませんでした。もういちど ためしてください。';
+    };
+  }
+  window.addEventListener('online', () => { pull(); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pull(); });
 
   let view = 'calc';
   function showView(v) {
@@ -1154,6 +1316,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   renderInv();
   renderHero();
   start('add10');
+  setCloudState('');
+  if (cloudOn()) pull();
   if (firstRun) showNameForm('p1', false, false);
 })();
 </script>
