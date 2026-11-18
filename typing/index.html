@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#30343a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="まなびランド">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>タイピング たんけん</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=M+PLUS+Rounded+1c:wght@700;800&display=swap">
+<style>
+/* Layout: さんすうと おなじ せかい。うえに なまえ、あそびの えらび（アイス／フルーツ）と レベル、まんなかに ゲームの ばめん、したに がめんの キーボード。 */
+:root {
+  --sky-top: #7cc6f2;
+  --sky-bot: #cdeefc;
+  --panel: #30343a;
+  --panel-edge: #17191c;
+  --panel-hi: #4b5058;
+  --slot: #22252a;
+  --fg: #f3f1e6;
+  --muted: #b9bcb3;
+  --yellow: #ffd23f;
+  --green: #6ccf4a;
+  --red: #ff6b5b;
+  --blue: #63b0ff;
+  --pink: #ff8fb8;
+  --card: #fffaf0;
+  --card-ink: #2a2a33;
+  --key: #6b7078;
+  --key-hi: #8d929a;
+  --key-lo: #45494f;
+  /* ゆびの いろ */
+  --f-pinky: #ff9ec4;
+  --f-ring: #ffd23f;
+  --f-middle: #8fe3c4;
+  --f-index: #9fc8ff;
+  --f-thumb: #d8c8ff;
+  --text: "Klee One", "UD デジタル 教科書体 N-R", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  --num: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+body {
+  background: linear-gradient(var(--sky-top), var(--sky-bot) 520px, var(--sky-bot));
+  background-color: var(--sky-bot);
+  color: var(--fg); font-family: var(--text); font-weight: 600; font-size: 17px; line-height: 1.75;
+}
+.wrap {
+  max-width: 820px; margin: 0 auto; padding-block: 18px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 14px;
+}
+h1 {
+  font-family: var(--num); font-weight: 800; margin: 0; line-height: 1.2; text-align: center;
+  font-size: clamp(30px, 8vw, 46px); color: var(--fg); word-break: keep-all; text-wrap: balance;
+  text-shadow: 3px 3px 0 #2b2f35, -2px -2px 0 #2b2f35, 2px -2px 0 #2b2f35, -2px 2px 0 #2b2f35;
+}
+h1 small { display: block; font-size: .42em; color: #24323c; text-shadow: none; letter-spacing: .08em; margin-top: 4px; }
+h2 { font-family: var(--num); font-weight: 800; font-size: 21px; margin: 0; color: var(--yellow); }
+.panel {
+  background: var(--panel); border: 4px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--panel-hi), inset -3px -3px 0 var(--panel-edge);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.note { margin: 0; color: var(--muted); font-size: 15px; }
+.back-top {
+  align-self: flex-start; font-family: var(--num); font-weight: 800; font-size: 16px; color: var(--fg); text-decoration: none;
+  background: var(--key); border: 3px solid var(--panel-edge); padding: 6px 14px;
+  box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.btn, .tabs button, .lv button {
+  font-family: var(--num); font-weight: 800; color: var(--fg); cursor: pointer;
+  background: var(--key); border: 3px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.btn { font-size: 18px; padding: 10px 18px; }
+.btn.primary, .tabs button[aria-pressed="true"], .lv button[aria-pressed="true"] { background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+button:disabled { opacity: .4; cursor: default; }
+.me { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; }
+.me .name { font-family: var(--num); font-weight: 800; font-size: 22px; color: var(--yellow); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tabs button { font-size: 18px; padding: 12px 6px; }
+.lv { display: flex; flex-wrap: wrap; gap: 4px; }
+.lv button { font-size: 14px; padding: 4px 9px; min-width: 38px; }
+.lvname { font-family: var(--num); font-weight: 800; font-size: 18px; }
+.hud { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 14px; font-family: var(--num); font-weight: 700; font-size: 15px; color: var(--muted); }
+.hud b { color: var(--yellow); }
+.warn { margin: 0; padding: 6px 10px; background: #5a2a3c; color: #fff; font-size: 15px; border: 2px solid var(--pink); }
+
+/* ゲームの ばめん */
+.stage { position: relative; height: 330px; overflow: hidden; border: 3px solid var(--panel-edge); user-select: none; }
+.stage.ice { background: linear-gradient(#ffe3ef, #fff6d8 70%, #f4d9a8 70%, #e9c48a); }
+.stage.fruit { background: linear-gradient(#7cc6f2, #cdeefc 72%, #7cc95a 72%, #4e9a2f); }
+.target {
+  position: absolute; left: 50%; transform: translateX(-50%); top: 14px; text-align: center; z-index: 3;
+  background: rgba(255, 250, 240, .95); color: var(--card-ink); border: 3px solid var(--panel-edge); padding: 4px 16px; min-width: 120px;
+}
+.target .kana { font-family: var(--text); font-size: clamp(26px, 8vw, 44px); line-height: 1.2; letter-spacing: .06em; white-space: nowrap; }
+.target { max-width: 94%; }
+.target .roma { font-family: var(--num); font-weight: 800; font-size: 20px; letter-spacing: .06em; color: #9aa0a8; }
+.target .roma .done { color: #2f8f5b; }
+.target .roma .next { color: #c43c30; text-decoration: underline; }
+.target.shake { animation: shake .3s steps(3); }
+@keyframes shake { 33% { transform: translateX(calc(-50% - 6px)); } 66% { transform: translateX(calc(-50% + 6px)); } }
+/* アイス */
+.tower { position: absolute; left: 50%; bottom: 0; width: 120px; margin-left: -60px; height: 100%; }
+.cone { position: absolute; left: 50%; bottom: 8px; width: 0; height: 0; margin-left: -34px; border-left: 34px solid transparent; border-right: 34px solid transparent; border-top: 78px solid #d9a066; }
+.cone::after { content: ""; position: absolute; left: -22px; top: -70px; width: 44px; height: 60px; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(138, 90, 54, .45) 8px 10px), repeating-linear-gradient(-45deg, transparent 0 8px, rgba(138, 90, 54, .45) 8px 10px); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.scoop { position: absolute; left: 50%; width: 76px; height: 46px; margin-left: -38px; border-radius: 50% 50% 42% 42%; border: 3px solid rgba(0, 0, 0, .25); }
+.scoop::after { content: ""; position: absolute; left: 14px; top: 8px; width: 14px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .6); }
+.scoop.drop { animation: drop .45s steps(6); }
+@keyframes drop { from { transform: translateY(-120px); } to { transform: none; } }
+.tower.wobble { animation: wob .4s steps(4); }
+@keyframes wob { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+.count { position: absolute; right: 10px; bottom: 10px; font-family: var(--num); font-weight: 800; font-size: 22px; color: #6b3d22; }
+/* フルーツ */
+.fruitbox { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+.fruitbox .fe { font-size: 40px; line-height: 1; }
+.fruitbox .ft { background: rgba(255, 250, 240, .95); color: var(--card-ink); border: 2px solid var(--panel-edge); padding: 0 6px; font-family: var(--text); font-size: 20px; white-space: nowrap; }
+.fruitbox .ft .done { color: #2f8f5b; }
+.fruitbox.active .ft { border-color: #c43c30; box-shadow: 0 0 0 2px var(--yellow); }
+.fruitbox.caught { transition: transform .35s steps(5), opacity .35s steps(5); opacity: 0; }
+.fruitbox.splat .fe { filter: grayscale(.6) brightness(.7); transform: scaleY(.5); }
+.catcher { position: absolute; bottom: 4px; z-index: 3; transition: left .25s steps(5); display: flex; flex-direction: column; align-items: center; }
+.catcher img { width: 42px; height: 56px; image-rendering: pixelated; }
+.catcher .basket { font-size: 30px; line-height: 1; margin-top: -10px; }
+.pop { position: absolute; z-index: 4; font-family: var(--num); font-weight: 800; font-size: 20px; color: #fff; text-shadow: 2px 2px 0 #000; pointer-events: none; animation: pop 1s steps(8) forwards; }
+@keyframes pop { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-40px); opacity: 0; } }
+
+/* キーボード */
+.kb { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.kb .row { display: flex; gap: 4px; }
+.kb .row:nth-child(2) { margin-left: 18px; }
+.kb .row:nth-child(3) { margin-left: 30px; }
+.kb .row:nth-child(4) { margin-left: 48px; }
+.kb button {
+  width: clamp(26px, 7.4vw, 46px); height: clamp(34px, 9vw, 46px); font-family: var(--num); font-weight: 800; font-size: clamp(13px, 3.6vw, 18px);
+  color: var(--card-ink); border: 2px solid var(--panel-edge); cursor: pointer; position: relative; padding: 0;
+}
+.kb button.f-pinky { background: var(--f-pinky); } .kb button.f-ring { background: var(--f-ring); }
+.kb button.f-middle { background: var(--f-middle); } .kb button.f-index { background: var(--f-index); }
+.kb button.home::after { content: ""; position: absolute; left: 35%; right: 35%; bottom: 4px; height: 2px; background: var(--card-ink); }
+.kb button.next { outline: 4px solid #c43c30; outline-offset: -1px; transform: translateY(-2px); box-shadow: 0 0 10px #c43c30; }
+.kb button.hit { filter: brightness(.8); }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; margin-right: 4px; border: 1px solid #000; vertical-align: -1px; }
+
+.result { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.result .big { font-family: var(--num); font-weight: 800; font-size: 30px; color: var(--yellow); margin: 0; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+.parents { background: rgba(255,255,255,.85); border: 3px solid #24323c; padding: 14px 18px; color: #24323c; font-size: 15px; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.75; }
+.parents summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.parents summary::-webkit-details-marker { display: none; }
+.parents summary::before { content: "▶"; font-size: 13px; }
+.parents[open] summary::before { content: "▼"; }
+.parents h2 { color: #24323c; font-size: 17px; }
+.parents p { margin: 8px 0 0; max-width: 65ch; }
+@media (max-width: 460px) {
+  .panel { padding: 12px 10px; }
+  .stage { height: 300px; }
+  .kb .row:nth-child(2) { margin-left: 10px; } .kb .row:nth-child(3) { margin-left: 18px; } .kb .row:nth-child(4) { margin-left: 28px; }
+  .kb .row { gap: 3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scoop.drop, .tower.wobble, .target.shake, .pop { animation: none; }
+  .catcher { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back-top" href="../" id="backTop">◀ トップへ もどる</a>
+  <h1>タイピング たんけん<small>キーボードで もじを うって レベルアップ！</small></h1>
+
+  <section class="panel">
+    <div class="me">
+      <div><span class="note">あそぶ ひと：</span><span class="name" id="meName"></span></div>
+      <div class="note" id="meLv"></div>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" aria-label="あそびの しゅるい">
+    <button id="t-ice" data-game="ice" aria-pressed="true">🍦 アイス タイピング</button>
+    <button id="t-fruit" data-game="fruit" aria-pressed="false">🍎 フルーツ タイピング</button>
+  </nav>
+
+  <main class="panel" id="card"></main>
+
+  <section class="panel">
+    <div class="kb" id="kb" aria-label="がめんの キーボード"></div>
+    <div class="legend"><span><i style="background:var(--f-pinky)"></i>こゆび</span><span><i style="background:var(--f-ring)"></i>くすりゆび</span><span><i style="background:var(--f-middle)"></i>なかゆび</span><span><i style="background:var(--f-index)"></i>ひとさしゆび</span><span>f と j の ぼうが「ホームポジション」</span></div>
+  </section>
+
+  <details class="parents">
+    <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
+    <p>キーボードで文字を打つ練習です。「🍦 アイス タイピング」は、正しく打つたびにアイスが1段ずつ積み上がります。「🍎 フルーツ タイピング」は、落ちてくるフルーツの文字を打って、カゴでキャッチします。どちらも1ステージ20こで、ステージをクリアするとレベルが上がります（ホームポジション → 上の段 → 下の段 → 全部の文字 → ローマ字のひらがな1文字 → 2文字・3文字・長い言葉 → スピードアップ）。アイスは正しく打てた割合が8割以上、フルーツは15こ以上キャッチでクリアです。クリアしたレベルまでは、いつでも選び直せます。</p>
+    <p>ローマ字は「し＝si／shi」「ち＝ti／chi」「つ＝tu／tsu」「ふ＝hu／fu」「じ＝zi／ji」「ん＝nn」など、よく使う打ち方はどれでも正解になります。画面のキーボードは、次に押すキーが赤く光り、どの指で押すかを色で示します（キーボードのないタブレットでは、画面のキーボードを押して遊べます）。パソコンで日本語入力（かな入力）がオンになっていると打てないので、「英数」に切りかえてください。</p>
+    <p>1こ打てるごとに、算数・ひらがなと共通の「けんちく」のブロックが1こ増えます。ステージをクリアすると、主人公の武器の種類も増えていきます。記録はプレイヤーごとに自動で保存されます。</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+
+  /* ---------- プレイヤーと ほぞん（さんすう・ひらがなと きょうつう） ---------- */
+  const PLAYERS_KEY = 'block-sansu-players';
+  const keyOf = id => id === 'p1' ? 'block-sansu-v1' : 'block-sansu-v1-' + id;
+  let players = null;
+  try { players = JSON.parse(localStorage.getItem(PLAYERS_KEY) || 'null'); } catch (e) {}
+  if (!players || !Array.isArray(players.list) || !players.list.length) players = { list: ['p1'], current: 'p1' };
+  if (!players.list.includes(players.current)) players.current = players.list[0];
+  try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (e) {}
+  const pid = players.current;
+  function loadSave() {
+    let sv = {};
+    try { sv = JSON.parse(localStorage.getItem(keyOf(pid)) || '{}') || {}; } catch (e) {}
+    if (!sv.typing || typeof sv.typing !== 'object') sv.typing = {};
+    return sv;
+  }
+  let save = loadSave();
+  const nameOf = () => save.name || 'ソラ';
+  let cloud = null;
+  try { cloud = JSON.parse(localStorage.getItem('block-sansu-cloud') || 'null'); } catch (e) {}
+  const cloudOn = () => !!(cloud && cloud.url && cloud.key);
+  let pushTimer = null;
+  function persist() {
+    save.updated = Date.now();
+    try { localStorage.setItem(keyOf(pid), JSON.stringify(save)); } catch (e) {}
+    if (!cloudOn()) return;
+    if (!Array.isArray(cloud.pending)) cloud.pending = [];
+    if (!cloud.pending.includes(pid)) cloud.pending.push(pid);
+    try { localStorage.setItem('block-sansu-cloud', JSON.stringify(cloud)); } catch (e) {}
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(async () => {
+      try {
+        const res = await fetch(cloud.url, { method: 'POST', body: JSON.stringify({ key: cloud.key, players: [{ id: pid, name: save.name || '', updated: save.updated, data: JSON.stringify(save) }] }) });
+        const j = await res.json();
+        if (j.ok) { cloud.pending = cloud.pending.filter(x => x !== pid); try { localStorage.setItem('block-sansu-cloud', JSON.stringify(cloud)); } catch (e) {} }
+      } catch (e) {}
+    }, 1500);
+  }
+  async function pullMe() {
+    if (!cloudOn()) return;
+    try {
+      const res = await fetch(cloud.url + (cloud.url.includes('?') ? '&' : '?') + 'action=list&key=' + encodeURIComponent(cloud.key));
+      const j = await res.json();
+      if (!j.ok) return;
+      const r = (j.players || []).find(p => p.id === pid);
+      if (r && r.data !== '__deleted__' && (r.updated || 0) > (save.updated || 0)) {
+        try { localStorage.setItem(keyOf(pid), r.data); } catch (e) {}
+        save = loadSave(); renderMe(); if (!g.running) renderIdle();
+      } else if (r && (save.updated || 0) > (r.updated || 0)) persist();
+    } catch (e) {}
+  }
+
+  /* @@HERO-SHARED-START しゅじんこう・そうび・きせかえ（さんすう と ひらがな で おなじ。さんすうで かえたら ひらがなにも コピーする） */
+  // そうびの シリーズ：どの もんだいも 1つめ（6こ）が そろうと 2つめの シリーズが はじまる。むずかしい もんだいほど つよい
+  const GEAR = [
+    { mode: 'add10', label: 'たしざん 10まで', series: 'はっぱ', pal: { x: '#7cc95a', h: '#c4f0a6', d: '#3f7f2c' } },
+    { mode: 'sub10', label: 'ひきざん 10まで', series: 'くも', pal: { x: '#e6edf5', h: '#ffffff', d: '#9aa9bb' } },
+    { mode: 'addC', label: 'くりあがり', series: 'そら', pal: { x: '#4f9bea', h: '#b5dcff', d: '#2a5f9e' } },
+    { mode: 'mix', label: 'まぜこぜ', series: 'たいよう', pal: { x: '#ff9d2e', h: '#ffd88a', d: '#b8611a' } },
+    { mode: 'cherry', label: 'さくらんぼ', series: 'さくら', pal: { x: '#ff8fb8', h: '#ffd3e4', d: '#c24f7d' } },
+    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } },
+    { mode: 'add10', tier: 2, label: 'たしざん 10まで', series: 'ほのお', pal: { x: '#ff6a3d', h: '#ffd08a', d: '#a8321a' } },
+    { mode: 'sub10', tier: 2, label: 'ひきざん 10まで', series: 'こおり', pal: { x: '#9fe3ff', h: '#ffffff', d: '#4a9fcf' } },
+    { mode: 'addC', tier: 2, label: 'くりあがり', series: 'かみなり', pal: { x: '#ffe14d', h: '#fff7c2', d: '#b89a12' } },
+    { mode: 'mix', tier: 2, label: 'まぜこぜ', series: 'ほしぞら', pal: { x: '#2b3a8f', h: '#ffd23f', d: '#151d4f' } },
+    { mode: 'cherry', tier: 2, label: 'さくらんぼ', series: 'はなかんむり', pal: { x: '#ff7eb6', h: '#fff0f6', d: '#3f9a4a' } },
+    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } }
+  ];
+  const PIECES = ['ぶき', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
+  GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
+  const SLOT_LABELS = ['ぶき', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
+  const PER = 3; // 3もん せいかいで そうびが 1こ
+  const gearCount = (ti, sv = save) => {
+    const n = Math.floor(((sv.mc || {})[GEAR[ti].mode] || 0) / PER);
+    return GEAR[ti].tier === 2 ? Math.min(6, Math.max(0, n - 6)) : Math.min(6, n);
+  };
+  const autoBest = (sv = save) => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti, sv) > j) best = ti; }); return best; });
+  // ぶきの しゅるい（ステージを クリアした かずで ふえる。さんすう＋ひらがな＋ドラゴン）
+  const WEAPONS = [
+    { id: 'sword', n: 'けん', need: 0, s: ['......hx', '.....hxd', '....hxd.', '...hxd..', 'd.hxd...', '.dxd....', '.kd.....', 'k.......'] },
+    { id: 'staff', n: 'つえ', need: 1, s: ['.....hh.', '....hxxh', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......'] },
+    { id: 'bow', n: 'ゆみ', need: 2, s: ['...xx...', '..x..k..', '.x...k..', '.x...k..', '.x...k..', '..x..k..', '...xx...', '........'] },
+    { id: 'axe', n: 'おの', need: 3, s: ['.xxx....', 'xhxxk...', 'xxxxk...', '.xx.k...', '....k...', '....k...', '....k...', '....k...'] },
+    { id: 'hammer', n: 'ハンマー', need: 5, s: ['xxxxxx..', 'xhhhhx..', 'xxxxxx..', '..k.....', '..k.....', '..k.....', '..k.....', '..k.....'] },
+    { id: 'spear', n: 'やり', need: 7, s: ['......hx', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......', '........'] }
+  ];
+  // こもの（ずかんの かずで ふえる）
+  const ACCS = [
+    { id: 'cape', n: 'マント', need: 10 },
+    { id: 'bag', n: 'リュック', need: 20 },
+    { id: 'glasses', n: 'めがね', need: 30 },
+    { id: 'crownAcc', n: 'おうかんの かざり', need: 'crown' }
+  ];
+  const PETS = [
+    { id: 'dog', n: 'いぬ', need: 40, s: ['......k.', 'b....bbb', 'bb..bbbb', '.bbbbbb.', '.bbbbbb.', '.b.bb.b.', '.b.bb.b.', '........'], p: { b: '#a0662f', k: '#22252a' } },
+    { id: 'cat', n: 'ねこ', need: 55, s: ['.g...g..', '.gg.gg..', '.ggggg..', '.gwgwg..', '.ggggg.g', '..ggg..g', '.ggggggg', '.g.g.g..'], p: { g: '#9aa3ad', w: '#22252a' } },
+    { id: 'bird', n: 'ことり', need: 70, s: ['........', '..yyy...', '.ykyyo..', '.yyyyy..', 'yyyyy...', '.yyy....', '..o.o...', '........'], p: { y: '#ffd23f', k: '#22252a', o: '#ff9d2e' } }
+  ];
+  const HAIRS = [{ id: 'short', n: 'みじかい' }, { id: 'long', n: 'ながい' }, { id: 'spiky', n: 'ツンツン' }, { id: 'pony', n: 'ポニーテール' }];
+  const HAIR_COLORS = ['#4a2f1d', '#1d1d22', '#d9a43a', '#c8443a', '#7a5fd6'];
+  const stageClears = (sv = save) => (sv.stageNo || 0) + (sv.hiraStage || 0) + (sv.dragonWins || 0) + (sv.typeClears || 0);
+  const itemCount = (sv = save) => Object.keys(sv.inv || {}).filter(k => sv.inv[k] > 0 && k !== 'red' && k !== 'blue').length;
+  const unlockedW = (w, sv = save) => stageClears(sv) >= w.need;
+  const unlockedA = (a, sv = save) => a.need === 'crown' ? ((sv.inv || {}).crown || 0) > 0 : itemCount(sv) >= a.need;
+  function outfitOf(sv = save) {
+    const o = Object.assign({ slots: [null, null, null, null, null, null], weapon: 'sword', hair: 'short', hairColor: 0, cape: false, bag: false, glasses: false, crownAcc: false, pet: null }, sv.outfit || {});
+    if (!Array.isArray(o.slots) || o.slots.length !== 6) o.slots = [null, null, null, null, null, null];
+    return o;
+  }
+  // きている そうび（じぶんで えらんだ もの → なければ いちばん つよい もの）
+  const equipped = (sv = save) => {
+    const a = autoBest(sv), o = outfitOf(sv);
+    return a.map((v, j) => { const c = o.slots[j]; if (c === null || c === undefined) return v; if (c === -1) return -1; return GEAR[c] && gearCount(c, sv) > j ? c : v; });
+  };
+  function drawHero(eq, sv = save) {
+    const o = outfitOf(sv);
+    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
+    const g = c.getContext('2d');
+    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
+    const skin = '#f2c9a0', hair = HAIR_COLORS[o.hairColor] || HAIR_COLORS[0], shirt = '#e9574f', shorts = '#3a6fd4';
+    const acc = id => o[id] && unlockedA(ACCS.find(a => a.id === id), sv);
+    if (acc('cape')) { R(3, 8, 10, 13, '#c8443a'); R(3, 8, 10, 1, '#8f2a22'); }
+    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
+    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
+    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
+    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
+    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
+    if (o.hair === 'long') { R(3, 2, 1, 8, hair); R(12, 2, 1, 8, hair); }
+    if (o.hair === 'pony') { R(12, 2, 2, 2, hair); R(13, 4, 1, 5, hair); }
+    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
+    if (o.hair === 'spiky') { R(3, 0, 1, 2, hair); R(12, 0, 1, 2, hair); R(8, 2, 3, 1, hair); }
+    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
+    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
+    if (acc('glasses')) { R(5, 4, 2, 2, '#22252a'); R(8, 4, 2, 2, '#22252a'); R(7, 4, 1, 1, '#22252a'); R(5, 4, 1, 1, '#9fd8f5'); R(8, 4, 1, 1, '#9fd8f5'); }
+    const P = ti => GEAR[ti].pal;
+    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
+    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
+    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
+    if (acc('bag')) { R(12, 9, 2, 6, '#8a5a2f'); R(12, 9, 2, 1, '#5e3b1c'); }
+    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
+    if (acc('crownAcc')) { R(5, 0, 6, 2, '#f2c230'); R(7, 0, 2, 1, '#e0245e'); }
+    if (eq[0] >= 0) {
+      const p = P(eq[0]), k = '#4a2f1d';
+      const w = (WEAPONS.find(x => x.id === o.weapon && unlockedW(x, sv)) || WEAPONS[0]).id;
+      if (w === 'sword') { R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, k); }
+      if (w === 'staff') { R(1, 5, 1, 13, k); R(-1, 2, 3, 3, p.x); R(-1, 2, 1, 1, p.h); }
+      if (w === 'bow') { R(-1, 4, 1, 10, p.x); R(0, 3, 1, 1, p.x); R(0, 14, 1, 1, p.x); R(1, 4, 1, 10, '#eeeeee'); }
+      if (w === 'axe') { R(1, 4, 1, 14, k); R(-2, 4, 3, 4, p.x); R(-2, 4, 1, 4, p.h); }
+      if (w === 'hammer') { R(1, 5, 1, 13, k); R(-1, 2, 5, 3, p.x); R(-1, 2, 5, 1, p.h); }
+      if (w === 'spear') { R(1, 2, 1, 16, k); R(0, 0, 3, 2, p.x); R(1, 0, 1, 1, p.h); }
+    }
+    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
+    return c.toDataURL();
+  }
+  const petCache = {};
+  function petURL(id) {
+    if (petCache[id]) return petCache[id];
+    const pt = PETS.find(p => p.id === id); if (!pt) return '';
+    const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d');
+    pt.s.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.' && pt.p[ch]) { g.fillStyle = pt.p[ch]; g.fillRect(x, y, 1, 1); } }));
+    return (petCache[id] = c.toDataURL());
+  }
+  function petHTML(sv = save) {
+    const o = outfitOf(sv), pt = PETS.find(p => p.id === o.pet);
+    return pt && unlockedA(pt, sv) ? `<img class="pet" src="${petURL(pt.id)}" alt="${pt.n}">` : '';
+  }
+  /* @@HERO-SHARED-END */
+
+  /* ---------- ローマじ（いろいろな うちかたを みとめる） ---------- */
+  const ROMA = {
+    'あ': ['a'], 'い': ['i'], 'う': ['u'], 'え': ['e'], 'お': ['o'],
+    'か': ['ka'], 'き': ['ki'], 'く': ['ku'], 'け': ['ke'], 'こ': ['ko'],
+    'さ': ['sa'], 'し': ['si', 'shi'], 'す': ['su'], 'せ': ['se'], 'そ': ['so'],
+    'た': ['ta'], 'ち': ['ti', 'chi'], 'つ': ['tu', 'tsu'], 'て': ['te'], 'と': ['to'],
+    'な': ['na'], 'に': ['ni'], 'ぬ': ['nu'], 'ね': ['ne'], 'の': ['no'],
+    'は': ['ha'], 'ひ': ['hi'], 'ふ': ['hu', 'fu'], 'へ': ['he'], 'ほ': ['ho'],
+    'ま': ['ma'], 'み': ['mi'], 'む': ['mu'], 'め': ['me'], 'も': ['mo'],
+    'や': ['ya'], 'ゆ': ['yu'], 'よ': ['yo'],
+    'ら': ['ra'], 'り': ['ri'], 'る': ['ru'], 'れ': ['re'], 'ろ': ['ro'],
+    'わ': ['wa'], 'を': ['wo'],
+    'が': ['ga'], 'ぎ': ['gi'], 'ぐ': ['gu'], 'げ': ['ge'], 'ご': ['go'],
+    'ざ': ['za'], 'じ': ['zi', 'ji'], 'ず': ['zu'], 'ぜ': ['ze'], 'ぞ': ['zo'],
+    'だ': ['da'], 'ぢ': ['di'], 'づ': ['du'], 'で': ['de'], 'ど': ['do'],
+    'ば': ['ba'], 'び': ['bi'], 'ぶ': ['bu'], 'べ': ['be'], 'ぼ': ['bo'],
+    'ぱ': ['pa'], 'ぴ': ['pi'], 'ぷ': ['pu'], 'ぺ': ['pe'], 'ぽ': ['po'],
+    'きゃ': ['kya'], 'きゅ': ['kyu'], 'きょ': ['kyo'], 'ぎゃ': ['gya'], 'ぎゅ': ['gyu'], 'ぎょ': ['gyo'],
+    'しゃ': ['sya', 'sha'], 'しゅ': ['syu', 'shu'], 'しょ': ['syo', 'sho'], 'じゃ': ['zya', 'ja', 'jya'], 'じゅ': ['zyu', 'ju', 'jyu'], 'じょ': ['zyo', 'jo', 'jyo'],
+    'ちゃ': ['tya', 'cha', 'cya'], 'ちゅ': ['tyu', 'chu', 'cyu'], 'ちょ': ['tyo', 'cho', 'cyo'],
+    'にゃ': ['nya'], 'にゅ': ['nyu'], 'にょ': ['nyo'], 'ひゃ': ['hya'], 'ひゅ': ['hyu'], 'ひょ': ['hyo'],
+    'みゃ': ['mya'], 'みゅ': ['myu'], 'みょ': ['myo'], 'りゃ': ['rya'], 'りゅ': ['ryu'], 'りょ': ['ryo'],
+    'びゃ': ['bya'], 'びゅ': ['byu'], 'びょ': ['byo'], 'ぴゃ': ['pya'], 'ぴゅ': ['pyu'], 'ぴょ': ['pyo'],
+    'ー': ['-']
+  };
+  function makeUnits(text, latin) {
+    if (latin) return [...text].map(ch => ({ kana: ch, alts: [ch] }));
+    const out = [];
+    for (let i = 0; i < text.length; i++) {
+      const two = text.slice(i, i + 2);
+      if (ROMA[two] && /[ゃゅょ]/.test(text[i + 1])) { out.push({ kana: two, alts: ROMA[two] }); i++; continue; }
+      const ch = text[i];
+      if (ch === 'っ') { out.push({ kana: ch, type: 'tsu' }); continue; }
+      if (ch === 'ん') { out.push({ kana: ch, type: 'n' }); continue; }
+      out.push({ kana: ch, alts: ROMA[ch] || [ch] });
+    }
+    return out;
+  }
+  function altsAt(units, i) {
+    const u = units[i];
+    if (u.alts) return u.alts;
+    const nx = units[i + 1];
+    const nxAlts = nx ? altsAt(units, i + 1) : [];
+    if (u.type === 'tsu') {
+      const firsts = [...new Set(nxAlts.map(a => a[0]).filter(c => !/[aiueon]/.test(c)))];
+      return firsts.concat(['xtu', 'ltu']);
+    }
+    // ん：つぎが なければ nn。つぎが ぼいん・や行・な行 で ない ときは n ひとつでも よい
+    const one = nx && nxAlts.every(a => !/^[aiueoyn]/.test(a));
+    return one ? ['nn', 'n'] : ['nn'];
+  }
+  function Matcher(text, latin) {
+    const units = makeUnits(text, latin);
+    const m = { text, units, i: 0, buf: '', typedRoma: '' };
+    m.done = () => m.i >= units.length;
+    m.next = () => { if (m.done()) return ''; const a = altsAt(units, m.i).find(x => x.startsWith(m.buf)) || ''; return a[m.buf.length] || ''; };
+    m.guide = () => {
+      // ひょうじ：うった ぶん＋のこり
+      let rest = '';
+      for (let k = m.i; k < units.length; k++) {
+        const a = altsAt(units, k);
+        rest += k === m.i ? ((a.find(x => x.startsWith(m.buf)) || a[0]).slice(m.buf.length)) : a[0];
+      }
+      return { done: m.typedRoma, rest };
+    };
+    m.kanaDone = () => units.slice(0, m.i).map(u => u.kana).join('');
+    m.key = ch => {
+      if (m.done()) return 'ng';
+      const alts = altsAt(units, m.i), cand = m.buf + ch;
+      if (alts.some(a => a.startsWith(cand))) {
+        m.buf = cand; m.typedRoma += ch;
+        if (alts.includes(m.buf) && !alts.some(a => a.length > m.buf.length && a.startsWith(m.buf))) { m.i++; m.buf = ''; }
+        return 'ok';
+      }
+      if (alts.includes(m.buf)) { m.i++; m.buf = ''; return m.key(ch); }
+      return 'ng';
+    };
+    return m;
+  }
+
+  /* ---------- レベル ---------- */
+  const W2 = ['ねこ', 'いぬ', 'うし', 'うま', 'かめ', 'かに', 'たこ', 'さる', 'とり', 'あり', 'はち', 'くま', 'やま', 'つき', 'ほし', 'くも', 'かさ', 'にじ', 'ふね', 'ほん', 'いえ', 'くつ', 'かぎ', 'すし', 'もも', 'なす', 'あめ', 'ゆき', 'みみ', 'りす', 'はな', 'そら'];
+  const W3 = ['りんご', 'いちご', 'みかん', 'すいか', 'さかな', 'うさぎ', 'きりん', 'くじら', 'かえる', 'ひよこ', 'ぶどう', 'たまご', 'きのこ', 'はさみ', 'とけい', 'めがね', 'ぼうし', 'くるま', 'つくえ', 'えほん', 'たいこ', 'おばけ', 'ねずみ', 'ひつじ'];
+  const W4 = ['ひまわり', 'おにぎり', 'にんじん', 'ふうせん', 'えんぴつ', 'ろうそく', 'でんしゃ', 'きゅうり', 'じてんしゃ', 'ちょうちょ', 'がっこう', 'きって', 'らっぱ', 'しゃしん', 'おちゃ', 'きんぎょ', 'こうえん', 'としょかん'];
+  const KANA_BASIC = Object.keys(ROMA).filter(k => k.length === 1 && k !== 'ー' && !/[がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽぢづをわ]/.test(k));
+  const LEVELS = [
+    { n: 'ホームポジション（f と j）', latin: 'fj' },
+    { n: 'ホームポジション（d f j k）', latin: 'dfjk' },
+    { n: 'ホームポジション（a s d f j k l ;）', latin: 'asdfjkl;' },
+    { n: 'うえの だん', latin: 'qwertyuiopasdfjkl' },
+    { n: 'したの だん', latin: 'zxcvbnmasdfjkl' },
+    { n: 'ぜんぶの アルファベット', latin: 'abcdefghijklmnopqrstuvwxyz' },
+    { n: 'ローマじ：あいうえお', kana: ['あ', 'い', 'う', 'え', 'お'] },
+    { n: 'ローマじ：か〜は ぎょう', kana: 'かきくけこさしすせそたちつてとなにぬねのはひふへほ'.split('') },
+    { n: 'ローマじ：ひらがな 1もじ', kana: KANA_BASIC },
+    { n: '2もじの ことば', words: W2 },
+    { n: '3もじの ことば', words: W3 },
+    { n: 'ながい ことば（きゃ・っ・ん）', words: W4 }
+  ];
+  const MAX_DEFINED = LEVELS.length;
+  function levelInfo(lv) {
+    if (lv <= MAX_DEFINED) return Object.assign({ speed: 1 }, LEVELS[lv - 1]);
+    return { n: `スピード アップ ${lv - MAX_DEFINED}`, words: W2.concat(W3, W4), speed: 1 + (lv - MAX_DEFINED) * .15 };
+  }
+  function makeTargets(lv, n) {
+    const L = levelInfo(lv), out = [];
+    let prev = '';
+    for (let k = 0; k < n; k++) {
+      let t, tries = 0;
+      do {
+        if (L.latin) t = { text: pick([...L.latin]), latin: true };
+        else if (L.kana) t = { text: pick(L.kana) };
+        else t = { text: pick(L.words) };
+        tries++;
+      } while (tries < 50 && (t.text === prev || out.slice(-6).some(x => x.text === t.text)));
+      prev = t.text; out.push(t);
+    }
+    return out;
+  }
+
+  /* ---------- キーボード ---------- */
+  const ROWS = ['1234567890-', 'qwertyuiop', "asdfghjkl;", 'zxcvbnm,./'];
+  const FINGER = {};
+  [['1qaz', 'f-pinky'], ['2wsx', 'f-ring'], ['3edc', 'f-middle'], ['4rfv5tgb', 'f-index'], ['6yhn7ujm', 'f-index'], ['8ik,', 'f-middle'], ['9ol.', 'f-ring'], ['0p;/-', 'f-pinky']]
+    .forEach(([ks, f]) => [...ks].forEach(k => { FINGER[k] = f; }));
+  function renderKB() {
+    document.getElementById('kb').innerHTML = ROWS.map(r => `<div class="row">${[...r].map(k =>
+      `<button type="button" class="${FINGER[k] || ''}${k === 'f' || k === 'j' ? ' home' : ''}" data-k="${k}" id="key-${k === ';' ? 'semi' : k === ',' ? 'comma' : k === '.' ? 'dot' : k === '/' ? 'slash' : k === '-' ? 'minus' : k}" aria-label="${k}">${k}</button>`).join('')}</div>`).join('');
+  }
+  function lightKey(k) {
+    document.querySelectorAll('#kb button.next').forEach(b => b.classList.remove('next'));
+    if (!k) return;
+    const b = document.querySelector(`#kb button[data-k="${CSS.escape(k)}"]`);
+    if (b) b.classList.add('next');
+  }
+  function flashKey(k) {
+    const b = document.querySelector(`#kb button[data-k="${CSS.escape(k)}"]`);
+    if (b) { b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 120); }
+  }
+
+  /* ---------- ゲーム ---------- */
+  const TOTAL = 20;
+  const lvOf = game => Math.max(1, save.typing[game] || 1);
+  const maxOf = game => Math.max(lvOf(game), save.typing[game + 'Max'] || 1);
+  const g = { game: 'ice', lv: lvOf('ice'), running: false, targets: [], idx: 0, m: null, ok: 0, miss: 0, caught: 0, dropped: 0, fruits: [], raf: 0, ime: false };
+  const card = document.getElementById('card');
+  const FRUITS = ['🍎', '🍊', '🍇', '🍓', '🍑', '🍉', '🍒', '🍐', '🍋', '🍌', '🥝', '🍍'];
+  const SCOOP_COLORS = ['#ff9ec4', '#fff4dc', '#8fe3c4', '#ffd23f', '#c9a3ff', '#ffb38a', '#6b3d22', '#9fd8f5'];
+
+  function renderMe() {
+    document.getElementById('meName').textContent = nameOf();
+    document.getElementById('meLv').textContent = `🍦 アイス Lv${lvOf('ice')} ・ 🍎 フルーツ Lv${lvOf('fruit')}`;
+  }
+  function lvPicker() {
+    const max = maxOf(g.game);
+    let s = '';
+    for (let k = 1; k <= Math.max(max, 1); k++) s += `<button data-lv="${k}" aria-pressed="${k === g.lv}">${k}</button>`;
+    return `<div class="lv" aria-label="レベル">${s}</div>`;
+  }
+  function renderIdle(result) {
+    cancelAnimationFrame(g.raf); g.running = false; lightKey('');
+    const L = levelInfo(g.lv);
+    card.innerHTML = `
+      <div class="lvname">${g.game === 'ice' ? '🍦 アイス タイピング' : '🍎 フルーツ タイピング'}：レベル ${g.lv}「${L.n}」</div>
+      ${lvPicker()}
+      ${result || `<p class="note">${g.game === 'ice'
+        ? 'でてきた もじを うつと、アイスが 1だん つみあがるよ。20だん つんで、8わり いじょう ただしく うてたら クリア！'
+        : 'おちてくる フルーツの もじを うって、カゴで キャッチ！ 20こ のうち 15こ いじょう キャッチで クリア！'}</p>`}
+      <div class="actions"><button class="btn primary" id="startBtn">▶ スタート</button></div>
+      <p class="note">パソコンは キーボードで、タブレットは したの がめんの キーボードで うってね。にほんご にゅうりょくは オフ（えいすう）に してね。</p>`;
+    card.querySelectorAll('[data-lv]').forEach(b => { b.onclick = () => { g.lv = Number(b.dataset.lv); renderIdle(); }; });
+    const sb = document.getElementById('startBtn'); sb.onclick = startGame; sb.focus({ preventScroll: true });
+  }
+  function startGame() {
+    Object.assign(g, { running: true, targets: makeTargets(g.lv, TOTAL), idx: 0, ok: 0, miss: 0, caught: 0, dropped: 0, fruits: [], spawned: 0, lastSpawn: 0, t0: performance.now(), active: null });
+    if (g.game === 'ice') renderIce(); else renderFruitStage();
+  }
+
+  /* アイス */
+  function renderIce(fx) {
+    const end = g.idx >= TOTAL;
+    const t = end ? { text: 'やったね', latin: true } : g.targets[g.idx];
+    if (!g.m || g.mIdx !== g.idx) { g.m = Matcher(t.text, t.latin); g.mIdx = g.idx; }
+    const gd = g.m.guide();
+    const shown = Math.min(g.idx, 5), base = 82; // うえの もじと かさならないように 5だんまで みせる
+    let scoops = '';
+    for (let k = 0; k < shown; k++) {
+      const n = g.idx - shown + k;
+      scoops += `<div class="scoop${fx === 'drop' && k === shown - 1 ? ' drop' : ''}" style="bottom:${base + k * 24}px;background:${SCOOP_COLORS[n % SCOOP_COLORS.length]}"></div>`;
+    }
+    card.innerHTML = `
+      <div class="hud"><span>レベル ${g.lv}「${esc(levelInfo(g.lv).n)}」</span><span><b>${g.idx}</b> ／ ${TOTAL}だん ・ ミス ${g.miss}</span></div>
+      ${g.ime ? '<p class="warn">にほんご にゅうりょくが オンに なって いるみたい。「えいすう」に きりかえてね</p>' : ''}
+      <div class="stage ice">
+        <div class="target${fx === 'miss' ? ' shake' : ''}" id="tgt">
+          <div class="kana">${end ? '🍦 20だん！' : t.latin ? esc(t.text) : `<span style="color:#2f8f5b">${esc(g.m.kanaDone())}</span>${esc(t.text.slice(g.m.kanaDone().length))}`}</div>
+          ${t.latin || end ? '' : `<div class="roma"><span class="done">${esc(gd.done)}</span>${gd.rest ? `<span class="next">${esc(gd.rest[0])}</span>${esc(gd.rest.slice(1))}` : ''}</div>`}
+        </div>
+        <div class="tower${fx === 'miss' ? ' wobble' : ''}"><div class="cone"></div>${scoops}</div>
+        <div class="count">${g.idx}だん</div>
+      </div>`;
+    lightKey(end ? '' : g.m.next());
+  }
+  /* フルーツ */
+  function renderFruitStage() {
+    card.innerHTML = `
+      <div class="hud"><span>レベル ${g.lv}「${esc(levelInfo(g.lv).n)}」</span><span>キャッチ <b id="hCaught">0</b> ・ おとした <span id="hDrop">0</span> ・ のこり <span id="hLeft">${TOTAL}</span></span></div>
+      <p class="warn" id="imeWarn" hidden>にほんご にゅうりょくが オンに なって いるみたい。「えいすう」に きりかえてね</p>
+      <div class="stage fruit" id="fstage"><div class="catcher" id="catcher"><img src="${drawHero(equipped())}" alt=""><span class="basket">🧺</span></div></div>`;
+    g.raf = requestAnimationFrame(fruitLoop);
+  }
+  function fruitParams() {
+    const L = levelInfo(g.lv);
+    const lv = Math.min(g.lv, 20);
+    return { speed: (22 + lv * 2.2) * (L.speed || 1), maxOn: g.lv <= 2 ? 1 : g.lv <= 6 ? 2 : 3, gap: Math.max(1.4, 3.2 - lv * .12) / (L.speed || 1) };
+  }
+  function fruitLoop(now) {
+    if (!g.running || g.game !== 'fruit') return;
+    const st = document.getElementById('fstage'); if (!st) return;
+    const H = st.clientHeight, Wd = st.clientWidth;
+    const P = fruitParams();
+    const dt = Math.min(.05, ((now - (g.lastT || now)) / 1000)); g.lastT = now;
+    const t = (now - g.t0) / 1000;
+    const live = g.fruits.filter(f => !f.gone);
+    if (g.spawned < TOTAL && live.length < P.maxOn && t - g.lastSpawn > P.gap) {
+      const tg = g.targets[g.spawned];
+      const el = document.createElement('div'); el.className = 'fruitbox';
+      const f = { tg, m: Matcher(tg.text, tg.latin), x: 20 + Math.random() * Math.max(10, Wd - 120), y: -60, el, emoji: pick(FRUITS) };
+      el.innerHTML = `<span class="fe">${f.emoji}</span><span class="ft"></span>`;
+      st.appendChild(el); g.fruits.push(f); g.spawned++; g.lastSpawn = t;
+      drawFruitText(f);
+    }
+    g.fruits.forEach(f => {
+      if (f.gone) return;
+      f.y += P.speed * dt * (matchMedia('(prefers-reduced-motion: reduce)').matches ? .8 : 1);
+      f.el.style.transform = `translate(${f.x}px, ${f.y}px)`;
+      if (f.y > H - 70) { // じめんに おちた
+        f.gone = true; g.dropped++; f.el.classList.add('splat');
+        if (g.active === f) g.active = null;
+        setTimeout(() => f.el.remove(), 700);
+        updateHud();
+      }
+    });
+    lightKey(g.active ? g.active.m.next() : '');
+    if (g.spawned >= TOTAL && g.fruits.every(f => f.gone)) { finish(); return; }
+    g.raf = requestAnimationFrame(fruitLoop);
+  }
+  function drawFruitText(f) {
+    const done = f.tg.latin ? f.m.typedRoma : f.m.kanaDone();
+    const all = f.tg.text;
+    f.el.querySelector('.ft').innerHTML = `<span class="done">${esc(done)}</span>${esc(all.slice(done.length))}${f.tg.latin ? '' : `<br><small style="font-family:var(--num);font-size:13px;color:#9aa0a8">${esc(f.m.guide().done)}<b style="color:#c43c30">${esc(f.m.guide().rest)}</b></small>`}`;
+    f.el.classList.toggle('active', g.active === f);
+  }
+  function updateHud() {
+    const a = document.getElementById('hCaught'); if (a) a.textContent = g.caught;
+    const b = document.getElementById('hDrop'); if (b) b.textContent = g.dropped;
+    const c = document.getElementById('hLeft'); if (c) c.textContent = TOTAL - g.caught - g.dropped;
+  }
+  function popAt(stage, x, y, text) {
+    const p = document.createElement('div'); p.className = 'pop'; p.style.left = x + 'px'; p.style.top = y + 'px'; p.textContent = text;
+    stage.appendChild(p); setTimeout(() => p.remove(), 1000);
+  }
+
+  /* キーを おした とき */
+  function onKey(ch) {
+    if (!g.running) return;
+    flashKey(ch);
+    if (g.game === 'ice') {
+      const r = g.m.key(ch);
+      if (r === 'ng') { g.miss++; renderIce('miss'); return; }
+      g.ok++;
+      if (g.m.done()) {
+        g.idx++; gainBlock();
+        if (g.idx >= TOTAL) { renderIce('drop'); setTimeout(finish, 500); return; }
+        renderIce('drop');
+      } else renderIce();
+      return;
+    }
+    // フルーツ：いま うって いる フルーツ、なければ いちばん したの フルーツ
+    let f = g.active && !g.active.gone ? g.active : null;
+    if (!f) {
+      const cands = g.fruits.filter(x => !x.gone).sort((a, b) => b.y - a.y);
+      f = cands.find(x => { const probe = Matcher(x.tg.text, x.tg.latin); return probe.key(ch) === 'ok'; });
+      if (!f) { g.miss++; return; }
+      g.active = f;
+      g.fruits.forEach(x => !x.gone && drawFruitText(x));
+    }
+    const r = f.m.key(ch);
+    if (r === 'ng') { g.miss++; return; }
+    g.ok++;
+    drawFruitText(f);
+    if (f.m.done()) {
+      f.gone = true; g.caught++; g.active = null; gainBlock();
+      const st = document.getElementById('fstage'), cat = document.getElementById('catcher');
+      if (cat) cat.style.left = Math.max(0, f.x - 10) + 'px';
+      f.el.classList.add('caught'); f.el.style.transform = `translate(${f.x}px, ${st.clientHeight - 70}px) scale(.4)`;
+      popAt(st, f.x, Math.max(20, f.y), 'キャッチ！');
+      setTimeout(() => f.el.remove(), 400);
+      updateHud();
+    }
+  }
+  function gainBlock() { save.built = (save.built || 0) + 1; persist(); }
+
+  function finish() {
+    cancelAnimationFrame(g.raf); g.running = false; lightKey('');
+    const acc = g.ok + g.miss ? g.ok / (g.ok + g.miss) : 1;
+    const secs = Math.round((performance.now() - g.t0) / 1000);
+    const clear = g.game === 'ice' ? acc >= .8 : g.caught >= 15;
+    const wBefore = WEAPONS.filter(w => unlockedW(w)).length;
+    let up = false;
+    if (clear) {
+      save.typeClears = (save.typeClears || 0) + 1;
+      if (g.lv === lvOf(g.game)) { save.typing[g.game] = g.lv + 1; up = true; }
+      save.typing[g.game + 'Max'] = Math.max(maxOf(g.game), g.lv + 1);
+      persist();
+    }
+    const newW = WEAPONS.filter(w => unlockedW(w)).slice(wBefore).map(w => w.n);
+    renderMe();
+    const result = `<div class="result">
+      <p class="big">${clear ? 'ステージ クリア！' : 'おしい！'}</p>
+      <p style="margin:0">${g.game === 'ice' ? `アイス 20だん！ ただしく うてた わりあい ${Math.round(acc * 100)}％` : `キャッチ ${g.caught}こ ・ おとした ${g.dropped}こ`} ・ ${secs}びょう</p>
+      <p style="margin:0">${clear ? (up ? `⬆ レベル ${g.lv + 1} に アップ！` : 'もう いちど ちょうせんして きろくを のばそう') : (g.game === 'ice' ? '8わり いじょう ただしく うてたら クリアだよ' : '15こ いじょう キャッチで クリアだよ')}</p>
+      ${newW.length ? `<p style="margin:0;color:var(--yellow)">🗡 あたらしい ぶきの かたち「${newW.join('・')}」が つかえるよ！（さんすうの「⚔ そうび」で えらべるよ）</p>` : ''}
+      <p class="note">うてた ぶん、けんちくの ブロックも ふえたよ</p>
+    </div>`;
+    if (clear && up) g.lv = lvOf(g.game);
+    renderIdle(result);
+    const sb = document.getElementById('startBtn'); if (sb) sb.textContent = clear && up ? `▶ レベル ${g.lv} へ` : '▶ もういちど';
+  }
+
+  /* そうさ */
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.isComposing || e.key === 'Process' || e.keyCode === 229) {
+      g.ime = true; const w = document.getElementById('imeWarn'); if (w) w.hidden = false; else if (g.running && g.game === 'ice') renderIce();
+      return;
+    }
+    if (!g.running) { if (e.key === 'Enter' || e.key === ' ') { const sb = document.getElementById('startBtn'); if (sb && document.activeElement !== sb) { e.preventDefault(); sb.click(); } } return; }
+    const k = e.key.length === 1 ? e.key.toLowerCase() : '';
+    if (!k) return;
+    e.preventDefault();
+    g.ime = false;
+    onKey(k);
+  });
+  document.getElementById('kb').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) onKey(b.dataset.k); });
+  document.getElementById('tabs').onclick = e => {
+    const b = e.target.closest('[data-game]'); if (!b) return;
+    g.game = b.dataset.game; g.lv = lvOf(g.game);
+    document.querySelectorAll('#tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderIdle();
+  };
+
+  renderKB(); renderMe(); renderIdle(); pullMe();
+})();
+</script>
+</body>
+</html>
