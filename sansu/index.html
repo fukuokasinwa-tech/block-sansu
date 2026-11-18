@@ -1325,6 +1325,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   setCloudState('');
   if (cloudOn()) pull();
   if (firstRun) showNameForm('p1', false, false);
+  // トップページの ボタンから きた とき：プレイヤー こうたい ／ スプレッドシートに つなぐ を すぐ ひらく
+  else if (location.hash === '#players') showPlayers();
+  else if (location.hash === '#cloud') showCloudForm();
 })();
 </script>
 </body>

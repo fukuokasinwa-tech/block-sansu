@@ -71,6 +71,11 @@ h2 { font-family: var(--num); font-weight: 800; font-size: 21px; margin: 0; colo
 .chips button[aria-pressed="true"] { background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tbtn {
+  font-family: var(--num); font-weight: 800; font-size: 15px; color: var(--fg); text-decoration: none; padding: 7px 12px;
+  background: var(--key); border: 3px solid var(--panel-edge); box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
 .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .game {
   display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--fg);
@@ -115,6 +120,10 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   <section class="panel" aria-label="あそぶ ひと">
     <div class="who" id="who"></div>
     <div class="chips" id="chips"></div>
+    <div class="top-actions">
+      <a class="tbtn" href="sansu/#players" id="goPlayers">👥 プレイヤー こうたい・なまえ</a>
+      <a class="tbtn" href="sansu/#cloud" id="goCloud">☁ スプレッドシートに つなぐ</a>
+    </div>
   </section>
 
   <section aria-label="ゲーム">
