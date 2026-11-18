@@ -216,6 +216,13 @@ tr.ten { background: rgba(255, 210, 63, .1); }
 
 .parents { background: rgba(255,255,255,.85); border: 3px solid #24323c; padding: 14px 18px; color: #24323c; font-size: 15px; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.75; }
 .parents h2 { color: #24323c; font-size: 17px; margin-bottom: 6px; font-family: var(--pixel); }
+.parents summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
+.parents summary::-webkit-details-marker { display: none; }
+.parents summary::before { content: "▶"; font-size: 13px; color: #24323c; }
+.parents[open] summary::before { content: "▼"; }
+.parents summary h2 { margin: 0; }
+.parents-body { margin-top: 8px; }
+.parents summary:focus-visible { outline: 3px solid #24323c; outline-offset: 3px; }
 .parents p { margin: 0 0 8px; max-width: 65ch; }
 .parents p:last-child { margin-bottom: 0; }
 
@@ -288,13 +295,15 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <section class="panel" id="house"></section>
   </div>
 
-  <section class="parents">
-    <h2>おうちのかたへ</h2>
+  <details class="parents" id="parents">
+    <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
+    <div class="parents-body">
     <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
     <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
     <p>「わけかた」では、1から10までの数を2つに分ける方法（いくつといくつ）を図と表ですべて見られます。10は「1と9・2と8・3と7・4と6・5と5・6と4・7と3・8と2・9と1」の9とおりです。「あわせて10」の組み合わせは、くりあがり・くりさがりでそのまま使います。クイズでも練習できます。</p>
     <p>「ヒント」では答えをかくしたまま考え方を見せ、まちがえると自動でヒントが出ます。キーボードの数字キーと Enter でも答えられます。</p>
-  </section>
+  </div>
+  </details>
 </div>
 
 <script>
