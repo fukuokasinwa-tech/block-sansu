@@ -340,14 +340,14 @@ tr.ten { background: rgba(255, 210, 63, .1); }
   }
 
   /* ---------- けいさん ---------- */
-  const STAGE = ['grass', 'dirt', 'dirt', 'wood', 'wood', 'stone', 'stone', 'gold', 'stone', 'gem'];
+  const STAGE = ['grass', 'dirt', 'dirt', 'dirt', 'wood', 'wood', 'dirt', 'stone', 'stone', 'wood', 'stone', 'stone', 'gold', 'stone', 'stone', 'gold', 'stone', 'gold', 'stone', 'gem'];
   const THEMES = [
     { kind: 'dirt',  add: 'ほって きたよ', sub: 'つかったよ', addTag: 'ほった', subTag: 'つかった' },
     { kind: 'wood',  add: 'きって きたよ', sub: 'もやしたよ', addTag: 'きった', subTag: 'もやした' },
     { kind: 'stone', add: 'ほって きたよ', sub: 'つんだよ',   addTag: 'ほった', subTag: 'つんだ' },
     { kind: 'gold',  add: 'みつけたよ',   sub: 'あげたよ',   addTag: 'みつけた', subTag: 'あげた' }
   ];
-  const TOTAL = 10;
+  const TOTAL = 20;
   const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
   const pick = a => a[Math.floor(Math.random() * a.length)];
 
