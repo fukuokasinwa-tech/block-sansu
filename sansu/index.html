@@ -741,8 +741,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
 
   function cherrySVG(tokens, splitIdx, parts) {
-    const xs = [30, 75, 120, 165, 210];
-    let s = '<svg viewBox="0 0 240 132" role="img" aria-label="さくらんぼけいさん">';
+    const xs = [46, 92, 136, 180, 224];
+    let s = '<svg viewBox="0 0 256 132" role="img" aria-label="さくらんぼけいさん">';
     tokens.forEach((tk, k) => { s += `<text x="${xs[k]}" y="42" font-size="34" text-anchor="middle">${tk}</text>`; });
     const x = xs[splitIdx];
     s += `<path class="stem" d="M${x} 52 L${x - 24} 88 M${x} 52 L${x + 24} 88"/>`;
@@ -837,16 +837,16 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
 
   function cherryQuestionSVG(q) {
-    const xs = [40, 95, 150, 205, 262];
+    const xs = [62, 120, 170, 220, 280];
     const toks = [q.a, q.op === '+' ? '+' : '−', q.b, '='];
     const si = q.op === '+' ? 2 : 0, x = xs[si];
     const v0 = st.blank > 0 || st.solved ? q.berry : (st.input || '');
     const v1 = st.solved ? q.ans : (st.blank === 1 ? st.input : '');
     const act = j => !st.solved && st.blank === j;
-    let o = `<svg class="cq" viewBox="0 0 300 172" role="img" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b}。${q.op === '+' ? q.b : q.a}を ${q.given}と いくつに わける？">`;
+    let o = `<svg class="cq" viewBox="0 0 320 172" role="img" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b}。${q.op === '+' ? q.b : q.a}を ${q.given}と いくつに わける？">`;
     toks.forEach((t, k) => { o += `<text x="${xs[k]}" y="62" font-size="46" text-anchor="middle">${t}</text>`; });
-    o += `<rect class="box${act(1) ? ' act' : ''}${st.solved ? ' ok' : ''}" x="234" y="20" width="58" height="56" rx="4"/>`;
-    o += `<text class="v" x="263" y="64" font-size="40" text-anchor="middle">${v1}</text>`;
+    o += `<rect class="box${act(1) ? ' act' : ''}${st.solved ? ' ok' : ''}" x="251" y="20" width="58" height="56" rx="4"/>`;
+    o += `<text class="v" x="280" y="64" font-size="40" text-anchor="middle">${v1}</text>`;
     o += `<path class="stem" d="M${x} 74 L${x - 30} 112 M${x} 74 L${x + 30} 112"/>`;
     o += `<circle class="berry" cx="${x - 30}" cy="138" r="27"/><text x="${x - 30}" y="150" font-size="32" text-anchor="middle">${q.given}</text>`;
     o += `<circle class="berry ${act(0) ? 'act' : ''}${st.blank > 0 || st.solved ? ' ok' : ''}" cx="${x + 30}" cy="138" r="27"/><text class="v" x="${x + 30}" y="150" font-size="32" text-anchor="middle">${v0}</text>`;
