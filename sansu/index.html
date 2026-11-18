@@ -298,6 +298,49 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .frame i.out .blk { animation: away .6s steps(5); }
   @keyframes away { from { opacity: 1; transform: none; } to { opacity: .3; transform: translateY(-6px); } }
 }
+/* たたかい */
+.battle {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: 8px;
+  padding: 34px 14px 8px; min-height: 178px; overflow: hidden; border: 3px solid var(--panel-edge);
+}
+.battle.bg-grass { background: linear-gradient(#5aa9d6, #a8dcf5 62%, #6cc447 62%, #4e9a2f); }
+.battle.bg-night { background: linear-gradient(#1d1640, #4b3a8a 62%, #3a2e5c 62%, #2a2145); }
+.battle.bg-factory { background: linear-gradient(#5d6670, #8e98a3 62%, #4a4f57 62%, #3a3e45); }
+.b-hero img { width: 60px; height: 80px; image-rendering: pixelated; display: block; }
+.b-enemy { grid-column: 3; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.b-name { font-family: var(--num); font-weight: 800; font-size: 14px; color: #fff; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
+.hearts { display: flex; gap: 3px; }
+.hearts i { width: 13px; height: 13px; background: #3a1d24; border: 2px solid #000; }
+.hearts i.on { background: #ff4d6d; }
+.spr-e { display: block; width: 88px; height: 99px; image-rendering: pixelated; background-size: 100% 100%; }
+.b-enemy.boss .spr-e { width: 120px; height: 135px; }
+.b-enemy.down .spr-e { opacity: .12; filter: grayscale(1); }
+.b-line {
+  position: absolute; top: 6px; left: 8px; margin: 0; max-width: 54%;
+  background: #fffaf0; color: #2a2a33; border: 3px solid #17191c; padding: 1px 8px; font-size: 14px; line-height: 1.5; text-align: left; white-space: normal;
+}
+.slash { position: absolute; right: 28px; bottom: 60px; width: 130px; height: 12px; background: var(--atk); transform: rotate(-35deg); box-shadow: 0 0 12px var(--atk), 0 0 2px #fff; opacity: 0; }
+.dmg { position: absolute; right: 18px; bottom: 120px; font-family: var(--num); font-weight: 800; font-size: 24px; color: #fff; text-shadow: 3px 3px 0 #000; }
+.dmg.crit { color: var(--yellow); }
+@media (prefers-reduced-motion: no-preference) {
+  .battle.atk .b-hero img { animation: lunge .45s steps(4); }
+  @keyframes lunge { 50% { transform: translateX(40px); } }
+  .battle .slash { animation: slash .45s steps(4) .15s; }
+  @keyframes slash { 0% { opacity: 0; transform: rotate(-35deg) scaleX(.2); } 40% { opacity: 1; } 100% { opacity: 0; transform: rotate(-35deg) scaleX(1.2); } }
+  .b-enemy.hurt .spr-e { animation: hurt .5s steps(5) .2s; }
+  @keyframes hurt { 20% { transform: translateX(8px); filter: brightness(2); } 60% { transform: translateX(-6px); } }
+  .b-enemy.down .spr-e { animation: down 1s steps(6) .3s backwards; }
+  @keyframes down { from { opacity: 1; filter: none; transform: none; } to { opacity: .12; filter: grayscale(1); transform: translateY(10px) scale(.8); } }
+  .b-enemy.enter .spr-e { animation: enter .6s steps(6); }
+  @keyframes enter { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dmg { animation: dmg 1s steps(6) forwards; }
+  @keyframes dmg { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
+}
+@media (max-width: 460px) {
+  .spr-e { width: 72px; height: 81px; }
+  .b-enemy.boss .spr-e { width: 100px; height: 112px; }
+  .b-hero img { width: 48px; height: 64px; }
+}
 /* しゅじんこう・そうび・ずかん */
 .hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
 .hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
@@ -425,6 +468,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   <details class="parents" id="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
     <div class="parents-body">
+    <p>問題を解くと、主人公が敵に攻撃します。敵はステージごとに「ブロックどろぼう団」「まちがい まほうつかい」「いたずらロボ」と入れかわり（すべてオリジナルのキャラクターです）、1ステージ20問で子分3体（5問ずつ）とボス（16〜20問目）が出てきます。1回で正解すると「クリティカル！」になります。まちがえても主人公はダメージを受けず、敵がからかうだけにしています。ボスをたおすと、★★★以上のアイテムがもらえます。</p>
     <p>さくらんぼ計算は「おてつだい レベル」で手助けの量が変わります。レベル1は、さくらんぼのあとの計算を小さな2つの計算（7＋3＝10 → 10＋2＝12、16−8なら 10−8＝2 → 2＋6＝8）に分けて1つずつ答え、10こ入る「はこ」にブロックが移って10のまとまりができる様子も見せます。レベル2は小さな計算だけ、レベル3は答えだけです。3問続けて1回で正解するとレベルが上がり、まちがえると1つ下がります（自分で選ぶこともできます）。「わけかた」のクイズでは「10の ともだち（7は あと いくつで 10）」「10と いくつ（10と4で14・14は10と4）」も練習でき、さくらんぼ計算の土台になります。</p>
     <p>「🍒 さくらんぼ」は、さくらんぼ計算の書き方そのものを練習する問題です（7＋5なら、5の下のさくらんぼに3が入っていて、もう1つのさくらんぼと□の答えを入れます。ひきざんは13を10といくつに分けます）。どの種類も20問ずつ、ランダムに出題し、同じ問題や答え・数が同じ問題が続かないようにしています。</p>
     <p>はじめて開くと、主人公の名前を決める画面が出ます（あとから「✎ なまえを かえる」で変えられます）。きょうだいなど複数人で使うときは「👥 プレイヤー こうたい」で、プレイヤーを最大6人まで作れます。そうび・ずかん・おうちの進み具合は、プレイヤーごとに別々に、正解するたびに自動で保存されます（保存先はこの端末のブラウザです。別の端末やブラウザとは共有されません。ブラウザの履歴・サイトデータを消すと記録も消えます）。</p>
@@ -958,6 +1002,77 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return o + '</svg>';
   }
 
+  /* ---------- てき（ステージごとに いちみが かわる。すべて オリジナルの ドットえ） ---------- */
+  const pad16 = rows => rows.map(r => (r + '................').slice(0, 16));
+  const FACTIONS = [
+    { id: 'nusu', name: 'ブロックどろぼう団 ぬすっとーズ', minion: 'チビぬすっと', boss: 'おやぶん ドロン', bg: 'grass',
+      mask: pad16([
+        '................', '.....oooooo.....', '....oooooooo....', '....ssssssss....', '....kkwkkwkk....', '....ssssssss....',
+        '.....ssmmss.....', '......ssss......', '....bwbwbwbw....', '...sbwbwbwbws...', '...sbwbwbwbwsyy.', '....bwbwbwbw.yyy',
+        '....dddddddd.yyy', '....dd....dd.yy.', '....kk....kk....', '................']),
+      pal: { o: '#ff8a1f', s: '#f2c9a0', k: '#22252a', w: '#ffffff', m: '#a0523a', b: '#2f5fb0', d: '#4a3a2a', y: '#c9a46a' },
+      boss: 'おやぶん ドロン', bossPal: { o: '#d6282f', b: '#7a2a8f', y: '#e8c247', d: '#2a2a2a' },
+      taunt: ['へへーん、ブロックは いただきだ！', 'おしかったな〜！'], down: 'ブロックを とりかえした！ ぬすっとは にげていった' },
+    { id: 'majin', name: 'まちがい まほうつかい ミスまじん', minion: 'ミスまじん', boss: 'だいまじん ミスゾー', bg: 'night',
+      mask: pad16([
+        '......pp........', '.....pppp.......', '....pppppp......', '...pppppppp.....', '...ppkkkkpp.....', '...pkykkykp...g.',
+        '...ppkkkkpp..ggg', '....pppppp....b.', '...pppppppp...b.', '..pppppppppp.sb.', '..ppplppplpp..b.', '..pppppppppp..b.',
+        '..pppppppppp..b.', '...pp....pp...b.', '...kk....kk.....', '................']),
+      pal: { p: '#7d4fd6', k: '#1b1530', y: '#ffe066', g: '#ff8fd0', b: '#8a5a2f', s: '#d8b0f0', l: '#b393f0' },
+      bossPal: { p: '#3b2a8a', l: '#ff5f8f', y: '#ff4d4d', g: '#ffd23f' },
+      taunt: ['ふっふっふ、まちがいの まほうだ〜', 'もう いちど かんがえて ごらん'], down: 'まほうが とけた！ ちいさく なって にげていった' },
+    { id: 'bot', name: 'いたずらロボ ガチャボット', minion: 'ガチャボット', boss: 'ギガボット', bg: 'factory',
+      mask: pad16([
+        '.......y........', '.......k........', '....gggggggg....', '....gccggccg....', '....gccggccg....', '....gggggggg....',
+        '....gkkkkkkg....', '....gggggggg....', '.....yyyyyy.....', '..ggyyyyyyyygdd.', '..g.yykkyy.gddd.', '....yyyyyy..dd..',
+        '....yyyyyy......', '....gg..gg......', '....kk..kk......', '................']),
+      pal: { y: '#ffd23f', k: '#2a2d33', g: '#9aa3ad', c: '#5fe0ff', d: '#6b7078' },
+      bossPal: { g: '#d6453a', y: '#3a3f47', c: '#ffe066', d: '#ffb347' },
+      taunt: ['ピピッ ハズレ ハズレ！', 'ガチャガチャ！ もう いっかい？'], down: 'ぶひんが はずれて バラバラ！' }
+  ];
+  (function makeEnemySprites() {
+    let css = '';
+    FACTIONS.forEach(f => {
+      [false, true].forEach(isBoss => {
+        const c = document.createElement('canvas'); c.width = 16; c.height = 18;
+        const g = c.getContext('2d'); const pal = Object.assign({}, f.pal, isBoss ? f.bossPal : {});
+        f.mask.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.' && pal[ch]) { g.fillStyle = pal[ch]; g.fillRect(x, y + 2, 1, 1); } }));
+        if (isBoss) { // ボスの かんむり
+          g.fillStyle = '#ffd23f';
+          [[5, 0], [7, 0], [9, 0], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [10, 0]].forEach(([x, y]) => g.fillRect(x, y, 1, 1));
+          g.fillStyle = '#e0245e'; g.fillRect(7, 1, 1, 1);
+        }
+        css += `.e-${f.id}${isBoss ? '-boss' : ''}{background-image:url(${c.toDataURL()})}`;
+      });
+    });
+    const st0 = document.createElement('style'); st0.textContent = css; document.head.appendChild(st0);
+  })();
+  const PER_ENEMY = 5; // 1たい 5もん（ハート 5こ）。16〜20もんめは ボス
+  const factionNow = (offset = 0) => FACTIONS[(((save.stageNo || 0) + offset) % FACTIONS.length + FACTIONS.length) % FACTIONS.length];
+  function battleHTML() {
+    const f = factionNow();
+    const ei = Math.min(TOTAL / PER_ENEMY - 1, Math.floor(st.i / PER_ENEMY)), boss = ei === TOTAL / PER_ENEMY - 1;
+    let solvedIn = 0;
+    for (let k = ei * PER_ENEMY; k < (ei + 1) * PER_ENEMY; k++) if (st.results[k] !== undefined) solvedIn++;
+    const hp = PER_ENEMY - solvedIn, down = hp <= 0;
+    const name = boss ? f.boss : `${f.minion} ${ei + 1}ごう`;
+    const hearts = Array.from({ length: PER_ENEMY }, (_, k) => `<i class="${k < hp ? 'on' : ''}"></i>`).join('');
+    const fx = st.fx || '';
+    const eq0 = equipped()[0];
+    const atk = eq0 >= 0 ? GEAR[eq0].pal.x : '#ffffff';
+    const first = st.i % PER_ENEMY === 0 && !st.solved && !st.wrong;
+    const line = down ? f.down + (boss ? '　ボスを たおした！' : '') : fx === 'miss' ? pick(f.taunt) : first ? `${name}が あらわれた！` : '';
+    return `<div class="battle bg-${f.bg}${fx === 'hit' || fx === 'crit' ? ' atk' : ''}" style="--atk:${atk}" aria-label="${name} ハート ${hp}">
+      <div class="b-hero"><img src="${drawHero(equipped())}" alt="" width="60" height="80"></div>
+      <div class="b-enemy${boss ? ' boss' : ''}${down ? ' down' : ''}${fx === 'hit' || fx === 'crit' ? ' hurt' : ''}${first ? ' enter' : ''}">
+        <div class="b-name">${name}</div><div class="hearts">${hearts}</div>
+        <span class="spr-e e-${f.id}${boss ? '-boss' : ''}"></span>
+      </div>
+      ${fx === 'hit' || fx === 'crit' ? `<span class="slash"></span><span class="dmg${fx === 'crit' ? ' crit' : ''}">${fx === 'crit' ? 'クリティカル！' : 'ヒット！'}</span>` : ''}
+      ${line ? `<p class="b-line">${line}</p>` : ''}
+    </div>`;
+  }
+
   function render() {
     renderGearStrip();
     if (st.done) {
@@ -965,6 +1080,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       card.innerHTML = `${mineHTML()}
         <div class="feedback good" style="gap:10px">
           <span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
+          <span>${factionNow(-1).name}を ぜんぶ たおした！</span>
+          <span style="color:var(--fg);font-size:17px">つぎは「${factionNow().name}」が まっているよ</span>
           <span>ブロックを ${TOTAL}こ ほったよ。いっかいで せいかい：${ok}もん</span>
           <span style="color:var(--fg);font-size:17px">${ok === TOTAL ? 'ぜんぶ いっかいで せいかい！ すごい！' : 'まちがえても、さいごまで できたね！'}</span>
         </div>
@@ -982,11 +1099,13 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       ${st.lvMsg === 'up' ? `<span class="lvmsg">⬆ おてつだい レベル ${cherryLv()} に アップ！ ${cherryLv() === 3 ? 'つぎは こたえだけで やってみよう' : 'つぎは ちいさな けいさんだけ'}</span>` : ''}
       ${st.lvMsg === 'down' ? `<span class="lvmsg">おてつだい レベル ${cherryLv()} で もういちど たしかめよう</span>` : ''}
       ${dropHTML(st.got, st.gotNew)}
+      ${st.bossBonus ? `<span class="lvmsg">👑 ボスを たおした ごほうび！</span>${dropHTML(st.bossBonus, st.bossBonusNew)}` : ''}
       ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>${esc(nameOf(save))}の すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
 
     card.innerHTML = `
-      <div class="stage-label"><span>だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⛏ せいかいで ブロックが ほれるよ</span></div>
+      <div class="stage-label"><span>ステージ ${(save.stageNo || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
+      ${battleHTML()}
       ${mineHTML()}
       ${q.kind === 'cherry' ? `
       ${lvPickerHTML()}
@@ -1005,7 +1124,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
                     : (st.hint ? '' : '<button class="btn" id="hint">ヒントを みる</button>')}
       </div>
       ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}`;
-    st.breaking = false;
+    st.breaking = false; st.fx = '';
     card.querySelectorAll('[data-lv]').forEach(b => { b.onclick = () => {
       save.cherryLv = Number(b.dataset.lv); save.cherryStreak = 0; persist();
       if (!st.solved && st.q.kind === 'cherry' && st.blank === 0) { st.qLv = cherryLv(); st.steps = stepsFor(st.q, st.qLv); }
@@ -1026,9 +1145,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       st.anim = 0;
       if (cherry && st.blank < st.steps.length - 1) {
         if (Number(st.input) === cur.ans) { st.blank++; st.input = ''; st.anim = st.blank; }
-        else { st.wrong = true; st.hint = st.qLv >= 3; st.input = ''; }
+        else { st.wrong = true; st.hint = st.qLv >= 3; st.input = ''; st.fx = 'miss'; }
       } else if (Number(st.input) === (cherry ? cur.ans : st.q.ans)) {
         st.solved = true; st.results[st.i] = !st.wrong; st.breaking = true;
+        st.fx = st.wrong ? 'hit' : 'crit';
+        st.bossBonus = null;
         if (cherry) st.anim = st.steps.length;
         st.lvMsg = '';
         if (cherry) {
@@ -1043,13 +1164,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         st.got = rewardFor(st.q); st.gotNew = gain(st.got);
         const after = gearCount(ti);
         st.newGear = after > before ? [ti, after - 1] : null;
+        if (st.i === TOTAL - 1) { st.bossBonus = roll([0, 0, 70, 30]); st.bossBonusNew = gain(st.bossBonus); }
         renderHero(!!st.newGear);
-      } else { st.wrong = true; st.hint = !cherry || st.qLv >= 3; st.input = ''; }
+      } else { st.wrong = true; st.hint = !cherry || st.qLv >= 3; st.input = ''; st.fx = 'miss'; }
     } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
     render();
   }
   function advance() {
-    if (st.i + 1 >= TOTAL) { st.done = true; render(); return; }
+    if (st.i + 1 >= TOTAL) { st.done = true; save.stageNo = (save.stageNo || 0) + 1; persist(); render(); return; }
     st.i++; next();
   }
 
