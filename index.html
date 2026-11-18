@@ -123,7 +123,7 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
 
   <details class="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
-    <p>「ブロック まなびランド」は、ゲームで楽しく学べるソフトの入り口です。ここから学びたいゲームを選んで遊びます。いまは「ブロック さんすう たんけん」（1年生のたしざん・ひきざん）が遊べます。国語・タイピング・プログラミングのゲームは、これから順番に増やしていきます。</p>
+    <p>「ブロック まなびランド」は、ゲームで楽しく学べるソフトの入り口です。ここから学びたいゲームを選んで遊びます。いまは「ブロック さんすう たんけん」（1年生のたしざん・ひきざん）と「ひらがな たんけん」が遊べます。カタカナ・漢字・タイピング・プログラミングのゲームは、これから順番に増やしていきます。</p>
     <p>プレイヤーの名前と記録は、すべてのゲームで共通です。名前の登録やプレイヤーの追加は、ゲームの中の「👥 プレイヤー こうたい」からできます。記録はこの端末に自動で保存されます。Google スプレッドシートにつないでいる場合は、ゲームを開いたときに合わせて保存されます。</p>
   </details>
 </div>
@@ -135,7 +135,8 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   /* ---------- ドットえの アイコン ---------- */
   const ICONS = {
     sansu: { s: ['..r.....', '..r.....', 'rrrrr...', '..r.....', '..r.....', '........', '...bbbbb', '........'], p: { r: '#ff6b5b', b: '#63b0ff' } },
-    kokugo: { s: ['......pp', '.....pyp', '....yyp.', '...yyy..', '..yyy...', '.yyy....', 'kyy.....', 'kk......'], p: { p: '#ff8fb1', y: '#ffd23f', k: '#3a2a1a' } },
+    hiragana: { s: ['......pp', '.....pyp', '....yyp.', '...yyy..', '..yyy...', '.yyy....', 'kyy.....', 'kk......'], p: { p: '#ff8fb1', y: '#ffd23f', k: '#3a2a1a' } },
+    kokugo: { s: ['.rrrrrr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rrrrrr.', '........'], p: { r: '#c0392b', w: '#fbf6ea', d: '#555555' } },
     typing: { s: ['........', 'xxxxxxxx', 'xwxwxwxx', 'xxxxxxxx', 'xwxwxwwx', 'xxxxxxxx', 'xxwwwwxx', 'xxxxxxxx'], p: { x: '#5d6166', w: '#e8ebee' } },
     program: { s: ['...yy...', '..xxxx..', '.xxxxxx.', '.xwxxwx.', '.xxxxxx.', '.xrrrrx.', '.xxxxxx.', '..x..x..'], p: { y: '#ffd23f', x: '#9aa3ad', w: '#3fd6d0', r: '#ff6b5b' } }
   };
@@ -166,7 +167,9 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   const GAMES = [
     { id: 'sansu', href: 'sansu/', title: 'ブロック さんすう たんけん', tag: 'さんすう ・ 1ねんせい',
       text: 'たしざん・ひきざん・さくらんぼ けいさん。せいかいで ブロックを ほって、そうびを あつめよう！', ready: true },
-    { id: 'kokugo', title: 'ことば たんけん', tag: 'こくご', text: 'ひらがな・かたかな・かんじ・ことばの ゲーム。', ready: false },
+    { id: 'hiragana', href: 'hiragana/', title: 'ひらがな たんけん', tag: 'こくご ・ 1ねんせい',
+      text: 'きいて えらぶ・えと ことば・ごじゅうおん・なぞりがき。もじカードを あつめよう！', ready: true },
+    { id: 'kokugo', title: 'カタカナ・かんじ たんけん', tag: 'こくご', text: 'カタカナ・かんじ・ことばの ゲーム。', ready: false },
     { id: 'typing', title: 'タイピング たんけん', tag: 'タイピング', text: 'キーボードで もじを うつ れんしゅう。', ready: false },
     { id: 'program', title: 'プログラミング たんけん', tag: 'プログラミング', text: 'めいれいブロックを ならべて キャラクターを うごかそう。', ready: false }
   ];
@@ -185,7 +188,8 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
       const icon = `<span class="icon" style="background-image:url(${iconURL[g.id]})" aria-hidden="true"></span>`;
       const head = `<div class="game-top">${icon}<div><h3>${g.title}</h3><span class="tag">${g.tag}</span></div></div><p>${g.text}</p>`;
       if (!g.ready) return `<div class="game soon">${head}<span class="soon-badge">じゅんびちゅう</span></div>`;
-      const prog = sv && g.id === 'sansu' ? `<span class="prog">${esc(nameOf(sv))}：${sansuProgress(sv)}</span>` : '';
+      const prog = !sv ? '' : g.id === 'sansu' ? `<span class="prog">${esc(nameOf(sv))}：${sansuProgress(sv)}</span>`
+        : g.id === 'hiragana' ? `<span class="prog">${esc(nameOf(sv))}：もじカード ${Object.keys(sv.hira || {}).filter(k => sv.hira[k] > 0).length} ／ 71</span>` : '';
       return `<a class="game" href="${g.href}" id="go-${g.id}">${head}${prog}<span class="play">▶ あそぶ</span></a>`;
     }).join('');
   }
