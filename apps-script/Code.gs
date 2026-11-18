@@ -27,8 +27,13 @@ function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
+// ぜんかく・はんかく や まえうしろの くうはくの ちがいは おなじと みなす（1234 と '1234' と '１２３４' は おなじ）
+function norm_(t) {
+  return String(t == null ? '' : t).normalize('NFKC').trim();
+}
 function ok_(key) {
-  return AIKOTOBA && AIKOTOBA !== 'ここに あいことばを かく' && key === AIKOTOBA;
+  const a = norm_(AIKOTOBA);
+  return a !== '' && a !== 'ここに あいことばを かく' && norm_(key) === a;
 }
 
 // よみこみ：?action=list&key=あいことば

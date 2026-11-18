@@ -1267,7 +1267,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     document.getElementById('cloudForm').onsubmit = async e => {
       e.preventDefault();
       const url = document.getElementById('cloudUrl').value.trim();
-      const key = document.getElementById('cloudKey').value.trim();
+      const key = document.getElementById('cloudKey').value.normalize('NFKC').trim();
       if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)) { msg.textContent = 'URL は https://script.google.com/ から はじまるものを いれてください。'; return; }
       if (!key) { msg.textContent = 'あいことばを いれてください。'; return; }
       msg.textContent = 'たしかめて います…';
