@@ -173,6 +173,9 @@ button:disabled { opacity: .45; cursor: default; }
 .hearts { display: flex; gap: 3px; }
 .hearts i { width: 13px; height: 13px; background: #3a1d24; border: 2px solid #000; }
 .hearts i.on { background: #ff4d6d; }
+.hearts i.lost { background: #ff4d6d; }
+@media (prefers-reduced-motion: no-preference) { .hearts i.lost { animation: lost 1s steps(6) .9s forwards; } @keyframes lost { 0%, 40% { background: #ffffff; } 100% { background: #3a1d24; } } }
+@media (prefers-reduced-motion: reduce) { .hearts i.lost { background: #3a1d24; } }
 .spr-e { display: block; width: 76px; height: 86px; image-rendering: pixelated; background-size: 100% 100%; }
 .b-enemy.boss .spr-e { width: 100px; height: 112px; }
 .b-enemy.down .spr-e { opacity: .12; filter: grayscale(1); }
@@ -184,18 +187,18 @@ button:disabled { opacity: .45; cursor: default; }
 .dmg { position: absolute; right: 18px; bottom: 120px; font-family: var(--num); font-weight: 800; font-size: 24px; color: #fff; text-shadow: 3px 3px 0 #000; }
 .dmg.crit { color: var(--yellow); }
 @media (prefers-reduced-motion: no-preference) {
-  .battle.atk .b-hero img { animation: lunge .45s steps(4); }
-  @keyframes lunge { 50% { transform: translateX(40px); } }
-  .battle .slash { animation: slash .45s steps(4) .15s; }
-  @keyframes slash { 0% { opacity: 0; transform: rotate(-35deg) scaleX(.2); } 40% { opacity: 1; } 100% { opacity: 0; transform: rotate(-35deg) scaleX(1.2); } }
-  .b-enemy.hurt .spr-e { animation: hurt .5s steps(5) .2s; }
-  @keyframes hurt { 20% { transform: translateX(8px); filter: brightness(2); } 60% { transform: translateX(-6px); } }
-  .b-enemy.down .spr-e { animation: down 1s steps(6) .3s backwards; }
+  .battle.atk .b-hero img { animation: lunge 1.2s steps(10); }
+  @keyframes lunge { 0% { transform: none; } 25% { transform: translateX(-8px); } 45%, 70% { transform: translateX(46px); } 100% { transform: none; } }
+  .battle .slash { animation: slash 1s steps(8) .45s backwards; }
+  @keyframes slash { 0% { opacity: 0; transform: rotate(-35deg) scaleX(.2); } 30%, 70% { opacity: 1; transform: rotate(-35deg) scaleX(1.1); } 100% { opacity: 0; transform: rotate(-35deg) scaleX(1.3); } }
+  .b-enemy.hurt .spr-e { animation: hurt 1.2s steps(10) .7s; }
+  @keyframes hurt { 10%, 50% { transform: translateX(10px); filter: brightness(2.2); } 30%, 70% { transform: translateX(-8px); filter: brightness(1.4); } 100% { transform: none; filter: none; } }
+  .b-enemy.down .spr-e { animation: down 1.8s steps(12) 1.6s backwards; }
   @keyframes down { from { opacity: 1; filter: none; transform: none; } to { opacity: .12; filter: grayscale(1); transform: translateY(10px) scale(.8); } }
-  .b-enemy.enter .spr-e { animation: enter .6s steps(6); }
+  .b-enemy.enter .spr-e { animation: enter 1.2s steps(10); }
   @keyframes enter { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .dmg { animation: dmg 1s steps(6) forwards; }
-  @keyframes dmg { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
+  .dmg { animation: dmg 2.6s steps(16) .7s both; }
+  @keyframes dmg { from { transform: translateY(10px) scale(.6); opacity: 0; } 15% { transform: translateY(0) scale(1.15); opacity: 1; } 75% { transform: translateY(-6px) scale(1); opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
 }
 @media (max-width: 460px) {
   .spr-e { width: 64px; height: 72px; }
@@ -478,7 +481,7 @@ button:disabled { opacity: .45; cursor: default; }
     for (let k = ei * PER_ENEMY; k < (ei + 1) * PER_ENEMY; k++) if (st.results[k] !== undefined) solvedIn++;
     const hp = PER_ENEMY - solvedIn, down = hp <= 0;
     const name = boss ? f.boss : `${f.minion} ${ei + 1}ごう`;
-    const hearts = Array.from({ length: PER_ENEMY }, (_, k) => `<i class="${k < hp ? 'on' : ''}"></i>`).join('');
+    const hearts = Array.from({ length: PER_ENEMY }, (_, k) => `<i class="${k < hp ? 'on' : (k === hp && (st.fx === 'hit' || st.fx === 'crit')) ? 'lost' : ''}"></i>`).join('');
     const fx = st.fx || '';
     const eq = equipped(), atk = eq[0] >= 0 ? GEAR[eq[0]].pal.x : '#ffffff';
     const first = st.i % PER_ENEMY === 0 && !st.solved && !st.wrong;
@@ -643,7 +646,14 @@ button:disabled { opacity: .45; cursor: default; }
     const say = document.getElementById('sayBtn');
     if (say) say.onclick = () => speak(q.type === 'word' ? q.word.w : q.target);
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
-    const n = document.getElementById('next'); if (n) { n.onclick = advance; n.focus({ preventScroll: true }); }
+    const n = document.getElementById('next');
+    if (n) {
+      n.onclick = advance;
+      // こうげきを ゆっくり みられるように すこし まってから おせる
+      if ((st.fx === 'hit' || st.fx === 'crit') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        n.disabled = true; setTimeout(() => { n.disabled = false; n.focus({ preventScroll: true }); }, 2200);
+      } else n.focus({ preventScroll: true });
+    }
     const fxNow = st.fx;
     st.fx = '';
     if (fxNow) {
