@@ -76,6 +76,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
   font-family: var(--num); font-weight: 800; font-size: 15px; color: var(--fg); text-decoration: none; padding: 7px 12px;
   background: var(--key); border: 3px solid var(--panel-edge); box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
 }
+.tbtn.on { background: #2f6f9e; box-shadow: inset 3px 3px 0 #5aa0d6, inset -3px -3px 0 #1d4a6b; }
 .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .game {
   display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--fg);
@@ -162,6 +163,15 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   const keyOf = id => id === 'p1' ? 'block-sansu-v1' : 'block-sansu-v1-' + id;
   let players = null;
   try { players = JSON.parse(localStorage.getItem(PLAYERS_KEY) || 'null'); } catch (e) {}
+  // ☁ いちど つないだら つないだ まま（せっていは この たんまつに のこる。やめる ときだけ きれる）
+  function renderCloud() {
+    let c = null;
+    try { c = JSON.parse(localStorage.getItem('block-sansu-cloud') || 'null'); } catch (e) {}
+    const on = !!(c && c.url && c.key);
+    const a = document.getElementById('goCloud');
+    a.textContent = on ? '☁ スプレッドシートに つないで います' : '☁ スプレッドシートに つなぐ';
+    a.classList.toggle('on', on);
+  }
   const hasPlayers = () => !!(players && Array.isArray(players.list) && players.list.length);
   const loadSave = id => { try { return JSON.parse(localStorage.getItem(keyOf(id)) || '{}') || {}; } catch (e) { return {}; } };
   const nameOf = sv => sv.name || 'ソラ';
@@ -208,8 +218,9 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
     try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (er) {}
     render();
   };
-  render();
+  render(); renderCloud();
   window.addEventListener('pageshow', () => {
+    renderCloud();
     try { players = JSON.parse(localStorage.getItem(PLAYERS_KEY) || 'null'); } catch (e) {}
     render();
   });

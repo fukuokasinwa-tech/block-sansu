@@ -159,6 +159,50 @@ button:disabled { opacity: .45; cursor: default; }
 .zcell.empty { visibility: hidden; }
 .zrow-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
 
+/* たたかい */
+.battle {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: end; gap: 8px;
+  padding: 34px 14px 8px; min-height: 178px; overflow: hidden; border: 3px solid var(--panel-edge);
+}
+.battle.bg-grass { background: linear-gradient(#5aa9d6, #a8dcf5 62%, #6cc447 62%, #4e9a2f); }
+.battle.bg-night { background: linear-gradient(#1d1640, #4b3a8a 62%, #3a2e5c 62%, #2a2145); }
+.battle.bg-factory { background: linear-gradient(#5d6670, #8e98a3 62%, #4a4f57 62%, #3a3e45); }
+.b-hero img { width: 60px; height: 80px; image-rendering: pixelated; display: block; }
+.b-enemy { grid-column: 3; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.b-name { font-family: var(--num); font-weight: 800; font-size: 14px; color: #fff; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
+.hearts { display: flex; gap: 3px; }
+.hearts i { width: 13px; height: 13px; background: #3a1d24; border: 2px solid #000; }
+.hearts i.on { background: #ff4d6d; }
+.spr-e { display: block; width: 88px; height: 99px; image-rendering: pixelated; background-size: 100% 100%; }
+.b-enemy.boss .spr-e { width: 120px; height: 135px; }
+.b-enemy.down .spr-e { opacity: .12; filter: grayscale(1); }
+.b-line {
+  position: absolute; top: 6px; left: 8px; margin: 0; max-width: 54%;
+  background: #fffaf0; color: #2a2a33; border: 3px solid #17191c; padding: 1px 8px; font-size: 14px; line-height: 1.5; text-align: left; white-space: normal;
+}
+.slash { position: absolute; right: 28px; bottom: 60px; width: 130px; height: 12px; background: var(--atk); transform: rotate(-35deg); box-shadow: 0 0 12px var(--atk), 0 0 2px #fff; opacity: 0; }
+.dmg { position: absolute; right: 18px; bottom: 120px; font-family: var(--num); font-weight: 800; font-size: 24px; color: #fff; text-shadow: 3px 3px 0 #000; }
+.dmg.crit { color: var(--yellow); }
+@media (prefers-reduced-motion: no-preference) {
+  .battle.atk .b-hero img { animation: lunge .45s steps(4); }
+  @keyframes lunge { 50% { transform: translateX(40px); } }
+  .battle .slash { animation: slash .45s steps(4) .15s; }
+  @keyframes slash { 0% { opacity: 0; transform: rotate(-35deg) scaleX(.2); } 40% { opacity: 1; } 100% { opacity: 0; transform: rotate(-35deg) scaleX(1.2); } }
+  .b-enemy.hurt .spr-e { animation: hurt .5s steps(5) .2s; }
+  @keyframes hurt { 20% { transform: translateX(8px); filter: brightness(2); } 60% { transform: translateX(-6px); } }
+  .b-enemy.down .spr-e { animation: down 1s steps(6) .3s backwards; }
+  @keyframes down { from { opacity: 1; filter: none; transform: none; } to { opacity: .12; filter: grayscale(1); transform: translateY(10px) scale(.8); } }
+  .b-enemy.enter .spr-e { animation: enter .6s steps(6); }
+  @keyframes enter { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dmg { animation: dmg 1s steps(6) forwards; }
+  @keyframes dmg { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
+}
+@media (max-width: 460px) {
+  .spr-e { width: 72px; height: 81px; }
+  .b-enemy.boss .spr-e { width: 100px; height: 112px; }
+  .b-hero img { width: 48px; height: 64px; }
+}
+.stage { align-items: center; }
 .parents { background: rgba(255,255,255,.85); border: 3px solid #24323c; padding: 14px 18px; color: #24323c; font-size: 15px; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.75; }
 .parents summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; }
 .parents summary::-webkit-details-marker { display: none; }
@@ -210,6 +254,7 @@ button:disabled { opacity: .45; cursor: default; }
   <details class="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
     <p>1年生で学ぶひらがなを、4つの遊びで練習します。「きいて えらぶ」は端末の読み上げ機能で音を出し、その字を選びます（読み上げに対応していない端末では選べません）。「えと ことば」は絵に合う言葉を選んだり、言葉のはじめの字を入れたりします。「ごじゅうおん」は50音の表のあいている所を入れます。「なぞりがき」は指やペンで字をなぞります。なぞり方が字の形にどれくらい重なっているかで判定していて、書き順までは判定していません。書き順はおうちの方が見てあげてください。</p>
+    <p>算数と同じように、問題を解くと主人公が敵に攻撃します（敵はステージごとに3つの一味が交代し、ひらがなのステージは算数とは別に数えます）。主人公は算数で集めたそうびの姿で戦います。ボスをたおすと、まだ持っていない「もじカード」が1枚もらえます。</p>
     <p>どの遊びも20問ずつ、ランダムに出題し、同じ問題が続かないようにしています。正解すると、その字の「もじカード」が手に入り（清音46字・濁音と半濁音25字の全71枚）、算数ゲームと共通の「おうち」も1つ進みます。記録はプレイヤーごとに、この端末に自動で保存されます。Google スプレッドシートにつないでいる場合は、そちらにも保存されます。</p>
   </details>
 </div>
@@ -343,6 +388,111 @@ button:disabled { opacity: .45; cursor: default; }
 
   /* ---------- もんだい ---------- */
   const TOTAL = 20;
+
+  /* ---------- てき と しゅじんこう（さんすうと おなじ キャラクター。ひらがなは ステージを べつに かぞえる：セーブの hiraStage） ---------- */
+  const GEAR = [
+    { mode: 'add10', label: 'たしざん 10まで', series: 'はっぱ', pal: { x: '#7cc95a', h: '#c4f0a6', d: '#3f7f2c' } },
+    { mode: 'sub10', label: 'ひきざん 10まで', series: 'くも', pal: { x: '#e6edf5', h: '#ffffff', d: '#9aa9bb' } },
+    { mode: 'addC', label: 'くりあがり', series: 'そら', pal: { x: '#4f9bea', h: '#b5dcff', d: '#2a5f9e' } },
+    { mode: 'mix', label: 'まぜこぜ', series: 'たいよう', pal: { x: '#ff9d2e', h: '#ffd88a', d: '#b8611a' } },
+    { mode: 'cherry', label: 'さくらんぼ', series: 'さくら', pal: { x: '#ff8fb8', h: '#ffd3e4', d: '#c24f7d' } },
+    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } }
+  ];
+
+  const PER = 3, SLOTS = 6;
+  const gearCount = ti => Math.min(6, Math.floor(((save.mc || {})[GEAR[ti].mode] || 0) / PER));
+  const equipped = () => Array.from({ length: SLOTS }, (_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti) > j) best = ti; }); return best; });
+  function drawHero(eq) {
+    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
+    const g = c.getContext('2d');
+    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
+    const skin = '#f2c9a0', hair = '#4a2f1d', shirt = '#e9574f', shorts = '#3a6fd4';
+    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
+    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
+    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
+    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
+    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
+    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
+    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
+    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
+    const P = ti => GEAR[ti].pal;
+    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
+    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
+    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
+    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
+    if (eq[0] >= 0) { const p = P(eq[0]); R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, '#4a2f1d'); }
+    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
+    return c.toDataURL();
+  }
+  const pad16 = rows => rows.map(r => (r + '................').slice(0, 16));
+  const FACTIONS = [
+    { id: 'nusu', name: 'ブロックどろぼう団 ぬすっとーズ', minion: 'チビぬすっと', boss: 'おやぶん ドロン', bg: 'grass',
+      mask: pad16([
+        '................', '.....oooooo.....', '....oooooooo....', '....ssssssss....', '....kkwkkwkk....', '....ssssssss....',
+        '.....ssmmss.....', '......ssss......', '....bwbwbwbw....', '...sbwbwbwbws...', '...sbwbwbwbwsyy.', '....bwbwbwbw.yyy',
+        '....dddddddd.yyy', '....dd....dd.yy.', '....kk....kk....', '................']),
+      pal: { o: '#ff8a1f', s: '#f2c9a0', k: '#22252a', w: '#ffffff', m: '#a0523a', b: '#2f5fb0', d: '#4a3a2a', y: '#c9a46a' },
+      boss: 'おやぶん ドロン', bossPal: { o: '#d6282f', b: '#7a2a8f', y: '#e8c247', d: '#2a2a2a' },
+      taunt: ['へへーん、ブロックは いただきだ！', 'おしかったな〜！'], down: 'ブロックを とりかえした！ ぬすっとは にげていった' },
+    { id: 'majin', name: 'まちがい まほうつかい ミスまじん', minion: 'ミスまじん', boss: 'だいまじん ミスゾー', bg: 'night',
+      mask: pad16([
+        '......pp........', '.....pppp.......', '....pppppp......', '...pppppppp.....', '...ppkkkkpp.....', '...pkykkykp...g.',
+        '...ppkkkkpp..ggg', '....pppppp....b.', '...pppppppp...b.', '..pppppppppp.sb.', '..ppplppplpp..b.', '..pppppppppp..b.',
+        '..pppppppppp..b.', '...pp....pp...b.', '...kk....kk.....', '................']),
+      pal: { p: '#7d4fd6', k: '#1b1530', y: '#ffe066', g: '#ff8fd0', b: '#8a5a2f', s: '#d8b0f0', l: '#b393f0' },
+      bossPal: { p: '#3b2a8a', l: '#ff5f8f', y: '#ff4d4d', g: '#ffd23f' },
+      taunt: ['ふっふっふ、まちがいの まほうだ〜', 'もう いちど かんがえて ごらん'], down: 'まほうが とけた！ ちいさく なって にげていった' },
+    { id: 'bot', name: 'いたずらロボ ガチャボット', minion: 'ガチャボット', boss: 'ギガボット', bg: 'factory',
+      mask: pad16([
+        '.......y........', '.......k........', '....gggggggg....', '....gccggccg....', '....gccggccg....', '....gggggggg....',
+        '....gkkkkkkg....', '....gggggggg....', '.....yyyyyy.....', '..ggyyyyyyyygdd.', '..g.yykkyy.gddd.', '....yyyyyy..dd..',
+        '....yyyyyy......', '....gg..gg......', '....kk..kk......', '................']),
+      pal: { y: '#ffd23f', k: '#2a2d33', g: '#9aa3ad', c: '#5fe0ff', d: '#6b7078' },
+      bossPal: { g: '#d6453a', y: '#3a3f47', c: '#ffe066', d: '#ffb347' },
+      taunt: ['ピピッ ハズレ ハズレ！', 'ガチャガチャ！ もう いっかい？'], down: 'ぶひんが はずれて バラバラ！' }
+  ];
+  (function makeEnemySprites() {
+    let css = '';
+    FACTIONS.forEach(f => {
+      [false, true].forEach(isBoss => {
+        const c = document.createElement('canvas'); c.width = 16; c.height = 18;
+        const g = c.getContext('2d'); const pal = Object.assign({}, f.pal, isBoss ? f.bossPal : {});
+        f.mask.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.' && pal[ch]) { g.fillStyle = pal[ch]; g.fillRect(x, y + 2, 1, 1); } }));
+        if (isBoss) { // ボスの かんむり
+          g.fillStyle = '#ffd23f';
+          [[5, 0], [7, 0], [9, 0], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [10, 0]].forEach(([x, y]) => g.fillRect(x, y, 1, 1));
+          g.fillStyle = '#e0245e'; g.fillRect(7, 1, 1, 1);
+        }
+        css += `.e-${f.id}${isBoss ? '-boss' : ''}{background-image:url(${c.toDataURL()})}`;
+      });
+    });
+    const st0 = document.createElement('style'); st0.textContent = css; document.head.appendChild(st0);
+  })();
+  const PER_ENEMY = 5; // 1たい 5もん。16〜20もんめは ボス
+  const factionNow = (offset = 0) => FACTIONS[(((save.hiraStage || 0) + offset) % FACTIONS.length + FACTIONS.length) % FACTIONS.length];
+  function battleHTML() {
+    const f = factionNow();
+    const last = TOTAL / PER_ENEMY - 1;
+    const ei = Math.min(last, Math.floor(st.i / PER_ENEMY)), boss = ei === last;
+    let solvedIn = 0;
+    for (let k = ei * PER_ENEMY; k < (ei + 1) * PER_ENEMY; k++) if (st.results[k] !== undefined) solvedIn++;
+    const hp = PER_ENEMY - solvedIn, down = hp <= 0;
+    const name = boss ? f.boss : `${f.minion} ${ei + 1}ごう`;
+    const hearts = Array.from({ length: PER_ENEMY }, (_, k) => `<i class="${k < hp ? 'on' : ''}"></i>`).join('');
+    const fx = st.fx || '';
+    const eq = equipped(), atk = eq[0] >= 0 ? GEAR[eq[0]].pal.x : '#ffffff';
+    const first = st.i % PER_ENEMY === 0 && !st.solved && !st.wrong;
+    const line = down ? f.down + (boss ? '　ボスを たおした！' : '') : fx === 'miss' ? pick(f.taunt) : first ? `${name}が あらわれた！` : '';
+    return `<div class="battle bg-${f.bg}${fx === 'hit' || fx === 'crit' ? ' atk' : ''}" style="--atk:${atk}" aria-label="${name} ハート ${hp}">
+      <div class="b-hero"><img src="${drawHero(eq)}" alt="" width="60" height="80"></div>
+      <div class="b-enemy${boss ? ' boss' : ''}${down ? ' down' : ''}${fx === 'hit' || fx === 'crit' ? ' hurt' : ''}${first ? ' enter' : ''}">
+        <div class="b-name">${name}</div><div class="hearts">${hearts}</div>
+        <span class="spr-e e-${f.id}${boss ? '-boss' : ''}"></span>
+      </div>
+      ${fx === 'hit' || fx === 'crit' ? `<span class="slash"></span><span class="dmg${fx === 'crit' ? ' crit' : ''}">${fx === 'crit' ? 'クリティカル！' : 'ヒット！'}</span>` : ''}
+      ${line ? `<p class="b-line">${line}</p>` : ''}
+    </div>`;
+  }
   function lookAlikes(c, n, pool) {
     const near = shuffle([...new Set(LOOKS.filter(g => g.includes(c)).flat())].filter(x => x !== c && pool.includes(x)));
     const rest = shuffle(pool.filter(x => x !== c && !near.includes(x)));
@@ -468,6 +618,8 @@ button:disabled { opacity: .45; cursor: default; }
       const ok = st.results.filter(Boolean).length;
       card.innerHTML = `${dotsHTML()}
         <div class="feedback good" style="gap:10px"><span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
+        <span>${factionNow(-1).name}を ぜんぶ たおした！</span>
+        <span style="color:var(--fg);font-size:17px">つぎは「${factionNow().name}」が まっているよ</span>
         <span>${TOTAL}もん できたよ。いっかいで せいかい：${ok}もん</span>
         <span style="color:var(--fg);font-size:17px">もじカード ${cardsOwned()} ／ ${ALL.length}</span></div>
         <div class="actions"><button class="btn" id="toZukan">🃏 ずかんを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
@@ -478,10 +630,12 @@ button:disabled { opacity: .45; cursor: default; }
     const q = st.q;
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！'}</span>
-      <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ おうちも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span></div>`;
+      <span class="reward"><span class="kcard">${esc(st.got)}</span>「${esc(st.got)}」の もじカード ゲット！ おうちも 1こ すすんだよ${st.gotNew ? '<span class="new">あたらしい カード！ ずかんに のったよ</span>' : ''}</span>
+      ${st.bossCard ? `<span class="reward"><span class="kcard">${esc(st.bossCard)}</span>👑 ボスを たおした ごほうび！「${esc(st.bossCard)}」の カード${st.bossCardNew ? '<span class="new">あたらしい カード！</span>' : ''}</span>` : ''}</div>`;
     else if (st.wrong && q.type !== 'trace') fb = '<div class="feedback try"><span>おしい！ もういちど えらんでね</span></div>';
     card.innerHTML = `
-      <div class="stage"><span>だい ${st.i + 1} もん ／ ${TOTAL}</span></div>
+      <div class="stage"><span>ステージ ${(save.hiraStage || 0) + 1}・だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⚔ せいかいで こうげき！</span></div>
+      ${battleHTML()}
       ${dotsHTML()}
       ${questionHTML(q)}
       ${fb}
@@ -490,28 +644,37 @@ button:disabled { opacity: .45; cursor: default; }
     if (say) say.onclick = () => speak(q.type === 'word' ? q.word.w : q.target);
     card.querySelectorAll('.choice').forEach(b => { b.onclick = () => choose(b.dataset.c, b); });
     const n = document.getElementById('next'); if (n) { n.onclick = advance; n.focus({ preventScroll: true }); }
+    st.fx = '';
     if (q.type === 'trace') setupTrace(q);
   }
 
   function solve() {
     st.solved = true;
     st.results[st.i] = !st.wrong;
+    st.fx = st.wrong ? 'hit' : 'crit';
     st.got = st.q.target;
     st.gotNew = gain(st.got);
+    st.bossCard = null;
+    if (st.i === TOTAL - 1) {
+      // ボスの ごほうび：まだ もっていない カードを 1まい（ぜんぶ あれば どれか）
+      const notYet = ALL.filter(c => !(save.hira[c] > 0));
+      st.bossCard = pick(notYet.length ? notYet : ALL);
+      st.bossCardNew = gain(st.bossCard);
+    }
     render();
     speak(st.q.type === 'word' ? st.q.word.w : st.q.target);
   }
   function choose(c, btn) {
     if (st.solved) return;
     if (c === st.q.answer) { solve(); return; }
-    st.wrong = true; st.no.push(c);
+    st.wrong = true; st.no.push(c); st.fx = 'miss';
     render();
     const again = card.querySelector(`.choice[data-c="${CSS.escape(c)}"]`);
     if (again) again.classList.add('shake');
     if (st.q.type === 'listen') setTimeout(() => speak(st.q.target), 300);
   }
   function advance() {
-    if (st.i + 1 >= TOTAL) { st.done = true; render(); return; }
+    if (st.i + 1 >= TOTAL) { st.done = true; save.hiraStage = (save.hiraStage || 0) + 1; persist(); render(); return; }
     st.i++; next();
   }
 
@@ -554,7 +717,7 @@ button:disabled { opacity: .45; cursor: default; }
       }
       const coverage = glyph ? covered / glyph : 0, precision = drawn ? near / drawn : 0;
       if (inkCount > 3 && coverage >= .55 && precision >= .7) { st.traceMsg = ''; solve(); return; }
-      st.wrong = true;
+      st.wrong = true; st.fx = 'miss';
       st.traceMsg = coverage < .55 ? 'もうすこし ぜんぶ なぞってね' : 'はみだしちゃった。「けす」で もういちど';
       render();
     };
