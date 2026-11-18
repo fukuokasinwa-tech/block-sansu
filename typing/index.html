@@ -344,7 +344,7 @@ button:disabled { opacity: .4; cursor: default; }
   ];
   const HAIRS = [{ id: 'short', n: 'みじかい' }, { id: 'long', n: 'ながい' }, { id: 'spiky', n: 'ツンツン' }, { id: 'pony', n: 'ポニーテール' }];
   const HAIR_COLORS = ['#4a2f1d', '#1d1d22', '#d9a43a', '#c8443a', '#7a5fd6'];
-  const stageClears = (sv = save) => (sv.stageNo || 0) + (sv.hiraStage || 0) + (sv.dragonWins || 0) + (sv.typeClears || 0) + (sv.progClears || 0);
+  const stageClears = (sv = save) => (sv.stageNo || 0) + (sv.hiraStage || 0) + (sv.dragonWins || 0) + (sv.typeClears || 0) + (sv.progClears || 0) + (sv.kokugoStage || 0);
   const itemCount = (sv = save) => Object.keys(sv.inv || {}).filter(k => sv.inv[k] > 0 && k !== 'red' && k !== 'blue').length;
   const unlockedW = (w, sv = save) => stageClears(sv) >= w.need;
   const unlockedA = (a, sv = save) => a.need === 'crown' ? ((sv.inv || {}).crown || 0) > 0 : itemCount(sv) >= a.need;
