@@ -241,6 +241,28 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .cq .box.act, .cq .berry.act { stroke: var(--yellow); stroke-width: 4; stroke-dasharray: none; }
 .cq .box.ok, .cq .berry.ok { stroke: var(--green); stroke-dasharray: none; }
 .cq text.v { fill: var(--yellow); }
+.btn.small { font-size: 15px; padding: 7px 12px; }
+.btn.ghost { background: var(--slot); box-shadow: none; }
+.btn.danger { background: #b8402f; box-shadow: inset 3px 3px 0 #e06a57, inset -3px -3px 0 #7a2418; }
+.player-actions { justify-content: center; }
+.overlay {
+  position: fixed; inset: 0; z-index: 50; background: rgba(10, 14, 20, .72);
+  display: flex; align-items: flex-start; justify-content: center; overflow-y: auto;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.overlay-panel { width: 100%; max-width: 520px; }
+.plist { display: flex; flex-direction: column; gap: 8px; }
+.pcard { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--slot); border: 3px solid var(--panel-edge); padding: 6px; }
+.pcard.cur { border-color: var(--yellow); }
+.pmain { flex: 1 1 200px; min-width: 0; display: flex; align-items: center; gap: 10px; background: none; border: 0; color: var(--fg); cursor: pointer; text-align: left; font-family: var(--pixel); padding: 4px; }
+.pmain img { width: 48px; height: 64px; image-rendering: pixelated; background: #9fd8f5; flex: none; }
+.pmain b { display: block; font-family: var(--num); font-size: 22px; color: var(--yellow); overflow-wrap: anywhere; }
+.pmain small { display: block; font-size: 13px; color: var(--muted); }
+.confirm { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--red); font-size: 15px; }
+.nameform { display: flex; flex-direction: column; gap: 10px; }
+.nameform label { font-size: 16px; }
+.nameform input { font-family: var(--num); font-weight: 800; font-size: 28px; padding: 10px 12px; width: 100%; color: var(--fg); background: var(--slot); border: 3px solid var(--yellow); }
+.err { color: var(--red); }
 /* しゅじんこう・そうび・ずかん */
 .hero-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
 .hero-img { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); }
@@ -300,10 +322,14 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 <div class="wrap">
   <h1>ブロック さんすう たんけん<small>もんだいを といて ブロックを ほろう！</small></h1>
 
-  <section class="panel" aria-label="ソラと もちもの">
+  <section class="panel" aria-label="しゅじんこうと もちもの">
     <div class="hero-row">
       <img id="heroImg" class="hero-img" alt="しゅじんこうの ソラ" width="120" height="160">
       <div class="hero-info" id="heroInfo"></div>
+    </div>
+    <div class="actions player-actions">
+      <button class="btn small" id="renameBtn">✎ なまえを かえる</button>
+      <button class="btn small" id="playersBtn">👥 プレイヤー こうたい</button>
     </div>
     <div class="inv" id="inv"></div>
   </section>
@@ -355,11 +381,16 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <section class="panel" id="house"></section>
   </div>
 
+  <div class="overlay" id="overlay" hidden>
+    <div class="panel overlay-panel" id="overlayBody" role="dialog" aria-modal="true" aria-label="プレイヤー"></div>
+  </div>
+
   <details class="parents" id="parents">
     <summary><h2>おうちのかたへ（タップで ひらく）</h2></summary>
     <div class="parents-body">
     <p>「🍒 さくらんぼ」は、さくらんぼ計算の書き方そのものを練習する問題です（7＋5なら、5の下のさくらんぼに3が入っていて、もう1つのさくらんぼと□の答えを入れます。ひきざんは13を10といくつに分けます）。どの種類も20問ずつ、ランダムに出題し、同じ問題や答え・数が同じ問題が続かないようにしています。</p>
-    <p>主人公の「ソラ」は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・かぶと・よろい・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「き・かわ」、ひきざん（10まで）は「いし・くさり」、くりあがりは「てつ」、まぜこぜは「きん」、くりさがりは「ほうせき」と、難しい問題ほど強いそうびになります。</p>
+    <p>はじめて開くと、主人公の名前を決める画面が出ます（あとから「✎ なまえを かえる」で変えられます）。きょうだいなど複数人で使うときは「👥 プレイヤー こうたい」で、プレイヤーを最大6人まで作れます。そうび・ずかん・おうちの進み具合は、プレイヤーごとに別々に、正解するたびに自動で保存されます（保存先はこの端末のブラウザです。別の端末やブラウザとは共有されません。ブラウザの履歴・サイトデータを消すと記録も消えます）。</p>
+    <p>主人公（名前を決めないときは「ソラ」）は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・かぶと・よろい・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「き・かわ」、ひきざん（10まで）は「いし・くさり」、くりあがりは「てつ」、まぜこぜは「きん」、くりさがりは「ほうせき」と、難しい問題ほど強いそうびになります。</p>
     <p>正解するたびにブロックやアイテム（全40種類）も1つ手に入り、「ずかん」に記録されます。やさしい問題ではブロックや「きのぼう」などの★のアイテム、難しい問題ほど★★★・★★★★のレアなアイテムが出やすくなります。</p>
     <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
     <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
@@ -489,15 +520,32 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const DROP = { 1: [100, 0, 0, 0], 2: [65, 35, 0, 0], 3: [0, 55, 40, 5], 4: [0, 20, 55, 25], quiz: [70, 30, 0, 0] };
   const rewardFor = q => roll(DROP[diffOf(q)]);
 
-  /* ---------- セーブ（この たんまつ だけ） ---------- */
-  const SAVE_KEY = 'block-sansu-v1';
-  let save = { inv: { grass: 0, dirt: 0, wood: 0, stone: 0, gold: 0, gem: 0 }, built: 0, houses: 0, recent: [], mc: {} };
-  try { const raw = localStorage.getItem(SAVE_KEY); if (raw) save = Object.assign(save, JSON.parse(raw)); } catch (e) {}
-  if (!Array.isArray(save.recent)) save.recent = [];
-  if (!save.mc || typeof save.mc !== 'object') save.mc = {};
-  if (!save.recent.length) save.recent = Object.keys(save.inv).filter(k => save.inv[k] > 0 && BY[k]);
-  const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} };
-  const owned = () => ITEMS.filter(it => (save.inv[it.id] || 0) > 0).length;
+  /* ---------- セーブ（この たんまつ だけ・プレイヤーごと・じどう） ---------- */
+  // さいしょの プレイヤー（p1）は まえからの キー 'block-sansu-v1' を そのまま つかう（まえの データを けさない）
+  const PLAYERS_KEY = 'block-sansu-players';
+  const MAX_PLAYERS = 6;
+  const keyOf = id => id === 'p1' ? 'block-sansu-v1' : 'block-sansu-v1-' + id;
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function loadSave(id) {
+    let sv = { inv: { grass: 0, dirt: 0, wood: 0, stone: 0, gold: 0, gem: 0 }, built: 0, houses: 0, recent: [], mc: {}, name: '' };
+    try { const raw = localStorage.getItem(keyOf(id)); if (raw) sv = Object.assign(sv, JSON.parse(raw)); } catch (e) {}
+    if (!sv.inv || typeof sv.inv !== 'object') sv.inv = {};
+    if (!Array.isArray(sv.recent)) sv.recent = [];
+    if (!sv.mc || typeof sv.mc !== 'object') sv.mc = {};
+    if (typeof sv.name !== 'string') sv.name = '';
+    if (!sv.recent.length) sv.recent = Object.keys(sv.inv).filter(k => sv.inv[k] > 0 && BY[k]);
+    return sv;
+  }
+  let players = null;
+  try { const raw = localStorage.getItem(PLAYERS_KEY); if (raw) players = JSON.parse(raw); } catch (e) {}
+  const firstRun = !players || !Array.isArray(players.list) || !players.list.length;
+  if (firstRun) players = { list: ['p1'], current: 'p1' };
+  if (!players.list.includes(players.current)) players.current = players.list[0];
+  const persistPlayers = () => { try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (e) {} };
+  let save = loadSave(players.current);
+  const persist = () => { try { localStorage.setItem(keyOf(players.current), JSON.stringify(save)); } catch (e) {} };
+  const nameOf = sv => sv.name || 'ソラ';
+  const owned = (sv = save) => ITEMS.filter(it => (sv.inv[it.id] || 0) > 0).length;
   let lastGot = null;
   function gain(kind) {
     const isNew = !(save.inv[kind] > 0);
@@ -525,9 +573,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 
   /* ---------- しゅじんこう ソラ ---------- */
   const tiOf = mode => GEAR.findIndex(g => g.mode === mode);
-  const gearCount = ti => Math.min(6, Math.floor((save.mc[GEAR[ti].mode] || 0) / PER));
-  const equipped = () => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti) > j) best = ti; }); return best; });
-  const gearTotal = () => GEAR.reduce((a, g, ti) => a + gearCount(ti), 0);
+  const gearCount = (ti, sv = save) => Math.min(6, Math.floor((sv.mc[GEAR[ti].mode] || 0) / PER));
+  const equipped = (sv = save) => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti, sv) > j) best = ti; }); return best; });
+  const gearTotal = (sv = save) => GEAR.reduce((a, g, ti) => a + gearCount(ti, sv), 0);
   function drawHero(eq) {
     const c = document.createElement('canvas'); c.width = 24; c.height = 32;
     const g = c.getContext('2d');
@@ -554,9 +602,10 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     const eq = equipped();
     const img = document.getElementById('heroImg');
     img.src = drawHero(eq);
+    img.alt = 'しゅじんこうの ' + nameOf(save);
     img.classList.toggle('flash', !!flash);
     document.getElementById('heroInfo').innerHTML = `
-      <div><span class="hero-name">ソラ</span> <span class="note">そうび ${gearTotal()} ／ ${GEAR.length * 6}</span></div>
+      <div><span class="hero-name">${esc(nameOf(save))}</span> <span class="note">そうび ${gearTotal()} ／ ${GEAR.length * 6}</span></div>
       <div class="eqs">${eq.map((ti, j) => `<div class="es" title="${ti >= 0 ? GEAR[ti].names[j] : SLOT_LABELS[j] + '：なし'}">${ti >= 0 ? G(ti, j) : ''}<small>${SLOT_LABELS[j]}</small></div>`).join('')}</div>
       <p class="note">${gearTotal() ? 'もんだいを とくと そうびが ふえて すがたが かわるよ。' : 'いまは Tシャツと たんパン。もんだいを ${PER}もん とくと そうびが もらえるよ！'}</p>`;
   }
@@ -810,7 +859,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     let fb = '';
     if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！ ブロックを ほったよ！'}</span>
       ${dropHTML(st.got, st.gotNew)}
-      ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>ソラの すがたが かわったよ</span>` : ''}</div>`;
+      ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>${esc(nameOf(save))}の すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
 
     card.innerHTML = `
@@ -984,6 +1033,91 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
 
   /* ---------- きりかえ・そうさ ---------- */
+  /* ---------- プレイヤー（なまえ・こうたい） ---------- */
+  const overlay = document.getElementById('overlay'), ob = document.getElementById('overlayBody');
+  const closeOverlay = () => { overlay.hidden = true; };
+  function switchPlayer(id) {
+    players.current = id; persistPlayers();
+    save = loadSave(id); lastGot = null;
+    renderInv(); renderHero(); start(st.mode); showView(view);
+    closeOverlay();
+  }
+  function showPlayers(confirmDel) {
+    const cards = players.list.map(id => {
+      const sv = id === players.current ? save : loadSave(id);
+      const del = confirmDel === id
+        ? `<div class="confirm">「${esc(nameOf(sv))}」の きろくを ぜんぶ けす？ <button class="btn small danger" data-act="del-yes" data-id="${id}">けす</button><button class="btn small" data-act="del-no">やめる</button></div>`
+        : (players.list.length > 1 ? `<button class="btn small ghost" data-act="del" data-id="${id}" aria-label="${esc(nameOf(sv))}を けす">🗑</button>` : '');
+      return `<div class="pcard${id === players.current ? ' cur' : ''}">
+        <button class="pmain" data-act="play" data-id="${id}">
+          <img src="${drawHero(equipped(sv))}" alt="" width="48" height="64">
+          <span><b>${esc(nameOf(sv))}</b><small>そうび ${gearTotal(sv)} ・ ずかん ${owned(sv)} ／ ${ITEMS.length}${id === players.current ? ' ・ いま あそんでいる' : ''}</small></span>
+        </button>
+        <button class="btn small ghost" data-act="rename" data-id="${id}" aria-label="${esc(nameOf(sv))}の なまえを かえる">✎</button>
+        ${del}
+      </div>`;
+    }).join('');
+    ob.innerHTML = `<h2>だれが あそぶ？</h2>
+      <p class="note">ひとりずつ べつべつに きろくされるよ。じぶんの なまえを タップしてね。</p>
+      <div class="plist">${cards}</div>
+      <div class="actions">
+        ${players.list.length < MAX_PLAYERS ? '<button class="btn primary" data-act="new">＋ あたらしい プレイヤー</button>' : `<p class="note">プレイヤーは ${MAX_PLAYERS}にん まで</p>`}
+        <button class="btn" data-act="close">とじる</button>
+      </div>`;
+    overlay.hidden = false;
+  }
+  function showNameForm(id, isNew, back) {
+    const sv = isNew ? { name: '' } : (id === players.current ? save : loadSave(id));
+    ob.innerHTML = `<h2>${isNew ? 'あたらしい プレイヤー' : 'なまえを きめよう'}</h2>
+      <form id="nameForm" class="nameform">
+        <label for="nameInput">なまえ（8もじ まで）</label>
+        <input id="nameInput" type="text" maxlength="8" autocomplete="off" value="${esc(sv.name || '')}" placeholder="れい：ソラ">
+        <p class="note err" id="nameErr" hidden>なまえを いれてね</p>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="nameOk">けってい</button>
+          ${back ? '<button type="button" class="btn" data-act="back">もどる</button>' : ''}
+        </div>
+      </form>`;
+    overlay.hidden = false;
+    const input = document.getElementById('nameInput');
+    setTimeout(() => input.focus(), 50);
+    document.getElementById('nameForm').onsubmit = e => {
+      e.preventDefault();
+      const nm = input.value.trim().slice(0, 8);
+      if (!nm) { document.getElementById('nameErr').hidden = false; return; }
+      if (isNew) {
+        players.list.push(id); persistPlayers();
+        try { localStorage.setItem(keyOf(id), JSON.stringify(Object.assign(loadSave(id), { name: nm }))); } catch (er) {}
+        switchPlayer(id);
+      } else if (id === players.current) {
+        save.name = nm; persist(); renderHero(); closeOverlay();
+        if (back) showPlayers();
+      } else {
+        const o = loadSave(id); o.name = nm;
+        try { localStorage.setItem(keyOf(id), JSON.stringify(o)); } catch (er) {}
+        showPlayers();
+      }
+    };
+  }
+  ob.addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const id = b.dataset.id, act = b.dataset.act;
+    if (act === 'play') switchPlayer(id);
+    else if (act === 'rename') showNameForm(id, false, true);
+    else if (act === 'new') showNameForm('p' + Date.now().toString(36), true, true);
+    else if (act === 'del') showPlayers(id);
+    else if (act === 'del-no') showPlayers();
+    else if (act === 'del-yes') {
+      try { localStorage.removeItem(keyOf(id)); } catch (er) {}
+      players.list = players.list.filter(x => x !== id);
+      if (players.current === id) { switchPlayer(players.list[0]); showPlayers(); } else { persistPlayers(); showPlayers(); }
+    }
+    else if (act === 'back') showPlayers();
+    else if (act === 'close') closeOverlay();
+  });
+  document.getElementById('renameBtn').onclick = () => showNameForm(players.current, false, false);
+  document.getElementById('playersBtn').onclick = () => showPlayers();
+
   let view = 'calc';
   function showView(v) {
     view = v;
@@ -1003,6 +1137,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (b.closest('.pad').dataset.pad === 'q') pressQuiz(k); else press(k);
   });
   document.addEventListener('keydown', e => {
+    if (!overlay.hidden) { if (e.key === 'Escape' && document.getElementById('playersBtn')) closeOverlay(); return; }
+    if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
     let k = null;
     if (/^[0-9]$/.test(e.key)) k = e.key;
     else if (e.key === 'Backspace') k = 'del';
@@ -1014,9 +1150,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (view === 'calc') press(k); else if (view === 'split') pressQuiz(k);
   });
 
+  persistPlayers();
   renderInv();
   renderHero();
   start('add10');
+  if (firstRun) showNameForm('p1', false, false);
 })();
 </script>
 </body>
