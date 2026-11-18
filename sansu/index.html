@@ -309,6 +309,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .battle.bg-castle { background: linear-gradient(#ff9a5a, #ffd9a0 62%, #8d8f92 62%, #6a6c70); }
 .b-hero { position: relative; z-index: 2; }
 .b-hero img { width: 60px; height: 80px; image-rendering: pixelated; display: block; }
+.b-hero img.pet { position: absolute; left: -30px; bottom: 0; width: 28px; height: 28px; }
 .b-enemy { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 1; }
 .b-name { font-family: var(--num); font-weight: 800; font-size: 14px; color: #fff; text-shadow: 2px 2px 0 #000; white-space: nowrap; }
 .hearts { display: flex; gap: 3px; }
@@ -376,7 +377,26 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   .spr-e { width: 64px; height: 72px; }
   .b-enemy.boss .spr-e { width: 84px; height: 95px; }
   .b-hero img { width: 48px; height: 64px; }
+  .b-hero img.pet { width: 24px; height: 24px; left: -26px; }
 }
+/* きせかえ */
+.pet { position: absolute; left: -30px; bottom: 0; width: 28px; height: 28px; image-rendering: pixelated; }
+.dress { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.dress-hero { position: relative; flex: none; margin-left: 30px; }
+.dress-hero > img:first-child { width: 120px; height: 160px; image-rendering: pixelated; background: linear-gradient(#9fd8f5, #cdeefc 75%, #6cc447 75%); border: 3px solid var(--panel-edge); display: block; }
+.dress-hero .pet { left: -34px; width: 32px; height: 32px; }
+.dress-opts { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.drow2 { display: flex; flex-direction: column; gap: 4px; }
+.dlbl { font-family: var(--num); font-weight: 800; font-size: 15px; color: var(--yellow); }
+.dopts { display: flex; flex-wrap: wrap; gap: 4px; }
+.dbtn { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 48px; min-height: 44px; padding: 3px 8px;
+  font-family: var(--num); font-weight: 700; font-size: 14px; color: var(--fg); cursor: pointer; background: var(--slot); border: 2px solid var(--panel-edge); }
+.dbtn .blk { width: 28px; height: 28px; }
+.dbtn img { image-rendering: pixelated; }
+.dbtn small { font-size: 11px; }
+.dbtn[aria-pressed="true"] { border-color: var(--yellow); background: #3d4a2e; }
+.dbtn:disabled { opacity: .35; cursor: default; }
+.swatch { display: block; width: 22px; height: 22px; border: 2px solid #000; }
 /* けんちく */
 .bstage { position: relative; width: 100%; max-width: 560px; margin: 0 auto; aspect-ratio: 4 / 3; border: 3px solid var(--panel-edge); background: #cdeefc; }
 .bstage canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
@@ -577,25 +597,189 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     { id: 'coin',   n: 'コイン',   t: 3, s: ['..yyyy..', '.yooooy.', 'yoyyyyoy', 'yoyooyoy', 'yoyooyoy', 'yoyyyyoy', '.yooooy.', '..yyyy..'], p: { y: '#ffd23f', o: '#d99a00' } },
     { id: 'gem',    n: 'にじの ほうせき', t: 4, g: 'rainbow' },
     { id: 'crystal',n: 'クリスタル', t: 4, s: ['...cc...', '..cwcc..', '.cwcccd.', '.cwcccd.', '.ccccdd.', '..cccd..', '...cd...', '........'], p: { c: '#b9a3ff', w: '#f1ebff', d: '#7a5fd6' } },
-    { id: 'crown',  n: 'おうかん', t: 4, s: ['........', 'y..yy..y', 'yy.yy.yy', 'yyyyyyyy', 'yryyyyry', 'yyyyyyyy', 'oooooooo', '........'], p: { y: '#ffd23f', r: '#e0245e', o: '#d99a00' } }
+    { id: 'crown',  n: 'おうかん', t: 4, s: ['........', 'y..yy..y', 'yy.yy.yy', 'yyyyyyyy', 'yryyyyry', 'yyyyyyyy', 'oooooooo', '........'], p: { y: '#ffd23f', r: '#e0245e', o: '#d99a00' } },
+    // ---- ここから ふえた 60しゅるい（ぜんぶ オリジナルの ドットえ） ----
+    { id: 'w_red', n: 'あかい ようもう', t: 1, c: ['#d9483b', '#c43c30', '#e35a4c'] },
+    { id: 'w_orange', n: 'オレンジの ようもう', t: 1, c: ['#ff9d2e', '#f08a1f', '#ffae4a'] },
+    { id: 'w_yellow', n: 'きいろい ようもう', t: 1, c: ['#ffd23f', '#f2c230', '#ffdd66'] },
+    { id: 'w_lime', n: 'きみどりの ようもう', t: 1, c: ['#9be07a', '#8ad468', '#aaea8c'] },
+    { id: 'w_sky', n: 'みずいろの ようもう', t: 1, c: ['#7cc6f2', '#6ab8e8', '#8ed0f6'] },
+    { id: 'w_pink', n: 'ピンクの ようもう', t: 1, c: ['#ffb3d1', '#ffa3c6', '#ffc2da'] },
+    { id: 'w_brown', n: 'ちゃいろい ようもう', t: 1, c: ['#8a5a36', '#7a4e2e', '#9b6a43'] },
+    { id: 'w_blue', n: 'あおい ようもう', t: 2, c: ['#3a6fd4', '#2f62c2', '#4a80e0'] },
+    { id: 'w_purple', n: 'むらさきの ようもう', t: 2, c: ['#9b6cf0', '#8a5ae0', '#ab7ef6'] },
+    { id: 'w_black', n: 'くろい ようもう', t: 2, c: ['#3a3a40', '#2f2f35', '#45454c'] },
+    { id: 'p_sakura', n: 'さくらの いた', t: 1, g: 'plank', c: ['#f2a7b8', '#eb98ab', '#f7b6c5'], line: '#c0607a' },
+    { id: 'p_dark', n: 'くろい いた', t: 1, g: 'plank', c: ['#5a3a2a', '#4e3224', '#664433'], line: '#3a2418' },
+    { id: 'p_white', n: 'しろい いた', t: 1, g: 'plank', c: ['#e8e2d4', '#ded7c6', '#f0ebdf'], line: '#b9b0a0' },
+    { id: 'b_white', n: 'しろい レンガ', t: 2, g: 'brick', c: ['#e8e2d4', '#d9d2c0'], line: '#9a9080' },
+    { id: 'b_black', n: 'くろい レンガ', t: 2, g: 'brick', c: ['#4a4a52', '#3a3a40'], line: '#8d8f92' },
+    { id: 'gl_red', n: 'あかい ガラス', t: 2, g: 'shine', c: ['#ff9a9a', '#ffb3b3', '#ff8080'] },
+    { id: 'gl_blue', n: 'あおい ガラス', t: 2, g: 'shine', c: ['#8ab8ff', '#a8caff', '#7aaaf5'] },
+    { id: 'gl_green', n: 'みどりの ガラス', t: 2, g: 'shine', c: ['#9be0a8', '#b5ecbe', '#86d494'] },
+    { id: 'sapphire', n: 'サファイア', t: 3, g: 'facet', c: ['#2f6fd0'], h: '#9cc4ff', d: '#1a3f80' },
+    { id: 'emerald', n: 'エメラルド', t: 3, g: 'facet', c: ['#2fae5a'], h: '#9cf0b5', d: '#16602f' },
+    { id: 'amethyst', n: 'アメジスト', t: 3, g: 'facet', c: ['#9b5fd6'], h: '#d9b8ff', d: '#5a2f8f' },
+    { id: 'topaz', n: 'トパーズ', t: 3, g: 'facet', c: ['#ffb347'], h: '#ffe0a8', d: '#b8701a' },
+    { id: 'opal', n: 'オパール', t: 4, g: 'facet', c: ['#f4f1ff'], h: '#ffc2e8', d: '#9fd8f5' },
+    { id: 'starshard', n: 'ほしの かけら', t: 4, g: 'facet', c: ['#ffe066'], h: '#ffffff', d: '#d9a43a' },
+    { id: 'moonstone', n: 'つきの いし', t: 4, g: 'facet', c: ['#c9d6ff'], h: '#ffffff', d: '#7a8acf' },
+    { id: 'mossy', n: 'こけいし', t: 1, g: 'cobble', c: ['#76787c', '#6a8a5a', '#7d7f83'], line: '#4f6b3f' },
+    { id: 'flowers', n: 'はなばたけ', t: 1, g: 'clover', c: ['#4fa83a', '#45992f', '#58b544'], h: '#ff8fb8', d: '#ffe066' },
+    { id: 'autumn', n: 'かれは', t: 1, c: ['#d9732a', '#c9601a', '#e88a3a', '#b8501a'] },
+    { id: 'sakuraleaf', n: 'さくらの はっぱ', t: 2, c: ['#ffb3d1', '#ff9ec4', '#ffc8dd'] },
+    { id: 'basalt', n: 'かざんの いし', t: 2, c: ['#3a3a40', '#2a2a30', '#4a4a52'], sp: ['#ff6a3d', '#ff9d2e'] },
+    { id: 'firefly', n: 'ほたるいし', t: 3, c: ['#2a2d33', '#22252a'], sp: ['#ffe066', '#fff7c2'] },
+    { id: 'icecream', n: 'アイス', t: 2, s: ['...pp...', '..pppp..', '..pwpp..', '..pppp..', '..cccc..', '...cc...', '...cc...', '....c...'], p: { p: '#ff9ec4', w: '#ffffff', c: '#d9a066' } },
+    { id: 'donut', n: 'ドーナツ', t: 2, s: ['..pspp..', '.ppppsp.', 'sp....pp', 'pp....ps', 'ps....pp', '.pspppp.', '..ppsp..', '........'], p: { p: '#ff9ec4', s: '#ffe066' } },
+    { id: 'dango', n: 'おだんご', t: 2, s: ['...b....', '..ppb...', '..pp....', '..wwb...', '..ww....', '..ggb...', '..gg....', '...b....'], p: { p: '#ff9ec4', w: '#fffaf0', g: '#8fd06a', b: '#b07a45' } },
+    { id: 'mikan', n: 'みかん', t: 1, s: ['....g...', '..oooo..', '.oooooo.', '.oohooo.', '.oooooo.', '.oooooo.', '..oooo..', '........'], p: { o: '#ff9d2e', h: '#ffd08a', g: '#3fa34d' } },
+    { id: 'grape', n: 'ぶどう', t: 2, s: ['....g...', '...g....', '.pppp...', 'pppppp..', '.pppp...', '..pp....', '........', '........'], p: { p: '#7d4fd6', g: '#3fa34d' } },
+    { id: 'cherries', n: 'さくらんぼ', t: 2, s: ['.....gg.', '....g..g', '...g...g', '..g....g', '.rr...rr', 'rrrr.rrr', 'rrrr.rrr', '.rr...rr'], p: { r: '#e0245e', g: '#3fa34d' } },
+    { id: 'cookie', n: 'クッキー', t: 1, s: ['..cccc..', '.cdcccc.', 'cccccdcc', 'ccdccccc', 'cccccdcc', '.ccdccc.', '..cccc..', '........'], p: { c: '#d9a066', d: '#6b3d22' } },
+    { id: 'pudding', n: 'プリン', t: 3, s: ['...rr...', '..rrrr..', '..yyyy..', '.yyyyyy.', '.yyyyyy.', 'wwwwwwww', '........', '........'], p: { r: '#8a4a1a', y: '#ffe066', w: '#ffffff' } },
+    { id: 'letter', n: 'てがみ', t: 1, s: ['........', 'wwwwwwww', 'wrwwwwrw', 'wwrwwrww', 'wwwrrwww', 'wwwwwwww', 'wwwwwwww', '........'], p: { w: '#fffaf0', r: '#e0245e' } },
+    { id: 'balloon', n: 'ふうせん', t: 1, s: ['..rrr...', '.rrrrr..', '.rwrrr..', '.rrrrr..', '..rrr...', '...r....', '...k....', '....k...'], p: { r: '#ff5f8f', w: '#ffd3e4', k: '#5d6166' } },
+    { id: 'ribbon', n: 'リボン', t: 2, s: ['........', 'pp....pp', 'ppp..ppp', 'pppppppp', 'ppp..ppp', 'pp.pp.pp', '...p.p..', '........'], p: { p: '#ff5f8f' } },
+    { id: 'bell', n: 'ベル', t: 2, s: ['...y....', '..yyy...', '.yyyyy..', '.yyhyy..', 'yyyyyyy.', '...y....', '........', '........'], p: { y: '#f2c230', h: '#fff7c2' } },
+    { id: 'map', n: 'ちず', t: 3, s: ['bbbbbbbb', 'btttgttb', 'bttggttb', 'btrttgtb', 'bttttrtb', 'btgttttb', 'bbbbbbbb', '........'], p: { b: '#8a5a2f', t: '#f0dfb0', g: '#5fb33c', r: '#e0245e' } },
+    { id: 'chest', n: 'たからばこ', t: 3, s: ['.bbbbbb.', 'bbybbybb', 'bbbbbbbb', 'yyyyyyyy', 'bbbykbbb', 'bbbbbbbb', 'bbbbbbbb', '........'], p: { b: '#8a5a2f', y: '#f2c230', k: '#22252a' } },
+    { id: 'orb', n: 'すいしょうだま', t: 4, s: ['..cccc..', '.cwcccc.', 'ccwccccc', 'cccccccc', '.cccccc.', '..cccc..', '.gggggg.', 'gggggggg'], p: { c: '#9fd8f5', w: '#ffffff', g: '#d9a43a' } },
+    { id: 'feather', n: 'にじの はね', t: 4, s: ['......rr', '.....ro.', '....oy..', '...yg...', '..gb....', '.bp.....', 'p.......', '........'], p: { r: '#ff6b8a', o: '#ffb347', y: '#ffe066', g: '#7ddc6f', b: '#5fb8ff', p: '#a98bff' } },
+    { id: 'pendant', n: 'ハートの ペンダント', t: 3, s: ['.y....y.', '..y..y..', '...yy...', '..r..r..', '.rrrrrr.', '.rrrrrr.', '..rrrr..', '...rr...'], p: { y: '#f2c230', r: '#ff4d6d' } },
+    { id: 'snowflake', n: 'ゆきの けっしょう', t: 3, s: ['...w....', '.w.w.w..', '..www...', 'wwwwwww.', '..www...', '.w.w.w..', '...w....', '........'], p: { w: '#cfefff' } },
+    { id: 'charm', n: 'はっぱの おまもり', t: 2, s: ['....g...', '...ggg..', '..ggggg.', '..gglgg.', '...ggg..', '....b...', '....b...', '........'], p: { g: '#3fa34d', l: '#a6e27f', b: '#8a5a2f' } },
+    { id: 'goldegg', n: 'きんの たまご', t: 4, s: ['...yy...', '..yyyy..', '.yhyyyy.', '.yyyyyy.', 'yyyyyyyd', 'yyyyyydd', '.yyyydd.', '..dddd..'], p: { y: '#f2c230', h: '#fff7c2', d: '#b88a12' } },
+    { id: 'glowshroom', n: 'ひかる キノコ', t: 3, s: ['..cccc..', '.cwccwc.', 'cccccccc', '..wwww..', '..wwww..', '..wwww..', '........', '........'], p: { c: '#5fe0ff', w: '#fff4dc' } },
+    { id: 'clock', n: 'めざまし どけい', t: 2, s: ['..kkkk..', '.kwwwwk.', 'kwwkwwwk', 'kwwkwwwk', 'kwwkkkwk', 'kwwwwwwk', '.kwwwwk.', '..kkkk..'], p: { k: '#c8443a', w: '#fffaf0' } },
+    { id: 'clover', n: 'よつばの クローバー', t: 1, s: ['.gg.gg..', 'gggggg..', '.gggg...', 'gggggg..', '.gg.gg..', '...b....', '....b...', '........'], p: { g: '#3fa34d', b: '#6b8a3a' } },
+    { id: 'acorn', n: 'どんぐり', t: 1, s: ['..bbbb..', '.bbbbbb.', '..aaaa..', '.aaaaaa.', '.aaaaaa.', '..aaaa..', '...aa...', '........'], p: { b: '#6b4423', a: '#b07a45' } },
+    { id: 'shell', n: 'かいがら', t: 1, s: ['...pp...', '..pwpp..', '.pwpwpp.', 'pwpwpwpp', 'pwpwpwpp', '.pppppp.', '..pppp..', '........'], p: { p: '#ffb3c6', w: '#fff0f4' } },
+    { id: 'pinecone', n: 'まつぼっくり', t: 1, s: ['...bb...', '..bdbd..', '.bdbdbd.', '.dbdbdb.', '.bdbdbd.', '..dbdb..', '...bd...', '........'], p: { b: '#8a5a2f', d: '#5a3a1e' } },
+    { id: 'bone', n: 'ほね', t: 1, s: ['ww....ww', 'www..www', '.wwwwww.', '..wwww..', '.wwwwww.', 'www..www', 'ww....ww', '........'], p: { w: '#f4f1ea' } },
+    { id: 'rod', n: 'つりざお', t: 2, s: ['.......b', '......bk', '.....b.k', '....b..k', '...b...k', '..b....k', '.b.....r', 'b.......'], p: { b: '#8a5a2f', k: '#cfd6dd', r: '#e0245e' } },
+    { id: 'wateringcan', n: 'じょうろ', t: 1, s: ['........', '.bbbb..b', 'bbbbbbb.', 'bbbbbb..', 'bbbbbb..', 'bbbbbb..', '.bbbb...', '........'], p: { b: '#4f9bea' } },
   ];
   const EXTRA = [
     { id: 'red',  c: ['#d9483b', '#c43c30', '#e35a4c'] },
     { id: 'blue', c: ['#3a78d4', '#2f68be', '#4a8ae0'] }
   ];
   /* そうび：むずかしい もんだいほど つよい そうび */
+  /* @@HERO-SHARED-START しゅじんこう・そうび・きせかえ（さんすう と ひらがな で おなじ。さんすうで かえたら ひらがなにも コピーする） */
+  // そうびの シリーズ：どの もんだいも 1つめ（6こ）が そろうと 2つめの シリーズが はじまる。むずかしい もんだいほど つよい
   const GEAR = [
     { mode: 'add10', label: 'たしざん 10まで', series: 'はっぱ', pal: { x: '#7cc95a', h: '#c4f0a6', d: '#3f7f2c' } },
     { mode: 'sub10', label: 'ひきざん 10まで', series: 'くも', pal: { x: '#e6edf5', h: '#ffffff', d: '#9aa9bb' } },
     { mode: 'addC', label: 'くりあがり', series: 'そら', pal: { x: '#4f9bea', h: '#b5dcff', d: '#2a5f9e' } },
     { mode: 'mix', label: 'まぜこぜ', series: 'たいよう', pal: { x: '#ff9d2e', h: '#ffd88a', d: '#b8611a' } },
     { mode: 'cherry', label: 'さくらんぼ', series: 'さくら', pal: { x: '#ff8fb8', h: '#ffd3e4', d: '#c24f7d' } },
-    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } }
+    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } },
+    { mode: 'add10', tier: 2, label: 'たしざん 10まで', series: 'ほのお', pal: { x: '#ff6a3d', h: '#ffd08a', d: '#a8321a' } },
+    { mode: 'sub10', tier: 2, label: 'ひきざん 10まで', series: 'こおり', pal: { x: '#9fe3ff', h: '#ffffff', d: '#4a9fcf' } },
+    { mode: 'addC', tier: 2, label: 'くりあがり', series: 'かみなり', pal: { x: '#ffe14d', h: '#fff7c2', d: '#b89a12' } },
+    { mode: 'mix', tier: 2, label: 'まぜこぜ', series: 'ほしぞら', pal: { x: '#2b3a8f', h: '#ffd23f', d: '#151d4f' } },
+    { mode: 'cherry', tier: 2, label: 'さくらんぼ', series: 'はなかんむり', pal: { x: '#ff7eb6', h: '#fff0f6', d: '#3f9a4a' } },
+    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } }
   ];
-  const PIECES = ['けん', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
+  const PIECES = ['ぶき', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
   GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
-  const SLOT_LABELS = ['けん', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
+  const SLOT_LABELS = ['ぶき', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
   const PER = 3; // 3もん せいかいで そうびが 1こ
+  const gearCount = (ti, sv = save) => {
+    const n = Math.floor(((sv.mc || {})[GEAR[ti].mode] || 0) / PER);
+    return GEAR[ti].tier === 2 ? Math.min(6, Math.max(0, n - 6)) : Math.min(6, n);
+  };
+  const autoBest = (sv = save) => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti, sv) > j) best = ti; }); return best; });
+  // ぶきの しゅるい（ステージを クリアした かずで ふえる。さんすう＋ひらがな＋ドラゴン）
+  const WEAPONS = [
+    { id: 'sword', n: 'けん', need: 0, s: ['......hx', '.....hxd', '....hxd.', '...hxd..', 'd.hxd...', '.dxd....', '.kd.....', 'k.......'] },
+    { id: 'staff', n: 'つえ', need: 1, s: ['.....hh.', '....hxxh', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......'] },
+    { id: 'bow', n: 'ゆみ', need: 2, s: ['...xx...', '..x..k..', '.x...k..', '.x...k..', '.x...k..', '..x..k..', '...xx...', '........'] },
+    { id: 'axe', n: 'おの', need: 3, s: ['.xxx....', 'xhxxk...', 'xxxxk...', '.xx.k...', '....k...', '....k...', '....k...', '....k...'] },
+    { id: 'hammer', n: 'ハンマー', need: 5, s: ['xxxxxx..', 'xhhhhx..', 'xxxxxx..', '..k.....', '..k.....', '..k.....', '..k.....', '..k.....'] },
+    { id: 'spear', n: 'やり', need: 7, s: ['......hx', '.....xx.', '....k...', '...k....', '..k.....', '.k......', 'k.......', '........'] }
+  ];
+  // こもの（ずかんの かずで ふえる）
+  const ACCS = [
+    { id: 'cape', n: 'マント', need: 10 },
+    { id: 'bag', n: 'リュック', need: 20 },
+    { id: 'glasses', n: 'めがね', need: 30 },
+    { id: 'crownAcc', n: 'おうかんの かざり', need: 'crown' }
+  ];
+  const PETS = [
+    { id: 'dog', n: 'いぬ', need: 40, s: ['......k.', 'b....bbb', 'bb..bbbb', '.bbbbbb.', '.bbbbbb.', '.b.bb.b.', '.b.bb.b.', '........'], p: { b: '#a0662f', k: '#22252a' } },
+    { id: 'cat', n: 'ねこ', need: 55, s: ['.g...g..', '.gg.gg..', '.ggggg..', '.gwgwg..', '.ggggg.g', '..ggg..g', '.ggggggg', '.g.g.g..'], p: { g: '#9aa3ad', w: '#22252a' } },
+    { id: 'bird', n: 'ことり', need: 70, s: ['........', '..yyy...', '.ykyyo..', '.yyyyy..', 'yyyyy...', '.yyy....', '..o.o...', '........'], p: { y: '#ffd23f', k: '#22252a', o: '#ff9d2e' } }
+  ];
+  const HAIRS = [{ id: 'short', n: 'みじかい' }, { id: 'long', n: 'ながい' }, { id: 'spiky', n: 'ツンツン' }, { id: 'pony', n: 'ポニーテール' }];
+  const HAIR_COLORS = ['#4a2f1d', '#1d1d22', '#d9a43a', '#c8443a', '#7a5fd6'];
+  const stageClears = (sv = save) => (sv.stageNo || 0) + (sv.hiraStage || 0) + (sv.dragonWins || 0);
+  const itemCount = (sv = save) => Object.keys(sv.inv || {}).filter(k => sv.inv[k] > 0 && k !== 'red' && k !== 'blue').length;
+  const unlockedW = (w, sv = save) => stageClears(sv) >= w.need;
+  const unlockedA = (a, sv = save) => a.need === 'crown' ? ((sv.inv || {}).crown || 0) > 0 : itemCount(sv) >= a.need;
+  function outfitOf(sv = save) {
+    const o = Object.assign({ slots: [null, null, null, null, null, null], weapon: 'sword', hair: 'short', hairColor: 0, cape: false, bag: false, glasses: false, crownAcc: false, pet: null }, sv.outfit || {});
+    if (!Array.isArray(o.slots) || o.slots.length !== 6) o.slots = [null, null, null, null, null, null];
+    return o;
+  }
+  // きている そうび（じぶんで えらんだ もの → なければ いちばん つよい もの）
+  const equipped = (sv = save) => {
+    const a = autoBest(sv), o = outfitOf(sv);
+    return a.map((v, j) => { const c = o.slots[j]; if (c === null || c === undefined) return v; if (c === -1) return -1; return GEAR[c] && gearCount(c, sv) > j ? c : v; });
+  };
+  function drawHero(eq, sv = save) {
+    const o = outfitOf(sv);
+    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
+    const g = c.getContext('2d');
+    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
+    const skin = '#f2c9a0', hair = HAIR_COLORS[o.hairColor] || HAIR_COLORS[0], shirt = '#e9574f', shorts = '#3a6fd4';
+    const acc = id => o[id] && unlockedA(ACCS.find(a => a.id === id), sv);
+    if (acc('cape')) { R(3, 8, 10, 13, '#c8443a'); R(3, 8, 10, 1, '#8f2a22'); }
+    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
+    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
+    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
+    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
+    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
+    if (o.hair === 'long') { R(3, 2, 1, 8, hair); R(12, 2, 1, 8, hair); }
+    if (o.hair === 'pony') { R(12, 2, 2, 2, hair); R(13, 4, 1, 5, hair); }
+    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
+    if (o.hair === 'spiky') { R(3, 0, 1, 2, hair); R(12, 0, 1, 2, hair); R(8, 2, 3, 1, hair); }
+    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
+    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
+    if (acc('glasses')) { R(5, 4, 2, 2, '#22252a'); R(8, 4, 2, 2, '#22252a'); R(7, 4, 1, 1, '#22252a'); R(5, 4, 1, 1, '#9fd8f5'); R(8, 4, 1, 1, '#9fd8f5'); }
+    const P = ti => GEAR[ti].pal;
+    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
+    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
+    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
+    if (acc('bag')) { R(12, 9, 2, 6, '#8a5a2f'); R(12, 9, 2, 1, '#5e3b1c'); }
+    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
+    if (acc('crownAcc')) { R(5, 0, 6, 2, '#f2c230'); R(7, 0, 2, 1, '#e0245e'); }
+    if (eq[0] >= 0) {
+      const p = P(eq[0]), k = '#4a2f1d';
+      const w = (WEAPONS.find(x => x.id === o.weapon && unlockedW(x, sv)) || WEAPONS[0]).id;
+      if (w === 'sword') { R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, k); }
+      if (w === 'staff') { R(1, 5, 1, 13, k); R(-1, 2, 3, 3, p.x); R(-1, 2, 1, 1, p.h); }
+      if (w === 'bow') { R(-1, 4, 1, 10, p.x); R(0, 3, 1, 1, p.x); R(0, 14, 1, 1, p.x); R(1, 4, 1, 10, '#eeeeee'); }
+      if (w === 'axe') { R(1, 4, 1, 14, k); R(-2, 4, 3, 4, p.x); R(-2, 4, 1, 4, p.h); }
+      if (w === 'hammer') { R(1, 5, 1, 13, k); R(-1, 2, 5, 3, p.x); R(-1, 2, 5, 1, p.h); }
+      if (w === 'spear') { R(1, 2, 1, 16, k); R(0, 0, 3, 2, p.x); R(1, 0, 1, 1, p.h); }
+    }
+    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
+    return c.toDataURL();
+  }
+  const petCache = {};
+  function petURL(id) {
+    if (petCache[id]) return petCache[id];
+    const pt = PETS.find(p => p.id === id); if (!pt) return '';
+    const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d');
+    pt.s.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.' && pt.p[ch]) { g.fillStyle = pt.p[ch]; g.fillRect(x, y, 1, 1); } }));
+    return (petCache[id] = c.toDataURL());
+  }
+  function petHTML(sv = save) {
+    const o = outfitOf(sv), pt = PETS.find(p => p.id === o.pet);
+    return pt && unlockedA(pt, sv) ? `<img class="pet" src="${petURL(pt.id)}" alt="${pt.n}">` : '';
+  }
+  /* @@HERO-SHARED-END */
   const GEAR_MASK = [
     ['......hx', '.....hxd', '....hxd.', '...hxd..', 'd.hxd...', '.dxd....', '.kd.....', 'k.......'],
     ['........', '.hhhhhx.', 'hxxxxxxd', 'xx....xd', 'xx....xd', 'x......d', '........', '........'],
@@ -606,7 +790,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   ];
   const GEAR_SPR = [];
   GEAR.forEach((g, ti) => GEAR_MASK.forEach((m, j) => GEAR_SPR.push({ id: `g${ti}_${j}`, s: m, p: Object.assign({ k: '#4a2f1d' }, g.pal) })));
+  WEAPONS.forEach(w => GEAR_SPR.push({ id: 'w-' + w.id, s: w.s, p: { x: '#c9ced6', h: '#ffffff', d: '#7d8590', k: '#8a5a2f' } }));
   const G = (ti, j) => `<span class="blk spr t-g${ti}_${j}"></span>`;
+  const W = id => `<span class="blk spr t-w-${id}"></span>`;
   const BY = {}; ITEMS.forEach(it => { BY[it.id] = it; });
   const NAMES = {}; ITEMS.forEach(it => { NAMES[it.id] = it.n; });
   const STARS = t => '★'.repeat(t);
@@ -684,11 +870,15 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const nameOf = sv => sv.name || 'ソラ';
   const owned = (sv = save) => ITEMS.filter(it => (sv.inv[it.id] || 0) > 0).length;
   let lastGot = null;
+  let unlockMsg = '';
   function gain(kind) {
+    const beforeA = ACCS.concat(PETS).filter(a => unlockedA(a)).map(a => a.n);
     const isNew = !(save.inv[kind] > 0);
     save.inv[kind] = (save.inv[kind] || 0) + 1; save.built++;
     save.recent = [kind].concat(save.recent.filter(k => k !== kind)).slice(0, 6);
     lastGot = kind; persist(); renderInv();
+    const newly = ACCS.concat(PETS).filter(a => unlockedA(a)).map(a => a.n).filter(n => !beforeA.includes(n));
+    if (newly.length) unlockMsg = `🎁 あたらしく「${newly.join('・')}」が つかえるように なったよ！「⚔ そうび」で きせかえよう`;
     return isNew;
   }
   function dropHTML(kind, isNew) {
@@ -710,31 +900,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 
   /* ---------- しゅじんこう ソラ ---------- */
   const tiOf = mode => GEAR.findIndex(g => g.mode === mode);
-  const gearCount = (ti, sv = save) => Math.min(6, Math.floor((sv.mc[GEAR[ti].mode] || 0) / PER));
-  const equipped = (sv = save) => SLOT_LABELS.map((_, j) => { let best = -1; GEAR.forEach((g, ti) => { if (gearCount(ti, sv) > j) best = ti; }); return best; });
   const gearTotal = (sv = save) => GEAR.reduce((a, g, ti) => a + gearCount(ti, sv), 0);
-  function drawHero(eq) {
-    const c = document.createElement('canvas'); c.width = 24; c.height = 32;
-    const g = c.getContext('2d');
-    const R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x + 4, y, w, h); };
-    const skin = '#f2c9a0', hair = '#4a2f1d', shirt = '#e9574f', shorts = '#3a6fd4';
-    R(4, 20, 3, 8, skin); R(9, 20, 3, 8, skin);
-    R(3, 28, 4, 2, '#f4f4f4'); R(9, 28, 4, 2, '#f4f4f4'); R(3, 30, 4, 1, '#555555'); R(9, 30, 4, 1, '#555555');
-    R(4, 16, 8, 2, shorts); R(4, 18, 3, 2, shorts); R(9, 18, 3, 2, shorts);
-    R(4, 8, 8, 8, shirt); R(7, 8, 2, 1, skin); R(7, 11, 2, 2, '#ffd23f');
-    R(2, 8, 2, 3, shirt); R(12, 8, 2, 3, shirt); R(2, 11, 2, 5, skin); R(12, 11, 2, 5, skin);
-    R(4, 2, 8, 6, skin); R(4, 0, 8, 2, hair); R(4, 2, 1, 2, hair); R(11, 2, 1, 2, hair); R(5, 2, 3, 1, hair);
-    R(6, 4, 1, 2, '#2b2b55'); R(9, 4, 1, 2, '#2b2b55'); R(7, 6, 2, 1, '#c0705a');
-    R(5, 6, 1, 1, '#f2a08a'); R(10, 6, 1, 1, '#f2a08a');
-    const P = ti => GEAR[ti].pal;
-    if (eq[3] >= 0) { const p = P(eq[3]); R(4, 16, 8, 2, p.x); R(4, 16, 8, 1, p.d); R(4, 18, 3, 8, p.x); R(9, 18, 3, 8, p.x); R(5, 19, 1, 5, p.h); R(10, 19, 1, 5, p.h); }
-    if (eq[4] >= 0) { const p = P(eq[4]); R(3, 25, 4, 5, p.x); R(9, 25, 4, 5, p.x); R(3, 25, 4, 1, p.h); R(9, 25, 4, 1, p.h); R(3, 30, 4, 1, p.d); R(9, 30, 4, 1, p.d); }
-    if (eq[2] >= 0) { const p = P(eq[2]); R(4, 8, 8, 8, p.x); R(2, 8, 2, 4, p.x); R(12, 8, 2, 4, p.x); R(5, 9, 2, 2, p.h); R(4, 15, 8, 1, p.d); R(7, 10, 2, 4, p.d); }
-    if (eq[1] >= 0) { const p = P(eq[1]); R(3, 0, 10, 2, p.x); R(3, 2, 2, 3, p.x); R(11, 2, 2, 3, p.x); R(4, 0, 4, 1, p.h); R(3, 4, 2, 1, p.d); R(11, 4, 2, 1, p.d); }
-    if (eq[0] >= 0) { const p = P(eq[0]); R(0, 3, 2, 11, p.x); R(0, 3, 1, 11, p.h); R(0, 2, 1, 1, p.h); R(-1, 14, 4, 1, p.d); R(0, 15, 2, 3, '#4a2f1d'); }
-    if (eq[5] >= 0) { const p = P(eq[5]); R(13, 10, 5, 8, p.d); R(14, 11, 3, 6, p.x); R(15, 12, 1, 3, p.h); }
-    return c.toDataURL();
-  }
   function renderHero(flash) {
     const eq = equipped();
     const img = document.getElementById('heroImg');
@@ -753,17 +919,56 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
   const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★（たしざん と ひきざん）' };
   function renderGearStrip() {
-    const ti = tiOf(st.mode), g = GEAR[ti], cnt = gearCount(ti), mc = save.mc[g.mode] || 0;
+    let ti = tiOf(st.mode);
+    if (gearCount(ti) >= 6) ti = GEAR.findIndex(x => x.mode === st.mode && x.tier === 2);
+    const g = GEAR[ti], cnt = gearCount(ti), mc = save.mc[g.mode] || 0;
     document.getElementById('gearStrip').innerHTML = `
       <div class="strip-head"><b>${g.label}</b> で もらえる もの</div>
       <p class="note">そうび：<b class="series">${g.series}</b> シリーズ（${PER}もん せいかいで 1こ）・ アイテム：${RARITY_TEXT[g.mode]}</p>
       ${gearRowHTML(ti, true)}
-      <p class="note">${cnt >= 6 ? 'この シリーズは ぜんぶ そろったよ！ つぎは もっと むずかしい もんだいに チャレンジ！' : `つぎの「${g.names[cnt]}」まで あと <b class="series">${PER - (mc % PER)}</b>もん`}</p>`;
+      <p class="note">${cnt >= 6 ? 'この もんだいの シリーズは ぜんぶ そろったよ！ ほかの もんだいにも チャレンジ！' : `つぎの「${g.names[cnt]}」まで あと <b class="series">${PER - (mc % PER)}</b>もん`}</p>`;
+  }
+  function dressHTML() {
+    const o = outfitOf(), eq = equipped();
+    const btn = (attrs, inner, pressed, disabled, title) => `<button class="dbtn" ${attrs} aria-pressed="${!!pressed}" ${disabled ? 'disabled' : ''} title="${title || ''}">${inner}</button>`;
+    const slotRows = SLOT_LABELS.map((lb, j) => {
+      const owned = GEAR.map((g, ti) => ti).filter(ti => gearCount(ti) > j);
+      const cur = o.slots[j];
+      return `<div class="drow2"><span class="dlbl">${lb}</span><div class="dopts">
+        ${btn(`data-slot="${j}" data-v="auto"`, 'おまかせ', cur === null || cur === undefined)}
+        ${btn(`data-slot="${j}" data-v="-1"`, 'なし', cur === -1)}
+        ${owned.map(ti => btn(`data-slot="${j}" data-v="${ti}"`, G(ti, j), cur === ti, false, GEAR[ti].names[j])).join('')}
+        ${owned.length ? '' : '<small class="note">まだ ないよ</small>'}</div></div>`;
+    }).join('');
+    const clears = stageClears(), items = itemCount();
+    return `<h2>きせかえ</h2>
+      <div class="dress">
+        <div class="dress-hero"><img src="${drawHero(eq)}" alt="いまの すがた" width="120" height="160">${petHTML()}</div>
+        <div class="dress-opts">
+          ${slotRows}
+          <div class="drow2"><span class="dlbl">ぶきの かたち</span><div class="dopts">${WEAPONS.map(w => btn(`data-weapon="${w.id}"`, `${W(w.id)}<small>${w.n}</small>`, o.weapon === w.id, !unlockedW(w), unlockedW(w) ? w.n : `ステージを あと ${w.need - clears}かい クリアで つかえるよ`)).join('')}</div></div>
+          <div class="drow2"><span class="dlbl">こもの</span><div class="dopts">${ACCS.map(a => btn(`data-acc="${a.id}"`, a.n, o[a.id] && unlockedA(a), !unlockedA(a), unlockedA(a) ? a.n : (a.need === 'crown' ? 'おうかんを ゲットすると つかえるよ' : `ずかんが ${a.need}こに なると つかえるよ`))).join('')}</div></div>
+          <div class="drow2"><span class="dlbl">ペット</span><div class="dopts">${btn('data-pet="none"', 'なし', !o.pet)}${PETS.map(p => btn(`data-pet="${p.id}"`, `<img src="${petURL(p.id)}" alt="" width="24" height="24"><small>${p.n}</small>`, o.pet === p.id, !unlockedA(p), unlockedA(p) ? p.n : `ずかんが ${p.need}こに なると つかえるよ`)).join('')}</div></div>
+          <div class="drow2"><span class="dlbl">かみがた</span><div class="dopts">${HAIRS.map(h => btn(`data-hair="${h.id}"`, h.n, o.hair === h.id)).join('')}</div></div>
+          <div class="drow2"><span class="dlbl">かみの いろ</span><div class="dopts">${HAIR_COLORS.map((c, i) => btn(`data-hc="${i}"`, `<i class="swatch" style="background:${c}"></i>`, o.hairColor === i, false, 'いろ ' + (i + 1))).join('')}</div></div>
+          <p class="note">ステージ クリア ${clears}かい ・ ずかん ${items}こ。ぶきは ステージを クリアすると、こもの・ペットは ずかんが ふえると つかえるように なるよ。</p>
+        </div>
+      </div>`;
+  }
+  function bindDress(root) {
+    const set = fn => { const o = outfitOf(); fn(o); save.outfit = o; persist(); renderHero(); renderGearView(); };
+    root.querySelectorAll('[data-slot]').forEach(b => { b.onclick = () => set(o => { const v = b.dataset.v; o.slots[+b.dataset.slot] = v === 'auto' ? null : Number(v); }); });
+    root.querySelectorAll('[data-weapon]').forEach(b => { b.onclick = () => set(o => { o.weapon = b.dataset.weapon; }); });
+    root.querySelectorAll('[data-acc]').forEach(b => { b.onclick = () => set(o => { o[b.dataset.acc] = !o[b.dataset.acc]; }); });
+    root.querySelectorAll('[data-pet]').forEach(b => { b.onclick = () => set(o => { o.pet = b.dataset.pet === 'none' ? null : b.dataset.pet; }); });
+    root.querySelectorAll('[data-hair]').forEach(b => { b.onclick = () => set(o => { o.hair = b.dataset.hair; }); });
+    root.querySelectorAll('[data-hc]').forEach(b => { b.onclick = () => set(o => { o.hairColor = Number(b.dataset.hc); }); });
   }
   function renderGearView() {
-    document.getElementById('gearView').innerHTML = `
+    const gv = document.getElementById('gearView');
+    gv.innerHTML = `${dressHTML()}
       <h2>そうび いちらん</h2>
-      <p class="note">むずかしい もんだいほど つよい そうびが もらえるよ。どの もんだいも ${PER}もん せいかいで 1こ。</p>
+      <p class="note">むずかしい もんだいほど つよい そうびが もらえるよ。どの もんだいも ${PER}もん せいかいで 1こ。1つめの シリーズが そろうと、2つめの シリーズが はじまるよ（ぜんぶで ${GEAR.length}シリーズ）。</p>
       ${GEAR.map((g, ti) => `<div class="series-box">
         <div class="strip-head"><b>${g.label}</b> → <span class="series">${g.series}</span> シリーズ　${gearCount(ti)} ／ 6</div>
         ${gearRowHTML(ti, true)}</div>`).join('')}
@@ -777,6 +982,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         <tr><td>まぜこぜ</td><td>でた もんだいの むずかしさで きまる</td></tr>
         <tr><td>わけかた クイズ</td><td>★〜★★</td></tr>
       </tbody></table></div>`;
+    bindDress(gv);
   }
   function renderZukan() {
     const list = ITEMS.slice().sort((a, b) => a.t - b.t);
@@ -1136,7 +1342,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     const line = down ? f.down + (boss ? '　ボスを たおした！' : '') : fx === 'miss' ? pick(f.taunt) : first ? `${name}が あらわれた！` : '';
     const eatk = fx === 'miss' && !down;
     return `<div class="battle bg-${f.bg}${fx === 'hit' || fx === 'crit' ? ' atk' : ''}${eatk ? ' eatk e-' + f.atk : ''}" style="--atk:${atk}" aria-label="${name} ハート ${hp}">
-      <div class="b-hero"><img src="${drawHero(equipped())}" alt="" width="60" height="80">${eatk ? '<span class="pow">ぽかっ！</span>' : ''}</div>
+      <div class="b-hero"><img src="${drawHero(equipped())}" alt="" width="60" height="80">${petHTML()}${eatk ? '<span class="pow">ぽかっ！</span>' : ''}</div>
       <div class="b-enemy${boss ? ' boss' : ''}${down ? ' down' : ''}${fx === 'hit' || fx === 'crit' ? ' hurt' : ''}${first ? ' enter' : ''}">
         <div class="b-name">${name}</div><div class="hearts">${hearts}</div>
         <span class="spr-e e-${f.id}${boss ? '-boss' : ''}"></span>
@@ -1155,6 +1361,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         <div class="feedback good" style="gap:10px">
           <span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
           <span>${(st.fac || factionNow()).name}を ぜんぶ たおした！</span>
+          ${st.newWeapons && st.newWeapons.length ? `<span class="lvmsg">🗡 あたらしい ぶきの かたち「${st.newWeapons.join('・')}」が つかえるよ！「⚔ そうび」で えらんでね</span>` : ''}
           ${st.dragonPrize ? `<span class="lvmsg">🐉 おしろを まもった！ とくべつな ごほうび</span>${dropHTML(st.dragonPrize, st.dragonPrizeNew)}` : ''}
           <span style="color:var(--fg);font-size:17px">つぎは「${factionNow().name}」が まっているよ</span>
           <span>ブロックを ${TOTAL}こ ほったよ。いっかいで せいかい：${ok}もん</span>
@@ -1174,6 +1381,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       ${st.lvMsg === 'up' ? `<span class="lvmsg">⬆ おてつだい レベル ${cherryLv()} に アップ！ ${cherryLv() === 3 ? 'つぎは こたえだけで やってみよう' : 'つぎは ちいさな けいさんだけ'}</span>` : ''}
       ${st.lvMsg === 'down' ? `<span class="lvmsg">おてつだい レベル ${cherryLv()} で もういちど たしかめよう</span>` : ''}
       ${dropHTML(st.got, st.gotNew)}
+      ${unlockMsg ? `<span class="lvmsg">${unlockMsg}</span>` : ''}
       ${st.bossBonus ? `<span class="lvmsg">👑 ボスを たおした ごほうび！</span>${dropHTML(st.bossBonus, st.bossBonusNew)}` : ''}
       ${st.newGear ? `<span class="gear-get">${G(st.newGear[0], st.newGear[1])} あたらしい そうび「${GEAR[st.newGear[0]].names[st.newGear[1]]}」！<br>${esc(nameOf(save))}の すがたが かわったよ</span>` : ''}</div>`;
     else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
@@ -1201,7 +1409,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div>`;
     setDash(card);
     const fxNow = st.fx;
-    st.breaking = false; st.fx = '';
+    st.breaking = false; st.fx = ''; unlockMsg = '';
     // こうげきの ときは たたかいの ばしょが みえるように する
     if (fxNow) {
       const bt = card.querySelector('.battle');
@@ -1249,11 +1457,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
           else { save.cherryStreak = (save.cherryStreak || 0) + 1; if (save.cherryStreak >= 3 && lv < 3) { lv++; save.cherryStreak = 0; st.lvMsg = 'up'; } }
           save.cherryLv = lv;
         }
-        const ti = tiOf(st.mode), before = gearCount(ti);
+        const tis = GEAR.map((g, i) => i).filter(i => GEAR[i].mode === st.mode), before = tis.map(i => gearCount(i));
         save.mc[st.mode] = (save.mc[st.mode] || 0) + 1;
         st.got = rewardFor(st.q); st.gotNew = gain(st.got);
-        const after = gearCount(ti);
-        st.newGear = after > before ? [ti, after - 1] : null;
+        st.newGear = null;
+        tis.forEach((i, k) => { const a = gearCount(i); if (a > before[k]) st.newGear = [i, a - 1]; });
         if (st.i === TOTAL - 1) { st.bossBonus = roll([0, 0, 70, 30]); st.bossBonusNew = gain(st.bossBonus); }
         renderHero(!!st.newGear);
       } else { st.wrong = true; st.hint = !cherry || st.qLv >= 3; st.input = ''; st.fx = 'miss'; }
@@ -1262,9 +1470,11 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
   function advance() {
     if (st.i + 1 >= TOTAL) {
+      const wBefore = WEAPONS.filter(w => unlockedW(w)).length;
       st.done = true; st.dragonPrize = null;
       if (st.fac && st.fac.id === 'dragon') { save.dragonReady = false; save.dragonWins = (save.dragonWins || 0) + 1; st.dragonPrize = 'crown'; st.dragonPrizeNew = gain('crown'); }
       else save.stageNo = (save.stageNo || 0) + 1;
+      st.newWeapons = WEAPONS.filter(w => unlockedW(w)).slice(wBefore).map(w => w.n);
       persist(); render(); return;
     }
     st.i++; next();
@@ -1775,7 +1985,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         : (players.list.length > 1 ? `<button class="btn small ghost" data-act="del" data-id="${id}" aria-label="${esc(nameOf(sv))}を けす">🗑</button>` : '');
       return `<div class="pcard${id === players.current ? ' cur' : ''}">
         <button class="pmain" data-act="play" data-id="${id}">
-          <img src="${drawHero(equipped(sv))}" alt="" width="48" height="64">
+          <img src="${drawHero(equipped(sv), sv)}" alt="" width="48" height="64">
           <span><b>${esc(nameOf(sv))}</b><small>そうび ${gearTotal(sv)} ・ ずかん ${owned(sv)} ／ ${ITEMS.length}${id === players.current ? ' ・ いま あそんでいる' : ''}</small></span>
         </button>
         <button class="btn small ghost" data-act="rename" data-id="${id}" aria-label="${esc(nameOf(sv))}の なまえを かえる">✎</button>
