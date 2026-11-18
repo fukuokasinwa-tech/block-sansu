@@ -400,7 +400,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     <div class="parents-body">
     <p>「🍒 さくらんぼ」は、さくらんぼ計算の書き方そのものを練習する問題です（7＋5なら、5の下のさくらんぼに3が入っていて、もう1つのさくらんぼと□の答えを入れます。ひきざんは13を10といくつに分けます）。どの種類も20問ずつ、ランダムに出題し、同じ問題や答え・数が同じ問題が続かないようにしています。</p>
     <p>はじめて開くと、主人公の名前を決める画面が出ます（あとから「✎ なまえを かえる」で変えられます）。きょうだいなど複数人で使うときは「👥 プレイヤー こうたい」で、プレイヤーを最大6人まで作れます。そうび・ずかん・おうちの進み具合は、プレイヤーごとに別々に、正解するたびに自動で保存されます（保存先はこの端末のブラウザです。別の端末やブラウザとは共有されません。ブラウザの履歴・サイトデータを消すと記録も消えます）。</p>
-    <p>主人公（名前を決めないときは「ソラ」）は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・かぶと・よろい・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「き・かわ」、ひきざん（10まで）は「いし・くさり」、くりあがりは「てつ」、まぜこぜは「きん」、くりさがりは「ほうせき」と、難しい問題ほど強いそうびになります。</p>
+    <p>主人公（名前を決めないときは「ソラ」）は、はじめはTシャツと短パンです。問題を3問正解するごとに、そうび（けん・ぼうし・ふく・ズボン・ブーツ・たて）が1つ手に入り、姿が変わります。たしざん（10まで）は「はっぱ」、ひきざん（10まで）は「くも」、くりあがりは「そら」、まぜこぜは「たいよう」、さくらんぼは「さくら」、くりさがりは「にじ」シリーズと、難しい問題ほど強いそうびになります。</p>
     <p>正解するたびにブロックやアイテム（全40種類）も1つ手に入り、「ずかん」に記録されます。やさしい問題ではブロックや「きのぼう」などの★のアイテム、難しい問題ほど★★★・★★★★のレアなアイテムが出やすくなります。</p>
     <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
     <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
@@ -417,7 +417,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const ST = ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'];
   const DIRT = ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'];
   const ITEMS = [
-    { id: 'grass',  n: 'くさ',     t: 1, g: 'top', c: DIRT, top: ['#5fb33c', '#4e9a2f', '#6cc447'] },
+    { id: 'grass',  n: 'くさ',     t: 1, g: 'clover', c: ['#4fa83a', '#45992f', '#58b544'], h: '#a6e27f', d: '#2f7424' },
     { id: 'dirt',   n: 'つち',     t: 1, c: DIRT },
     { id: 'wood',   n: 'き',       t: 1, g: 'log', c: ['#6b4423', '#8a5a2f', '#7a4f29'] },
     { id: 'stone',  n: 'いし',     t: 1, c: ST },
@@ -431,9 +431,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     { id: 'ice',    n: 'こおり',   t: 2, g: 'shine', c: ['#9fd0f5', '#8cc3ee', '#b2dcf8'] },
     { id: 'glass',  n: 'ガラス',   t: 2, g: 'shine', c: ['#bfe9fb', '#d9f3fd', '#a8dcf2'] },
     { id: 'brick',  n: 'レンガ',   t: 2, g: 'brick', c: ['#b4523a', '#a34830', '#c25d43'], line: '#d8cfc4' },
-    { id: 'coal',   n: 'せきたん', t: 2, c: ST, sp: ['#222222', '#3a3a3a'] },
-    { id: 'iron',   n: 'てつ',     t: 2, c: ST, sp: ['#e3c6a8', '#d4a983'] },
-    { id: 'copper', n: 'どう',     t: 2, c: ST, sp: ['#e07a3e', '#3fae8c'] },
+    { id: 'coal',   n: 'せきたん', t: 2, g: 'facet', c: ['#3a3a40'], h: '#6a6a72', d: '#1d1d22' },
+    { id: 'iron',   n: 'てつ',     t: 2, g: 'facet', c: ['#c9ced6'], h: '#f4f6f8', d: '#7d8590' },
+    { id: 'copper', n: 'どう',     t: 2, g: 'facet', c: ['#d9733a'], h: '#f2a77a', d: '#8f4520' },
     { id: 'cactus', n: 'サボテン', t: 2, g: 'log', c: ['#2f7d32', '#3f9a3f', '#4aab47'] },
     { id: 'pumpkin',n: 'かぼちゃ', t: 2, g: 'log', c: ['#c76a12', '#e8891f', '#f09a2c'] },
     { id: 'wool',   n: 'ようもう', t: 2, c: ['#f4f1ea', '#e8e4da', '#fbfaf6'] },
@@ -442,8 +442,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     { id: 'egg',    n: 'たまご',   t: 2, s: ['...ww...', '..wwww..', '.wwwwww.', '.wwwwws.', 'wwwwwwss', 'wwwwwwss', '.wwwwss.', '..ssss..'], p: { w: '#fbf6ea', s: '#dccfb3' } },
     { id: 'carrot', n: 'にんじん', t: 2, s: ['.....g.g', '......g.', '.....oo.', '....ooo.', '...ooo..', '..ooo...', '.oo.....', 'o.......'], p: { o: '#f08a24', g: '#3fa34d' } },
     { id: 'bread',  n: 'パン',     t: 2, s: ['........', '..llll..', '.lbbbbl.', 'lbbbbbbl', 'lbbbbbbl', 'bbbbbbbb', '.bbbbbb.', '........'], p: { b: '#c9822f', l: '#e8b15c' } },
-    { id: 'gold',   n: 'きん',     t: 3, c: ST, sp: ['#f2c230', '#ffe07a'] },
-    { id: 'ruby',   n: 'ルビー',   t: 3, c: ST, sp: ['#e0245e', '#ff6b93'] },
+    { id: 'gold',   n: 'きん',     t: 3, g: 'facet', c: ['#f2c230'], h: '#ffe58a', d: '#b88a12' },
+    { id: 'ruby',   n: 'ルビー',   t: 3, g: 'facet', c: ['#e0245e'], h: '#ff8fb1', d: '#8f1238' },
     { id: 'magma',  n: 'マグマ',   t: 3, c: ['#7a1f0f', '#5e1609', '#93280f'], sp: ['#ff8a1f', '#ffd23f'] },
     { id: 'cake',   n: 'ケーキ',   t: 3, s: ['...r....', '...w....', '.wwwwww.', 'wpwpwpww', 'wwwwwwww', 'bbbbbbbb', 'wwwwwwww', 'bbbbbbbb'], p: { r: '#e5484d', w: '#fffaf0', p: '#ff8fb1', b: '#8a5a36' } },
     { id: 'star',   n: 'ほし',     t: 3, s: ['...yy...', '...yy...', 'yyyyyyyy', '.yyyyyy.', '..yyyy..', '.yyyyyy.', '.yy..yy.', 'y......y'], p: { y: '#ffd23f' } },
@@ -454,8 +454,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     { id: 'torch',  n: 'たいまつ', t: 3, s: ['...y....', '..yoy...', '..yoy...', '...b....', '...b....', '...b....', '...b....', '...b....'], p: { y: '#ffd23f', o: '#ff8a1f', b: '#8a5a2f' } },
     { id: 'book',   n: 'ほん',     t: 3, s: ['.rrrrrr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rwddwr.', '.rwwwwr.', '.rrrrrr.', '........'], p: { r: '#c0392b', w: '#fbf6ea', d: '#555555' } },
     { id: 'coin',   n: 'コイン',   t: 3, s: ['..yyyy..', '.yooooy.', 'yoyyyyoy', 'yoyooyoy', 'yoyooyoy', 'yoyyyyoy', '.yooooy.', '..yyyy..'], p: { y: '#ffd23f', o: '#d99a00' } },
-    { id: 'gem',    n: 'ほうせき', t: 4, c: ST, sp: ['#3fd6d0', '#9ff3ef'] },
-    { id: 'crystal',n: 'クリスタル', t: 4, s: ['...cc...', '..cwcc..', '.cwcccd.', '.cwcccd.', '.ccccdd.', '..cccd..', '...cd...', '........'], p: { c: '#7fd8ff', w: '#e8fbff', d: '#3a9bd0' } },
+    { id: 'gem',    n: 'にじの ほうせき', t: 4, g: 'rainbow' },
+    { id: 'crystal',n: 'クリスタル', t: 4, s: ['...cc...', '..cwcc..', '.cwcccd.', '.cwcccd.', '.ccccdd.', '..cccd..', '...cd...', '........'], p: { c: '#b9a3ff', w: '#f1ebff', d: '#7a5fd6' } },
     { id: 'crown',  n: 'おうかん', t: 4, s: ['........', 'y..yy..y', 'yy.yy.yy', 'yyyyyyyy', 'yryyyyry', 'yyyyyyyy', 'oooooooo', '........'], p: { y: '#ffd23f', r: '#e0245e', o: '#d99a00' } }
   ];
   const EXTRA = [
@@ -464,19 +464,15 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   ];
   /* そうび：むずかしい もんだいほど つよい そうび */
   const GEAR = [
-    { mode: 'add10', label: 'たしざん 10まで', series: 'き・かわ', pal: { x: '#a8794a', h: '#d1a36b', d: '#6b4423' },
-      names: ['きの けん', 'かわの ぼうし', 'かわの ふく', 'かわの ズボン', 'かわの ブーツ', 'きの たて'] },
-    { mode: 'sub10', label: 'ひきざん 10まで', series: 'いし・くさり', pal: { x: '#8d9196', h: '#c9cdd2', d: '#55595e' },
-      names: ['いしの けん', 'くさりの かぶと', 'くさりの よろい', 'くさりの ズボン', 'くさりの ブーツ', 'いしの たて'] },
-    { mode: 'addC', label: 'くりあがり', series: 'てつ', pal: { x: '#d5dbe2', h: '#ffffff', d: '#8f99a4' },
-      names: ['てつの けん', 'てつの かぶと', 'てつの よろい', 'てつの ズボン', 'てつの ブーツ', 'てつの たて'] },
-    { mode: 'mix', label: 'まぜこぜ', series: 'きん', pal: { x: '#f2c230', h: '#ffe58a', d: '#b88a12' },
-      names: ['きんの けん', 'きんの かぶと', 'きんの よろい', 'きんの ズボン', 'きんの ブーツ', 'きんの たて'] },
-    { mode: 'cherry', label: 'さくらんぼ', series: 'ほしのいし', pal: { x: '#9b6cf0', h: '#d6c2ff', d: '#5b3aa8' },
-      names: ['ほしのいしの けん', 'ほしのいしの かぶと', 'ほしのいしの よろい', 'ほしのいしの ズボン', 'ほしのいしの ブーツ', 'ほしのいしの たて'] },
-    { mode: 'subC', label: 'くりさがり', series: 'ほうせき', pal: { x: '#3fd6d0', h: '#b5f7f4', d: '#1f8f8b' },
-      names: ['ほうせきの けん', 'ほうせきの かぶと', 'ほうせきの よろい', 'ほうせきの ズボン', 'ほうせきの ブーツ', 'ほうせきの たて'] }
+    { mode: 'add10', label: 'たしざん 10まで', series: 'はっぱ', pal: { x: '#7cc95a', h: '#c4f0a6', d: '#3f7f2c' } },
+    { mode: 'sub10', label: 'ひきざん 10まで', series: 'くも', pal: { x: '#e6edf5', h: '#ffffff', d: '#9aa9bb' } },
+    { mode: 'addC', label: 'くりあがり', series: 'そら', pal: { x: '#4f9bea', h: '#b5dcff', d: '#2a5f9e' } },
+    { mode: 'mix', label: 'まぜこぜ', series: 'たいよう', pal: { x: '#ff9d2e', h: '#ffd88a', d: '#b8611a' } },
+    { mode: 'cherry', label: 'さくらんぼ', series: 'さくら', pal: { x: '#ff8fb8', h: '#ffd3e4', d: '#c24f7d' } },
+    { mode: 'subC', label: 'くりさがり', series: 'にじ', pal: { x: '#a77bf0', h: '#ffe066', d: '#5b3aa8' } }
   ];
+  const PIECES = ['けん', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
+  GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
   const SLOT_LABELS = ['けん', 'あたま', 'からだ', 'あし', 'くつ', 'たて'];
   const PER = 3; // 3もん せいかいで そうびが 1こ
   const GEAR_MASK = [
@@ -509,6 +505,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
         else if (it.g === 'shine') col = (x === y || x === y + 1) ? '#ffffff' : pk(it.c);
         else if (it.g === 'plank') col = y % 3 === 2 ? it.line : pk(it.c);
         else if (it.g === 'brick') col = (y % 4 === 3 || (x + (Math.floor(y / 4) % 2) * 2) % 4 === 3) ? it.line : pk(it.c);
+        else if (it.g === 'clover') col = ((x * 5 + y * 3) % 7 === 0) ? it.h : ((x + y * 2) % 9 === 4 ? it.d : pk(it.c));
+        else if (it.g === 'facet') col = ((x === 2 && y === 1) || (x === 1 && y === 2)) ? '#ffffff' : (x === 0 || y === 0 || x === 7 || y === 7) ? it.d : (x + y < 6 ? it.h : (x + y > 9 ? it.d : it.c[0]));
+        else if (it.g === 'rainbow') col = ((x === 2 && y === 1) || (x === 1 && y === 2)) ? '#ffffff' : ['#ff6b8a', '#ffb347', '#ffe066', '#7ddc6f', '#5fb8ff', '#a98bff'][Math.floor((x + y) / 2.4) % 6];
         else if (it.g === 'cobble') col = ((x * 3 + y * 5) % 7 === 0 || r() < .12) ? it.line : pk(it.c);
         else if (it.sp && r() < .22) col = pk(it.sp);
         else col = pk(it.c);
