@@ -315,7 +315,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .hearts i { width: 13px; height: 13px; background: #3a1d24; border: 2px solid #000; }
 .hearts i.on { background: #ff4d6d; }
 .hearts i.lost { background: #ff4d6d; }
-@media (prefers-reduced-motion: no-preference) { .hearts i.lost { animation: lost 1s steps(6) .9s forwards; } @keyframes lost { 0%, 40% { background: #ffffff; } 100% { background: #3a1d24; } } }
+@media (prefers-reduced-motion: no-preference) { .hearts i.lost { animation: lost 1s steps(6) 1.1s forwards; } @keyframes lost { 0%, 40% { background: #ffffff; } 100% { background: #3a1d24; } } }
 @media (prefers-reduced-motion: reduce) { .hearts i.lost { background: #3a1d24; } }
 .spr-e { display: block; width: 76px; height: 86px; image-rendering: pixelated; background-size: 100% 100%; }
 .b-enemy.boss .spr-e { width: 100px; height: 112px; }
@@ -328,17 +328,27 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 .dmg { position: absolute; right: 18px; bottom: 120px; font-family: var(--num); font-weight: 800; font-size: 24px; color: #fff; text-shadow: 3px 3px 0 #000; }
 .dmg.crit { color: var(--yellow); }
 @media (prefers-reduced-motion: no-preference) {
-  .battle.atk .b-hero img { animation: lunge 1.2s steps(10); }
-  @keyframes lunge { 0% { transform: none; } 25% { transform: translateX(-8px); } 45%, 70% { transform: translateX(46px); } 100% { transform: none; } }
-  .battle .slash { animation: slash 1s steps(8) .45s backwards; }
+  .battle.atk .b-hero img { animation: dash 2.2s steps(22); position: relative; z-index: 2; }
+  @keyframes dash {
+    0% { transform: none; }
+    8% { transform: translateX(-10px); }
+    22% { transform: translate(calc(var(--dash, 120px) * .55), -16px); }
+    32% { transform: translateX(var(--dash, 120px)); }
+    40% { transform: translateX(var(--dash, 120px)) rotate(-10deg); }
+    48% { transform: translateX(var(--dash, 120px)) rotate(14deg); }
+    70% { transform: translateX(var(--dash, 120px)); }
+    86% { transform: translate(calc(var(--dash, 120px) * .4), -10px); }
+    100% { transform: none; }
+  }
+  .battle .slash { animation: slash .9s steps(8) .85s backwards; z-index: 3; }
   @keyframes slash { 0% { opacity: 0; transform: rotate(-35deg) scaleX(.2); } 30%, 70% { opacity: 1; transform: rotate(-35deg) scaleX(1.1); } 100% { opacity: 0; transform: rotate(-35deg) scaleX(1.3); } }
-  .b-enemy.hurt .spr-e { animation: hurt 1.2s steps(10) .7s; }
+  .b-enemy.hurt .spr-e { animation: hurt 1.2s steps(10) 1s; }
   @keyframes hurt { 10%, 50% { transform: translateX(10px); filter: brightness(2.2); } 30%, 70% { transform: translateX(-8px); filter: brightness(1.4); } 100% { transform: none; filter: none; } }
-  .b-enemy.down .spr-e { animation: down 1.8s steps(12) 1.6s backwards; }
+  .b-enemy.down .spr-e { animation: down 1.8s steps(12) 2s backwards; }
   @keyframes down { from { opacity: 1; filter: none; transform: none; } to { opacity: .12; filter: grayscale(1); transform: translateY(10px) scale(.8); } }
   .b-enemy.enter .spr-e { animation: enter 1.2s steps(10); }
   @keyframes enter { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .dmg { animation: dmg 2.6s steps(16) .7s both; }
+  .dmg { animation: dmg 2.6s steps(16) 1s both; }
   @keyframes dmg { from { transform: translateY(10px) scale(.6); opacity: 0; } 15% { transform: translateY(0) scale(1.15); opacity: 1; } 75% { transform: translateY(-6px) scale(1); opacity: 1; } to { transform: translateY(-14px); opacity: 0; } }
 }
 @media (max-width: 460px) {
@@ -1007,6 +1017,13 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return o + '</svg>';
   }
 
+  function setDash(root) {
+    const bt = root.querySelector('.battle'); if (!bt) return;
+    const h = bt.querySelector('.b-hero img'), e = bt.querySelector('.b-enemy .spr-e');
+    if (!h || !e) return;
+    const dx = Math.max(40, e.getBoundingClientRect().left - h.getBoundingClientRect().right + 24);
+    bt.style.setProperty('--dash', dx + 'px');
+  }
   /* ---------- てき（ステージごとに いちみが かわる。すべて オリジナルの ドットえ） ---------- */
   const pad16 = rows => rows.map(r => (r + '................').slice(0, 16));
   const FACTIONS = [
@@ -1129,6 +1146,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       </div>
       ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}
       <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div>`;
+    setDash(card);
     const fxNow = st.fx;
     st.breaking = false; st.fx = '';
     // こうげきの ときは たたかいの ばしょが みえるように する
@@ -1148,8 +1166,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const SLOW = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
   function holdNext(n, fxNow) {
     if ((fxNow === 'hit' || fxNow === 'crit') && SLOW()) {
-      st.lockUntil = Date.now() + 2200; n.disabled = true;
-      setTimeout(() => { n.disabled = false; n.focus({ preventScroll: true }); }, 2200);
+      st.lockUntil = Date.now() + 2800; n.disabled = true;
+      setTimeout(() => { n.disabled = false; n.focus({ preventScroll: true }); }, 2800);
     } else n.focus({ preventScroll: true });
   }
 
