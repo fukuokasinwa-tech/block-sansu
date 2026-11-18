@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#30343a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ブロックさんすう">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>ブロック さんすう たんけん</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<style>
+/* Layout: そら の はいけいに、いしの パネル。うえに もちもの、タブで「けいさん／わけかた／おうち」を きりかえる。ひとつの ゲームの みため（ライト・ダークとも おなじ）。 */
+:root {
+  --sky-top: #7cc6f2;
+  --sky-bot: #cdeefc;
+  --panel: #30343a;
+  --panel-edge: #17191c;
+  --panel-hi: #4b5058;
+  --slot: #22252a;
+  --fg: #f3f1e6;
+  --muted: #b9bcb3;
+  --yellow: #ffd23f;
+  --green: #6ccf4a;
+  --red: #ff6b5b;
+  --blue: #63b0ff;
+  --cherry: #ff6f9c;
+  --cherry-soft: #5a2a3c;
+  --key: #6b7078;
+  --key-hi: #8d929a;
+  --key-lo: #45494f;
+  --pixel: "DotGothic16", "Hiragino Maru Gothic ProN", "Yu Gothic", monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  background: linear-gradient(var(--sky-top), var(--sky-bot) 520px, var(--sky-bot));
+  background-color: var(--sky-bot);
+  color: var(--fg);
+  font-family: var(--pixel);
+  font-size: 17px;
+  line-height: 1.7;
+}
+.wrap {
+  max-width: 780px; margin: 0 auto;
+  padding-block: 18px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 16px;
+}
+.panel {
+  background: var(--panel); border: 4px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--panel-hi), inset -3px -3px 0 var(--panel-edge);
+  padding: 18px; display: flex; flex-direction: column; gap: 14px;
+}
+h1 {
+  font-family: var(--pixel); font-weight: 400; margin: 0; line-height: 1.2; text-align: center;
+  font-size: clamp(28px, 7.5vw, 44px); color: var(--fg);
+  text-shadow: 3px 3px 0 #2b2f35, -2px -2px 0 #2b2f35, 2px -2px 0 #2b2f35, -2px 2px 0 #2b2f35;
+  letter-spacing: .04em;
+}
+h1 small { display: block; font-size: .42em; color: #24323c; text-shadow: none; letter-spacing: .1em; margin-top: 4px; }
+h2 { font-family: var(--pixel); font-weight: 400; font-size: 21px; margin: 0; color: var(--yellow); }
+
+/* ブロック（もようは JS で つくる ドット え） */
+.blk {
+  display: block; width: 36px; height: 36px; background-size: 100% 100%; image-rendering: pixelated;
+  box-shadow: inset -3px -3px 0 rgba(0,0,0,.28), inset 3px 3px 0 rgba(255,255,255,.2);
+}
+
+/* もちもの */
+.inv { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.inv .slot {
+  width: 64px; height: 64px; background: var(--slot); border: 3px solid var(--panel-edge);
+  box-shadow: inset 2px 2px 0 #000, inset -2px -2px 0 var(--panel-hi);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+}
+.inv .slot .blk { width: 32px; height: 32px; }
+.inv .slot b { position: absolute; right: 5px; bottom: 1px; font-weight: 400; font-size: 17px; text-shadow: 2px 2px 0 #000; }
+.inv .slot small { font-size: 11px; color: var(--muted); line-height: 1; margin-top: 2px; }
+.inv .slot.got { animation: got .6s steps(3); }
+@keyframes got { 0%, 100% { border-color: var(--panel-edge); } 50% { border-color: var(--yellow); } }
+
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tabs button, .modes button, .chips button, .btn, .pad button {
+  font-family: var(--pixel); color: var(--fg); cursor: pointer;
+  background: var(--key); border: 3px solid var(--panel-edge);
+  box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
+}
+.tabs button { font-size: 17px; padding: 12px 4px; line-height: 1.3; }
+.tabs button[aria-pressed="true"], .modes button[aria-pressed="true"], .chips button[aria-pressed="true"] {
+  background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e;
+}
+button:active { box-shadow: inset -3px -3px 0 var(--key-hi), inset 3px 3px 0 var(--key-lo); }
+button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+.view { display: flex; flex-direction: column; gap: 16px; }
+
+.modes { display: flex; flex-wrap: wrap; gap: 6px; }
+.modes button { font-size: 15px; padding: 7px 10px; }
+
+/* こうざん（ほる ブロックの ならび） */
+.mine { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; background: #1a1410; padding: 6px; border: 3px solid var(--panel-edge); }
+.mine .cell { aspect-ratio: 1; max-width: 100%; position: relative; }
+.mine .cell .blk { width: 100%; height: 100%; }
+.mine .cell.hole { background: #0f0b08; box-shadow: inset 3px 3px 0 #000; }
+.mine .cell.now { outline: 3px solid var(--yellow); outline-offset: -1px; }
+.mine .cell.now::after { content: "⛏"; position: absolute; right: -4px; top: -10px; font-size: 18px; }
+.mine .cell.break .blk { animation: crack .7s steps(4) forwards; }
+@keyframes crack {
+  0% { transform: none; filter: none; }
+  30% { transform: translate(-2px, 1px); filter: brightness(.8); }
+  60% { transform: translate(2px, -1px) scale(.85); filter: brightness(.6); }
+  100% { transform: scale(0); opacity: 0; }
+}
+.stage-label { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; color: var(--muted); font-size: 15px; }
+
+.story { font-size: clamp(19px, 4.8vw, 23px); margin: 0; line-height: 1.8; }
+.story b { font-weight: 400; font-size: 1.3em; }
+.ca { color: var(--red); } .cb { color: var(--blue); }
+
+.picture { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
+.group { padding: 8px 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 3px solid; }
+.group.a { border-color: var(--red); background: rgba(255, 107, 91, .12); }
+.group.b { border-color: var(--blue); background: rgba(99, 176, 255, .12); }
+.group .tag { font-size: 14px; color: var(--fg); }
+.items { display: grid; gap: 3px; }
+.item { position: relative; }
+.item.gone .blk { opacity: .3; }
+.item.gone::after { content: "×"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 34px; line-height: 1; color: var(--blue); text-shadow: 2px 2px 0 #000; }
+.op { font-size: 44px; line-height: 1; }
+
+.expr { display: flex; justify-content: center; align-items: center; gap: 10px; font-size: clamp(38px, 11vw, 58px); line-height: 1; font-variant-numeric: tabular-nums; }
+.ans {
+  min-width: 1.6em; height: 1.35em; padding: 0 .15em; border: 4px dashed var(--muted);
+  display: inline-flex; align-items: center; justify-content: center; color: var(--yellow); background: var(--slot);
+}
+.ans.filled { border-style: solid; border-color: var(--yellow); }
+.ans.right { border-style: solid; border-color: var(--green); color: var(--green); }
+
+.pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 420px; width: 100%; margin: 0 auto; }
+.pad button { font-size: 28px; height: 58px; }
+.pad .wide { grid-column: span 2; font-size: 19px; }
+.pad .go { grid-column: span 3; font-size: 21px; background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; }
+
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.btn { font-size: 18px; padding: 10px 18px; }
+.btn.primary { background: #4f8f35; box-shadow: inset 3px 3px 0 #79c25a, inset -3px -3px 0 #2f5f1e; font-size: 20px; }
+
+.feedback { text-align: center; font-size: 21px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.feedback.good { color: var(--green); }
+.feedback.try { color: var(--red); }
+.drop { display: inline-flex; align-items: center; gap: 8px; color: var(--yellow); font-size: 18px; }
+.drop .blk { width: 28px; height: 28px; }
+@media (prefers-reduced-motion: no-preference) {
+  .drop { animation: drop .5s steps(5); }
+  @keyframes drop { from { transform: translateY(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+@media (prefers-reduced-motion: reduce) { .mine .cell.break .blk, .inv .slot.got { animation: none; } }
+
+.explain { border-top: 3px dashed var(--panel-hi); padding-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+.explain-body { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.explain-body > * { min-width: 0; }
+.cherry svg, .quiz-svg { width: 240px; max-width: 100%; height: auto; display: block; }
+svg text { font-family: var(--pixel); fill: var(--fg); }
+svg .stem { stroke: var(--cherry); stroke-width: 3; fill: none; }
+svg .berry { fill: var(--cherry-soft); stroke: var(--cherry); stroke-width: 3; }
+svg .q { fill: var(--yellow); }
+.frames { display: flex; flex-wrap: wrap; gap: 8px; }
+.frame { display: grid; grid-template-columns: repeat(5, 30px); grid-template-rows: repeat(2, 30px); gap: 2px; padding: 3px; background: #1a1410; border: 3px solid var(--panel-edge); }
+.frame i { background: var(--slot); position: relative; }
+.frame i .blk { width: 100%; height: 100%; }
+.frame i.x .blk { opacity: .3; }
+.frame i.x::after { content: "×"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; line-height: 1; color: var(--fg); text-shadow: 2px 2px 0 #000; }
+.frame-cap { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.steps { margin: 0; padding-left: 1.5em; font-size: 19px; display: flex; flex-direction: column; gap: 4px; flex: 1 1 240px; }
+.steps .n { color: var(--yellow); }
+.steps .hide { display: inline-block; min-width: 1.4em; border-bottom: 3px solid var(--muted); color: transparent; }
+
+/* かずの わけかた */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { width: 50px; height: 50px; font-size: 24px; }
+.split-head { font-size: clamp(22px, 5.6vw, 28px); margin: 0; }
+.split-head .cnt { color: var(--yellow); }
+.note { margin: 0; color: var(--muted); font-size: 15px; }
+.splits { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.splits li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 8px 10px; background: var(--slot); border: 2px solid var(--panel-edge); }
+.splits li.pair5 { border-color: var(--yellow); }
+.splits .lbl { font-size: 23px; min-width: 7.5em; font-variant-numeric: tabular-nums; }
+.drow { display: inline-flex; align-items: center; gap: 3px; }
+.drow .blk { width: 20px; height: 20px; box-shadow: inset -2px -2px 0 rgba(0,0,0,.28), inset 2px 2px 0 rgba(255,255,255,.2); }
+.drow .sep { width: 4px; height: 26px; background: var(--fg); margin: 0 4px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 17px; }
+th, td { border-bottom: 2px solid var(--panel-hi); padding: 8px 6px; text-align: left; vertical-align: top; font-weight: 400; }
+thead th { font-size: 14px; color: var(--muted); }
+tbody th { font-size: 24px; color: var(--yellow); width: 2.2em; }
+td.pairs span { display: inline-block; margin-right: 12px; white-space: nowrap; }
+td.num { white-space: nowrap; }
+tr.ten { background: rgba(255, 210, 63, .1); }
+
+/* おうち */
+.build { display: grid; gap: 2px; background: #9fd8f5; padding: 8px; border: 3px solid var(--panel-edge); width: max-content; max-width: 100%; margin: 0 auto; }
+.build .bc { width: 28px; height: 28px; }
+.build .bc .blk { width: 100%; height: 100%; }
+.build .bc.next { outline: 2px dashed #24323c; outline-offset: -2px; }
+.build .bc.ghost { background: rgba(255,255,255,.25); }
+.bar { height: 18px; background: var(--slot); border: 3px solid var(--panel-edge); }
+.bar span { display: block; height: 100%; background: var(--green); }
+
+.parents { background: rgba(255,255,255,.85); border: 3px solid #24323c; padding: 14px 18px; color: #24323c; font-size: 15px; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.75; }
+.parents h2 { color: #24323c; font-size: 17px; margin-bottom: 6px; font-family: var(--pixel); }
+.parents p { margin: 0 0 8px; max-width: 65ch; }
+.parents p:last-child { margin-bottom: 0; }
+
+@media (max-width: 460px) {
+  .panel { padding: 14px 12px; }
+  .blk { width: 30px; height: 30px; }
+  .inv .slot { width: 52px; height: 52px; }
+  .inv .slot .blk { width: 26px; height: 26px; }
+  .inv .slot small { display: none; }
+  .mine { grid-template-columns: repeat(5, 1fr); }
+  .frame { grid-template-columns: repeat(5, 26px); grid-template-rows: repeat(2, 26px); }
+  .drow .blk { width: 16px; height: 16px; }
+  .splits .lbl { font-size: 20px; }
+  .build .bc { width: 24px; height: 24px; }
+  .tabs button { font-size: 15px; }
+}
+@media (max-width: 360px) { .build .bc { width: 20px; height: 20px; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <h1>ブロック さんすう たんけん<small>もんだいを といて ブロックを ほろう！</small></h1>
+
+  <section class="panel" aria-label="もちもの">
+    <div class="inv" id="inv"></div>
+  </section>
+
+  <nav class="tabs" id="tabs" aria-label="あそびかた">
+    <button id="t-calc" data-view="calc" aria-pressed="true">⛏ けいさん</button>
+    <button id="t-split" data-view="split" aria-pressed="false">🍒 わけかた</button>
+    <button id="t-house" data-view="house" aria-pressed="false">🏠 おうち</button>
+  </nav>
+
+  <div id="view-calc" class="view">
+    <nav class="modes" id="modes" aria-label="もんだいの しゅるい">
+      <button id="m-add10" data-mode="add10">たしざん 10まで</button>
+      <button id="m-sub10" data-mode="sub10">ひきざん 10まで</button>
+      <button id="m-addC" data-mode="addC">くりあがり</button>
+      <button id="m-subC" data-mode="subC">くりさがり</button>
+      <button id="m-mix" data-mode="mix">まぜこぜ</button>
+    </nav>
+    <main class="panel" id="card"></main>
+  </div>
+
+  <div id="view-split" class="view" hidden>
+    <section class="panel">
+      <h2>いくつと いくつ？</h2>
+      <p class="story" style="font-size:19px">ブロックを ふたつに わけてみよう。すうじを えらんでね。</p>
+      <div class="chips" id="chips"></div>
+      <div id="splitList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </section>
+    <section class="panel">
+      <h2>いちらんひょう（1から 10まで）</h2>
+      <div class="tablewrap" id="splitTable"></div>
+    </section>
+    <section class="panel" id="quiz"></section>
+  </div>
+
+  <div id="view-house" class="view" hidden>
+    <section class="panel" id="house"></section>
+  </div>
+
+  <section class="parents">
+    <h2>おうちのかたへ</h2>
+    <p>問題に正解するとブロックを1つ掘れて、もちものに入ります。掘ったブロックは「おうち」タブで1つずつ積み上がり、家が完成します。もちものと家の進み具合は、この端末のブラウザに保存されます。</p>
+    <p>「けいさん」では、ブロックの絵で「あわせる・ふえる（たしざん）」「つかう・へる（ひきざん）」の場面を見てから式にします。くりあがり・くりさがりは教科書と同じ「さくらんぼ計算」と10のマスの図で説明します（8＋5なら、5を2と3にわけて 8＋2＝10、10＋3＝13）。</p>
+    <p>「わけかた」では、1から10までの数を2つに分ける方法（いくつといくつ）を図と表ですべて見られます。10は「1と9・2と8・3と7・4と6・5と5・6と4・7と3・8と2・9と1」の9とおりです。「あわせて10」の組み合わせは、くりあがり・くりさがりでそのまま使います。クイズでも練習できます。</p>
+    <p>「ヒント」では答えをかくしたまま考え方を見せ、まちがえると自動でヒントが出ます。キーボードの数字キーと Enter でも答えられます。</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  /* ---------- ドットえの ブロック ---------- */
+  const PAL = {
+    grass: { c: ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'], top: ['#5fb33c', '#4e9a2f', '#6cc447'] },
+    dirt:  { c: ['#8a5a36', '#7a4e2e', '#9b6a43', '#6e4428'] },
+    wood:  { c: ['#6b4423', '#8a5a2f', '#7a4f29'] },
+    stone: { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'] },
+    gold:  { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'], sp: ['#f2c230', '#ffe07a'], rate: .22 },
+    gem:   { c: ['#8d8f92', '#7d7f83', '#9a9ca0', '#717377'], sp: ['#3fd6d0', '#9ff3ef'], rate: .22 },
+    red:   { c: ['#d9483b', '#c43c30', '#e35a4c'] },
+    blue:  { c: ['#3a78d4', '#2f68be', '#4a8ae0'] },
+    glass: { c: ['#bfe9fb', '#d9f3fd', '#a8dcf2'] }
+  };
+  const NAMES = { grass: 'くさ', dirt: 'つち', wood: 'き', stone: 'いし', gold: 'きん', gem: 'ほうせき' };
+  const INV_KINDS = ['grass', 'dirt', 'wood', 'stone', 'gold', 'gem'];
+  (function makeTextures() {
+    let css = '';
+    for (const kind in PAL) {
+      const c = document.createElement('canvas'); c.width = c.height = 8;
+      const g = c.getContext('2d');
+      let seed = [...kind].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) >>> 0, 7);
+      const r = () => { seed = (seed * 1103515245 + 12345) >>> 0; return (seed >>> 8) / 16777216; };
+      const p = PAL[kind], pk = a => a[Math.floor(r() * a.length)];
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        let col;
+        if (p.top && (y < 2 || (y === 2 && r() < .5))) col = pk(p.top);
+        else if (kind === 'wood') col = x % 3 === 0 ? p.c[0] : pk(p.c.slice(1));
+        else if (kind === 'glass') col = (x === y || x === y + 1) ? '#ffffff' : pk(p.c);
+        else if (p.sp && r() < p.rate) col = pk(p.sp);
+        else col = pk(p.c);
+        g.fillStyle = col; g.fillRect(x, y, 1, 1);
+      }
+      css += `.t-${kind}{background-image:url(${c.toDataURL()})}`;
+    }
+    const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+  })();
+  const B = kind => `<span class="blk t-${kind}"></span>`;
+
+  /* ---------- セーブ（この たんまつ だけ） ---------- */
+  const SAVE_KEY = 'block-sansu-v1';
+  let save = { inv: { grass: 0, dirt: 0, wood: 0, stone: 0, gold: 0, gem: 0 }, built: 0, houses: 0 };
+  try { const raw = localStorage.getItem(SAVE_KEY); if (raw) save = Object.assign(save, JSON.parse(raw)); } catch (e) {}
+  const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} };
+  let lastGot = null;
+  function gain(kind) { save.inv[kind] = (save.inv[kind] || 0) + 1; save.built++; lastGot = kind; persist(); renderInv(); }
+
+  function renderInv() {
+    document.getElementById('inv').innerHTML = INV_KINDS.map(k =>
+      `<div class="slot${k === lastGot ? ' got' : ''}" title="${NAMES[k]}">${B(k)}<small>${NAMES[k]}</small><b>${save.inv[k] || 0}</b></div>`).join('');
+    lastGot = null;
+  }
+
+  /* ---------- けいさん ---------- */
+  const STAGE = ['grass', 'dirt', 'dirt', 'wood', 'wood', 'stone', 'stone', 'gold', 'stone', 'gem'];
+  const THEMES = [
+    { kind: 'dirt',  add: 'ほって きたよ', sub: 'つかったよ', addTag: 'ほった', subTag: 'つかった' },
+    { kind: 'wood',  add: 'きって きたよ', sub: 'もやしたよ', addTag: 'きった', subTag: 'もやした' },
+    { kind: 'stone', add: 'ほって きたよ', sub: 'つんだよ',   addTag: 'ほった', subTag: 'つんだ' },
+    { kind: 'gold',  add: 'みつけたよ',   sub: 'あげたよ',   addTag: 'みつけた', subTag: 'あげた' }
+  ];
+  const TOTAL = 10;
+  const rnd = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+
+  function makeQ(mode) {
+    if (mode === 'mix') mode = pick(['add10', 'sub10', 'addC', 'subC']);
+    let a, b, op;
+    if (mode === 'add10') { op = '+'; a = rnd(1, 8); b = rnd(1, 10 - a); }
+    if (mode === 'sub10') { op = '-'; a = rnd(3, 10); b = rnd(1, a - 1); }
+    if (mode === 'addC')  { op = '+'; a = rnd(2, 9); b = rnd(Math.max(2, 11 - a), 9); }
+    if (mode === 'subC')  { op = '-'; a = rnd(11, 18); b = rnd(a - 9, 9); }
+    return { a, b, op, ans: op === '+' ? a + b : a - b, theme: pick(THEMES) };
+  }
+
+  const st = { mode: 'add10', i: 0, results: [], q: null, input: '', solved: false, wrong: false, hint: false, done: false, breaking: false };
+  const card = document.getElementById('card');
+
+  function start(mode) {
+    st.mode = mode; st.i = 0; st.results = []; st.done = false;
+    document.querySelectorAll('#modes button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    next();
+  }
+  function next() {
+    let q; do { q = makeQ(st.mode); } while (st.q && q.a === st.q.a && q.b === st.q.b && q.op === st.q.op);
+    st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false;
+    render();
+  }
+
+  function itemsHTML(n, kind, goneFrom = Infinity) {
+    let s = '';
+    for (let k = 0; k < n; k++) s += `<span class="item${k >= goneFrom ? ' gone' : ''}">${B(kind)}</span>`;
+    return `<div class="items" style="grid-template-columns:repeat(${Math.min(n, 5)}, auto)">${s}</div>`;
+  }
+  function storyHTML(q) {
+    const t = q.theme, nm = NAMES[t.kind];
+    if (q.op === '+') return `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ あるよ。<br><b class="cb">${q.b}</b>こ ${t.add}。<br>ぜんぶで なんこ かな？</p>`;
+    return `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ あるよ。<br><b class="cb">${q.b}</b>こ ${t.sub}。<br>のこりは なんこ かな？</p>`;
+  }
+  function pictureHTML(q) {
+    const t = q.theme;
+    if (q.op === '+') return `<div class="picture" aria-hidden="true">
+        <div class="group a">${itemsHTML(q.a, t.kind)}<span class="tag">はじめ ${q.a}こ</span></div>
+        <span class="op">＋</span>
+        <div class="group b">${itemsHTML(q.b, t.kind)}<span class="tag">${t.addTag} ${q.b}こ</span></div></div>`;
+    return `<div class="picture" aria-hidden="true">
+      <div class="group a">${itemsHTML(q.a, t.kind, q.a - q.b)}<span class="tag">はじめ ${q.a}こ ・ <span class="cb">×は ${t.subTag} ${q.b}こ</span></span></div></div>`;
+  }
+
+  function cherrySVG(tokens, splitIdx, parts) {
+    const xs = [30, 75, 120, 165, 210];
+    let s = '<svg viewBox="0 0 240 132" role="img" aria-label="さくらんぼけいさん">';
+    tokens.forEach((tk, k) => { s += `<text x="${xs[k]}" y="42" font-size="34" text-anchor="middle">${tk}</text>`; });
+    const x = xs[splitIdx];
+    s += `<path class="stem" d="M${x} 52 L${x - 24} 88 M${x} 52 L${x + 24} 88"/>`;
+    s += `<circle class="berry" cx="${x - 24}" cy="106" r="19"/><circle class="berry" cx="${x + 24}" cy="106" r="19"/>`;
+    s += `<text x="${x - 24}" y="115" font-size="24" text-anchor="middle">${parts[0]}</text>`;
+    s += `<text x="${x + 24}" y="115" font-size="24" text-anchor="middle">${parts[1]}</text>`;
+    return s + '</svg>';
+  }
+  function framesHTML(cells) {
+    const n = cells.length > 10 ? 2 : 1;
+    let s = '<div class="frames">';
+    for (let f = 0; f < n; f++) {
+      s += '<div class="frame">';
+      for (let k = 0; k < 10; k++) {
+        const c = cells[f * 10 + k];
+        s += c ? `<i class="${c.x ? 'x' : ''}">${B(c.k === 'a' ? 'red' : 'blue')}</i>` : '<i></i>';
+      }
+      s += '</div>';
+    }
+    return s + '</div>';
+  }
+  function explainHTML(q, reveal) {
+    const H = v => reveal ? `<span class="n">${v}</span>` : '<span class="hide">?</span>';
+    const N = v => `<span class="n">${v}</span>`;
+    let cherry = '', cells = [], steps = [], cap = '';
+    const ansTok = reveal ? q.ans : '?';
+    if (q.op === '+') {
+      if (q.ans <= 10) {
+        for (let k = 0; k < q.a; k++) cells.push({ k: 'a' });
+        for (let k = 0; k < q.b; k++) cells.push({ k: 'b' });
+        steps = [`あかの ${N(q.a)}こと あおの ${N(q.b)}こを あわせるよ。`,
+                 q.a >= 5 || q.b >= 5 ? '5の まとまりを つかって かぞえよう。' : '1こずつ じゅんばんに かぞえよう。',
+                 `${N(q.a)} ＋ ${N(q.b)} ＝ ${H(q.ans)}`];
+        cap = 'マスは 10こ。ぜんぶ うまると 10。';
+      } else {
+        const splitB = q.a >= q.b;
+        const big = splitB ? q.a : q.b, small = splitB ? q.b : q.a;
+        const need = 10 - big, rest = small - need;
+        const [bc, sc] = splitB ? ['a', 'b'] : ['b', 'a'];
+        for (let k = 0; k < big; k++) cells.push({ k: bc });
+        for (let k = 0; k < small; k++) cells.push({ k: sc });
+        cherry = cherrySVG([q.a, '+', q.b, '=', ansTok], splitB ? 2 : 0, [need, rest]);
+        steps = [`${N(big)}は あと ${N(need)}で 10に なるね。`,
+                 `${N(small)}を ${N(need)}と ${N(rest)}に わけるよ。`,
+                 `${N(big)} ＋ ${N(need)} ＝ ${N(10)}`,
+                 `${N(10)} ＋ ${N(rest)} ＝ ${H(q.ans)}`];
+        cap = '1まいめの マスが うまって 10の まとまりが できたよ。';
+      }
+    } else {
+      for (let k = 0; k < q.a; k++) cells.push({ k: 'a' });
+      const ones = q.a - 10;
+      if (q.a > 10 && q.b > ones) {
+        for (let k = 10 - q.b; k < 10; k++) cells[k].x = true;
+        cherry = cherrySVG([q.a, '−', q.b, '=', ansTok], 0, [10, ones]);
+        steps = [`${N(ones)}から ${N(q.b)}は ひけないね。`,
+                 `${N(q.a)}を ${N(10)}と ${N(ones)}に わけるよ。`,
+                 `${N(10)} − ${N(q.b)} ＝ ${N(10 - q.b)}`,
+                 `${N(10 - q.b)} ＋ ${N(ones)} ＝ ${H(q.ans)}`];
+        cap = '10の まとまりから ひいて、のこりを あわせるよ。';
+      } else {
+        for (let k = q.a - q.b; k < q.a; k++) cells[k].x = true;
+        steps = [`${N(q.a)}こ から ${N(q.b)}こ とるよ（×の ところ）。`,
+                 '×が ついていない ブロックを かぞえよう。',
+                 `${N(q.a)} − ${N(q.b)} ＝ ${H(q.ans)}`];
+        cap = '×は なくなった ぶん。';
+      }
+    }
+    return `<section class="explain" aria-live="polite">
+      <h2>${reveal ? 'かんがえかた' : 'ヒント'}</h2>
+      <div class="explain-body">
+        ${cherry ? `<div class="cherry">${cherry}</div>` : ''}
+        <div>${framesHTML(cells)}<div class="frame-cap">${cap}</div></div>
+        <ol class="steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+      </div></section>`;
+  }
+
+  function padHTML(prefix) {
+    return `<div class="pad" data-pad="${prefix}">
+      ${[1,2,3,4,5,6,7,8,9,0].map(d => `<button id="${prefix}k${d}" data-d="${d}">${d}</button>`).join('')}
+      <button class="wide" id="${prefix}kdel" data-act="del">けす</button>
+      <button class="go" id="${prefix}kgo" data-act="go">こたえる</button></div>`;
+  }
+  function mineHTML() {
+    let s = '<div class="mine" aria-hidden="true">';
+    for (let k = 0; k < TOTAL; k++) {
+      const mined = st.results[k] !== undefined;
+      const breakNow = st.breaking && k === st.i;
+      if (mined && !breakNow) s += '<div class="cell hole"></div>';
+      else s += `<div class="cell${k === st.i && !st.done && !mined ? ' now' : ''}${breakNow ? ' break' : ''}">${B(STAGE[k])}</div>`;
+    }
+    return s + '</div>';
+  }
+
+  function render() {
+    if (st.done) {
+      const ok = st.results.filter(Boolean).length;
+      card.innerHTML = `${mineHTML()}
+        <div class="feedback good" style="gap:10px">
+          <span style="font-size:30px;color:var(--yellow)">ステージ クリア！</span>
+          <span>ブロックを ${TOTAL}こ ほったよ。いっかいで せいかい：${ok}もん</span>
+          <span style="color:var(--fg);font-size:17px">${ok === TOTAL ? 'ぜんぶ いっかいで せいかい！ すごい！' : 'まちがえても、さいごまで できたね！'}</span>
+        </div>
+        <div class="actions"><button class="btn" id="toHouse">🏠 おうちを みる</button><button class="btn primary" id="again">つぎの ステージ ▶</button></div>`;
+      document.getElementById('again').onclick = () => start(st.mode);
+      document.getElementById('toHouse').onclick = () => showView('house');
+      return;
+    }
+    const q = st.q;
+    const opSym = q.op === '+' ? '＋' : '−';
+    const ansBox = st.solved ? `<span class="ans right">${q.ans}</span>`
+      : `<span class="ans${st.input ? ' filled' : ''}">${st.input || '&nbsp;'}</span>`;
+    let fb = '';
+    if (st.solved) fb = `<div class="feedback good"><span>${st.wrong ? 'できたね！ よく がんばった！' : 'せいかい！ ブロックを ほったよ！'}</span>
+      <span class="drop">${B(STAGE[st.i])} ${NAMES[STAGE[st.i]]} を 1こ ゲット！</span></div>`;
+    else if (st.wrong) fb = '<div class="feedback try"><span>おしい！ ヒントを みて もういちど。</span></div>';
+
+    card.innerHTML = `
+      <div class="stage-label"><span>だい ${st.i + 1} もん ／ ${TOTAL}</span><span>⛏ せいかいで ブロックが ほれるよ</span></div>
+      ${mineHTML()}
+      ${storyHTML(q)}
+      ${pictureHTML(q)}
+      <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>
+      ${fb}
+      ${st.solved ? '' : padHTML('c')}
+      <div class="actions">
+        ${st.solved ? `<button class="btn primary" id="next">${st.i + 1 < TOTAL ? 'つぎの ブロック ▶' : 'けっかを みる ▶'}</button>`
+                    : (st.hint ? '' : '<button class="btn" id="hint">ヒントを みる</button>')}
+      </div>
+      ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}`;
+    st.breaking = false;
+    const h = document.getElementById('hint'); if (h) h.onclick = () => { st.hint = true; render(); };
+    const n = document.getElementById('next'); if (n) { n.onclick = advance; n.focus({ preventScroll: true }); }
+  }
+
+  function press(k) {
+    if (st.done) return;
+    if (st.solved) { if (k === 'go') advance(); return; }
+    if (k === 'del') st.input = st.input.slice(0, -1);
+    else if (k === 'go') {
+      if (!st.input) return;
+      if (Number(st.input) === st.q.ans) {
+        st.solved = true; st.results[st.i] = !st.wrong; st.breaking = true;
+        gain(STAGE[st.i]);
+      } else { st.wrong = true; st.hint = true; st.input = ''; }
+    } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
+    render();
+  }
+  function advance() {
+    if (st.i + 1 >= TOTAL) { st.done = true; render(); return; }
+    st.i++; next();
+  }
+
+  /* ---------- かずの わけかた ---------- */
+  const sp = { n: 10 };
+  const sq = { n: 0, a: 0, input: '', solved: false, wrong: false, count: 0 };
+
+  function drow(a, b) {
+    let s = '<span class="drow" aria-hidden="true">';
+    for (let k = 0; k < a; k++) s += B('red');
+    if (a && b) s += '<span class="sep"></span>';
+    for (let k = 0; k < b; k++) s += B('blue');
+    return s + '</span>';
+  }
+  function renderSplit() {
+    document.getElementById('chips').innerHTML = Array.from({ length: 10 }, (_, k) => k + 1)
+      .map(n => `<button id="chip${n}" data-n="${n}" aria-pressed="${n === sp.n}">${n}</button>`).join('');
+    const n = sp.n;
+    let html;
+    if (n === 1) {
+      html = `<p class="split-head"><span class="cnt">1</span> は ふたつに わけられないよ</p>
+        <div>${drow(1, 0)}</div>
+        <p class="note">ブロックが 1こ だけ なので、ふたつに わけると どちらかが「なし（0）」に なるよ。</p>`;
+    } else {
+      let li = '';
+      for (let a = 1; a < n; a++) {
+        li += `<li class="${a * 2 === n ? 'pair5' : ''}"><span class="lbl"><span class="cnt" style="color:var(--yellow)">${n}</span>は <span class="ca">${a}</span>と <span class="cb">${n - a}</span></span>${drow(a, n - a)}</li>`;
+      }
+      html = `<p class="split-head"><span class="cnt">${n}</span> の わけかたは <span class="cnt">${n - 1}</span>とおり</p>
+        <ul class="splits">${li}</ul>
+        <p class="note">${n === 10 ? '「あわせて 10」の くみあわせは、くりあがり・くりさがりで つかう だいじな ともだちだよ。' : ''}${n % 2 === 0 ? `きいろの わくは おなじ かずずつ（${n / 2}と ${n / 2}）。` : ''}${n >= 3 ? `「1と ${n - 1}」と「${n - 1}と 1」のように、いれかえても あわせると ${n}。` : ''}</p>`;
+    }
+    document.getElementById('splitList').innerHTML = html;
+
+    let rows = '';
+    for (let m = 1; m <= 10; m++) {
+      const pairs = m === 1 ? '<span>わけられない</span>' : Array.from({ length: m - 1 }, (_, k) => `<span><span class="ca">${k + 1}</span>と<span class="cb">${m - k - 1}</span></span>`).join('');
+      rows += `<tr class="${m === 10 ? 'ten' : ''}"><th scope="row">${m}</th><td class="pairs">${pairs}</td><td class="num">${m === 1 ? '0' : m - 1}とおり</td></tr>`;
+    }
+    document.getElementById('splitTable').innerHTML = `<table><thead><tr><th>かず</th><th>わけかた（いくつと いくつ）</th><th>かず</th></tr></thead><tbody>${rows}</tbody></table>`;
+    renderQuiz();
+  }
+
+  function newQuiz() {
+    let n, a; do { n = rnd(2, 10); a = rnd(1, n - 1); } while (n === sq.n && a === sq.a);
+    if (Math.random() < .4) n = 10, a = rnd(1, 9);
+    Object.assign(sq, { n, a, input: '', solved: false, wrong: false });
+  }
+  function quizSVG() {
+    const b = sq.solved ? sq.n - sq.a : (sq.input || '?');
+    return `<svg class="quiz-svg" viewBox="0 0 200 140" role="img" aria-label="${sq.n}は ${sq.a}と いくつ">
+      <text x="100" y="40" font-size="40" text-anchor="middle">${sq.n}</text>
+      <path class="stem" d="M100 50 L66 92 M100 50 L134 92"/>
+      <circle class="berry" cx="66" cy="112" r="22"/><circle class="berry" cx="134" cy="112" r="22"/>
+      <text x="66" y="122" font-size="28" text-anchor="middle">${sq.a}</text>
+      <text class="q" x="134" y="122" font-size="28" text-anchor="middle">${b}</text></svg>`;
+  }
+  function renderQuiz() {
+    if (!sq.n) newQuiz();
+    const q = document.getElementById('quiz');
+    let fb = '';
+    if (sq.solved) fb = `<div class="feedback good"><span>せいかい！ ${sq.n}は ${sq.a}と ${sq.n - sq.a}</span><span class="drop">${B('gem')} ほうせき を 1こ ゲット！</span></div>`;
+    else if (sq.wrong) fb = `<div class="feedback try"><span>おしい！ うえの ひょうの「${sq.n}」を みてみよう。</span></div>`;
+    q.innerHTML = `<h2>わけかた クイズ</h2>
+      <p class="story" style="font-size:20px">${sq.n}は ${sq.a}と いくつ？</p>
+      ${quizSVG()}
+      ${sq.wrong && !sq.solved ? `<div style="display:flex;justify-content:center">${drow(sq.a, sq.n - sq.a)}</div>` : ''}
+      ${fb}
+      ${sq.solved ? '<div class="actions"><button class="btn primary" id="qnext">つぎの クイズ ▶</button></div>' : padHTML('q')}`;
+    const nx = document.getElementById('qnext'); if (nx) { nx.onclick = () => { newQuiz(); renderQuiz(); }; nx.focus({ preventScroll: true }); }
+  }
+  function pressQuiz(k) {
+    if (sq.solved) { if (k === 'go') { newQuiz(); renderQuiz(); } return; }
+    if (k === 'del') sq.input = sq.input.slice(0, -1);
+    else if (k === 'go') {
+      if (!sq.input) return;
+      if (Number(sq.input) === sq.n - sq.a) { sq.solved = true; gain('gem'); }
+      else { sq.wrong = true; sq.input = ''; }
+    } else if (sq.input.length < 2) sq.input = (sq.input === '0' ? '' : sq.input) + k;
+    renderQuiz();
+  }
+
+  /* ---------- おうち ---------- */
+  const HOUSE = [
+    '....jj....',
+    '...ssss...',
+    '..ssssss..',
+    '.ssssssss.',
+    '.wwwwwwww.',
+    '.wggwwdww.',
+    '.wggwwdww.',
+    'GGGGGGGGGG'
+  ];
+  const HK = { j: 'gem', s: 'stone', w: 'wood', g: 'glass', d: 'dirt', G: 'grass' };
+  const ORDER = [];
+  for (let y = HOUSE.length - 1; y >= 0; y--) for (let x = 0; x < 10; x++) if (HOUSE[y][x] !== '.') ORDER.push(y * 10 + x);
+  function renderHouse() {
+    const need = ORDER.length, placed = Math.min(save.built, need);
+    const placedSet = new Set(ORDER.slice(0, placed));
+    const nextIdx = ORDER[placed];
+    let cells = '';
+    for (let y = 0; y < HOUSE.length; y++) for (let x = 0; x < 10; x++) {
+      const idx = y * 10 + x, ch = HOUSE[y][x];
+      if (ch === '.') cells += '<div class="bc"></div>';
+      else if (placedSet.has(idx)) cells += `<div class="bc">${B(HK[ch])}</div>`;
+      else cells += `<div class="bc ghost${idx === nextIdx ? ' next' : ''}"></div>`;
+    }
+    const done = placed >= need;
+    document.getElementById('house').innerHTML = `
+      <h2>おうちづくり ${save.houses ? `（できた おうち：${save.houses}けん）` : ''}</h2>
+      <p class="story" style="font-size:19px">${done ? 'おうちが かんせいしたよ！ おめでとう！' : `ブロックを ほると おうちが できていくよ。<br>あと <b style="color:var(--yellow)">${need - placed}</b>こで かんせい！`}</p>
+      <div class="build" style="grid-template-columns:repeat(10, auto)" aria-label="おうち ${placed}/${need}">${cells}</div>
+      <div class="bar" aria-hidden="true"><span style="width:${Math.round(placed / need * 100)}%"></span></div>
+      <p class="note">${placed} ／ ${need} こ。もんだいに 1もん せいかいすると、1こ つめるよ。</p>
+      <div class="actions">${done ? '<button class="btn primary" id="newHouse">あたらしい おうちを たてる</button>' : '<button class="btn primary" id="goCalc">⛏ ほりに いく</button>'}</div>`;
+    const nh = document.getElementById('newHouse');
+    if (nh) nh.onclick = () => { save.houses++; save.built = Math.max(0, save.built - need); persist(); renderHouse(); };
+    const gc = document.getElementById('goCalc'); if (gc) gc.onclick = () => showView('calc');
+  }
+
+  /* ---------- きりかえ・そうさ ---------- */
+  let view = 'calc';
+  function showView(v) {
+    view = v;
+    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+    ['calc', 'split', 'house'].forEach(id => { document.getElementById('view-' + id).hidden = id !== v; });
+    if (v === 'split') renderSplit();
+    if (v === 'house') renderHouse();
+  }
+  document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
+  document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b) start(b.dataset.mode); };
+  document.getElementById('chips').onclick = e => { const b = e.target.closest('button'); if (b) { sp.n = Number(b.dataset.n); renderSplit(); } };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.pad button'); if (!b) return;
+    const k = b.dataset.d !== undefined ? b.dataset.d : b.dataset.act;
+    if (b.closest('.pad').dataset.pad === 'q') pressQuiz(k); else press(k);
+  });
+  document.addEventListener('keydown', e => {
+    let k = null;
+    if (/^[0-9]$/.test(e.key)) k = e.key;
+    else if (e.key === 'Backspace') k = 'del';
+    else if (e.key === 'Enter') {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+      k = 'go'; e.preventDefault();
+    }
+    if (k === null) return;
+    if (view === 'calc') press(k); else if (view === 'split') pressQuiz(k);
+  });
+
+  renderInv();
+  start('add10');
+})();
+</script>
+</body>
+</html>
