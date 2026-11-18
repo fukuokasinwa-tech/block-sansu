@@ -630,7 +630,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return `<div class="gear-row">${GEAR[ti].names.map((nm, j) =>
       `<div class="gslot${j < cnt ? '' : ' locked'}${highlightNext && j === cnt ? ' next' : ''}">${G(ti, j)}<small>${nm}</small></div>`).join('')}</div>`;
   }
-  const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★' };
+  const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★（たしざん と ひきざん）' };
   function renderGearStrip() {
     const ti = tiOf(st.mode), g = GEAR[ti], cnt = gearCount(ti), mc = save.mc[g.mode] || 0;
     document.getElementById('gearStrip').innerHTML = `
@@ -685,7 +685,12 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (mode === 'mix') mode = pick(['add10', 'sub10', 'addC', 'subC', 'cherry']);
     const type = mode;
     let a, b, op, kind = '';
-    if (mode === 'cherry') { kind = 'cherry'; mode = Math.random() < .5 ? 'addC' : 'subC'; }
+    if (mode === 'cherry') {
+      kind = 'cherry';
+      // さくらんぼ だけの ステージは たしざん 10もん・ひきざん 10もん（つづけて 3かい おなじに ならない）
+      const op = st.mode === 'cherry' && st.cherryOps ? st.cherryOps[st.i] : (Math.random() < .5 ? '+' : '-');
+      mode = op === '+' ? 'addC' : 'subC';
+    }
     if (mode === 'add10') { op = '+'; a = rnd(1, 8); b = rnd(1, 10 - a); }
     if (mode === 'sub10') { op = '-'; a = rnd(3, 10); b = rnd(1, a - 1); }
     if (mode === 'addC')  { op = '+'; a = rnd(2, 9); b = rnd(Math.max(2, 11 - a), 9); }
@@ -702,8 +707,18 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   const st = { mode: 'add10', i: 0, results: [], q: null, input: '', solved: false, wrong: false, hint: false, done: false, breaking: false };
   const card = document.getElementById('card');
 
+  function shuffleOps() {
+    const a = Array(TOTAL / 2).fill('+').concat(Array(TOTAL / 2).fill('-'));
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
   function start(mode) {
     st.mode = mode; st.i = 0; st.results = []; st.done = false; st.hist = [];
+    if (mode === 'cherry') {
+      let ops;
+      do { ops = shuffleOps(); } while (/(\+\+\+|---)/.test(ops.join('')));
+      st.cherryOps = ops;
+    }
     document.querySelectorAll('#modes button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
     next();
   }
