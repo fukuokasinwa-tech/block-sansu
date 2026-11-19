@@ -77,6 +77,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outlin
   background: var(--key); border: 3px solid var(--panel-edge); box-shadow: inset 3px 3px 0 var(--key-hi), inset -3px -3px 0 var(--key-lo);
 }
 .tbtn.on { background: #2f6f9e; box-shadow: inset 3px 3px 0 #5aa0d6, inset -3px -3px 0 #1d4a6b; }
+.timer-set { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.timer-set .tl { font-family: var(--num); font-weight: 800; font-size: 15px; }
+.timer-set button { font-family: var(--num); font-weight: 800; font-size: 14px; color: var(--fg); cursor: pointer; padding: 4px 10px; background: var(--key); border: 3px solid var(--panel-edge); }
+.timer-set button[aria-pressed="true"] { background: #4f8f35; }
+.timer-set .tleft { font-size: 14px; color: var(--yellow); font-family: var(--num); font-weight: 700; }
 .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .game {
   display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--fg);
@@ -135,6 +140,7 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   <section class="panel" aria-label="あそぶ ひと">
     <div class="who" id="who"></div>
     <div class="chips" id="chips"></div>
+    <div class="timer-set" id="timerSet" aria-label="あそぶ じかん"></div>
     <div class="top-actions">
       <a class="tbtn" href="sansu/#players" id="goPlayers">👥 プレイヤー こうたい・なまえ</a>
       <a class="tbtn" href="sansu/#cloud" id="goCloud">☁ スプレッドシートに つなぐ</a>
@@ -233,13 +239,34 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
     const b = e.target.closest('button'); if (!b) return;
     players.current = b.dataset.id;
     try { localStorage.setItem(PLAYERS_KEY, JSON.stringify(players)); } catch (er) {}
-    render();
+    render(); renderTimer();
   };
-  render(); renderCloud();
+  // あそぶ じかん（プレイヤーごと）：なし／10〜60ぷん。きょう あそんだ じかんは 'block-sansu-time-<id>'
+  const TIMER_CHOICES = [0, 10, 15, 20, 30, 45, 60];
+  function renderTimer() {
+    const el = document.getElementById('timerSet');
+    if (!hasPlayers()) { el.innerHTML = ''; return; }
+    const cur = players.current, sv = loadSave(cur), lim = Number(sv.timerMin) || 0;
+    let used = 0, extra = 0;
+    try { const d = new Date(), day = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); const t = JSON.parse(localStorage.getItem('block-sansu-time-' + cur) || 'null'); if (t && t.day === day) { used = t.sec; extra = t.extra || 0; } } catch (e) {}
+    const left = lim ? Math.max(0, Math.ceil(((lim + extra) * 60 - used) / 60)) : null;
+    el.innerHTML = `<span class="tl">⏰ あそぶ じかん：</span>${TIMER_CHOICES.map(m => `<button data-min="${m}" aria-pressed="${m === lim}">${m ? m + 'ふん' : 'なし'}</button>`).join('')}
+      <span class="tleft">きょう ${Math.round(used / 60)}ふん あそんだ${left !== null ? `・あと ${left}ふん` : ''}</span>`;
+    el.querySelectorAll('[data-min]').forEach(b => { b.onclick = () => {
+      const s2 = loadSave(cur); s2.timerMin = Number(b.dataset.min); s2.updated = Date.now();
+      try {
+        localStorage.setItem(keyOf(cur), JSON.stringify(s2));
+        const c = JSON.parse(localStorage.getItem('block-sansu-cloud') || 'null');
+        if (c && c.url && c.key) { c.pending = Array.isArray(c.pending) ? c.pending : []; if (!c.pending.includes(cur)) c.pending.push(cur); localStorage.setItem('block-sansu-cloud', JSON.stringify(c)); }
+      } catch (e) {}
+      renderTimer();
+    }; });
+  }
+  render(); renderCloud(); renderTimer();
   window.addEventListener('pageshow', () => {
     renderCloud();
     try { players = JSON.parse(localStorage.getItem(PLAYERS_KEY) || 'null'); } catch (e) {}
-    render();
+    render(); renderTimer();
   });
 })();
 </script>

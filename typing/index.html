@@ -218,6 +218,26 @@ body.playlock { overscroll-behavior: none; }
 button, .choice, .pad button, .kb button, .card, #card, #game, .stage, .battle { touch-action: manipulation; }
 body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 input, textarea { -webkit-user-select: text; user-select: text; }
+
+/* あそぶ じかんの タイマー */
+.timebadge { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 55; font-family: var(--num); font-weight: 800; font-size: 15px; color: #2a2a33; background: #fffaf0; border: 3px solid #17191c; padding: 4px 10px; pointer-events: none; }
+.timebadge.soon { background: #ffd23f; }
+@media (prefers-reduced-motion: no-preference) { .timebadge.soon { animation: tbl 1s steps(2) infinite; } @keyframes tbl { 50% { background: #ff9a5a; } } }
+.timeup { position: fixed; inset: 0; z-index: 100; background: rgba(13, 20, 51, .92); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.timeup-box { background: var(--panel, #30343a); border: 4px solid #17191c; color: #f3f1e6; max-width: 520px; width: 100%; padding: 22px; display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; font-family: var(--num); font-weight: 800; }
+.timeup-box .big { font-size: 28px; color: #ffd23f; margin: 0; }
+.timeup-box p { margin: 0; font-size: 18px; line-height: 1.6; }
+.timeup-box a { color: #fff; background: #4f8f35; border: 3px solid #17191c; padding: 10px 18px; text-decoration: none; font-size: 18px; }
+.timeup-box .ext { font: inherit; font-size: 14px; color: #f3f1e6; background: #45494f; border: 3px solid #17191c; padding: 8px 12px; cursor: pointer; position: relative; overflow: hidden; touch-action: none; }
+.timeup-box .ext i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 210, 63, .45); }
+.timebadge { pointer-events: auto; cursor: pointer; }
+.timeup-box .tupanel { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.timeup-box .turow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
+.timeup-box .turow span { width: 100%; font-size: 15px; color: #ffd23f; }
+.timeup-box .turow button, .timeup-box .tuclose { font: inherit; font-size: 16px; color: #f3f1e6; background: #6b7078; border: 3px solid #17191c; padding: 6px 12px; cursor: pointer; }
+.timeup-box .turow button[aria-pressed="true"] { background: #4f8f35; }
+.timeup-box .tunow { font-size: 14px; color: #b9bcb3; }
+.timeup-box small { color: #b9bcb3; font-size: 13px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -821,6 +841,79 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 
   // ロック ちゅうは ながおしの メニューを ださない
   document.addEventListener('contextmenu', e => { if (document.body.classList.contains('playlock')) e.preventDefault(); });
+
+  /* あそぶ じかんの タイマー：1にちの ごうけい（ゲーム ぜんぶ）を プレイヤーごとに かぞえる。じかんは トップページか、みぎしたの ⏰ から えらぶ（セーブの timerMin） */
+  const timerUI = (() => {
+    const pidNow = () => (typeof players !== 'undefined' && players && players.current) || 'p1';
+    const today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+    const key = () => 'block-sansu-time-' + pidNow();
+    const load = () => { try { const t = JSON.parse(localStorage.getItem(key()) || 'null'); if (t && t.day === today()) return t; } catch (e) {} return { day: today(), sec: 0, extra: 0 }; };
+    const store = t => { try { localStorage.setItem(key(), JSON.stringify(t)); } catch (e) {} };
+    const badge = document.createElement('button'); badge.type = 'button'; badge.className = 'timebadge'; badge.hidden = true; badge.setAttribute('aria-label', 'あそぶ じかん');
+    const ov = document.createElement('div'); ov.className = 'timeup'; ov.hidden = true;
+    ov.innerHTML = `<div class="timeup-box" role="dialog" aria-modal="true">
+      <p class="big" id="tuTitle">⏰ おしまいの じかん</p><p id="tuText"></p>
+      <a href="../" id="tuHome">🏠 トップへ もどる</a>
+      <button class="ext" id="tuHold" type="button"><i></i>おうちの かたへ：3びょう ながおしで せってい</button>
+      <div class="tupanel" id="tuPanel" hidden>
+        <div class="turow"><span>えんちょう</span>${[5, 10, 15, 30].map(m => `<button type="button" data-ext="${m}">＋${m}ふん</button>`).join('')}</div>
+        <div class="turow"><span>1にちの じかん</span>${[0, 10, 15, 20, 30, 45, 60].map(m => `<button type="button" data-lim="${m}">${m ? m + 'ふん' : 'なし'}</button>`).join('')}</div>
+        <p class="tunow" id="tuNow"></p>
+      </div>
+      <button class="tuclose" id="tuClose" type="button">とじる</button>
+    </div>`;
+    document.body.appendChild(badge); document.body.appendChild(ov);
+    let mode = ''; // 'up'＝じかんぎれ、'set'＝せってい
+    const panel = ov.querySelector('#tuPanel'), holdBtn = ov.querySelector('#tuHold'), bar = holdBtn.querySelector('i');
+    // ながおし 3びょうで せっていを ひらく
+    let holdT = null, holdStart = 0, holdRaf = 0;
+    const stopHold = () => { clearTimeout(holdT); cancelAnimationFrame(holdRaf); bar.style.width = '0'; };
+    const grow = () => { bar.style.width = Math.min(100, (Date.now() - holdStart) / 30) + '%'; holdRaf = requestAnimationFrame(grow); };
+    holdBtn.addEventListener('pointerdown', e => { e.preventDefault(); holdStart = Date.now(); grow(); holdT = setTimeout(() => { stopHold(); panel.hidden = false; holdBtn.hidden = true; showNow(); }, 3000); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => holdBtn.addEventListener(ev, stopHold));
+    function leftSec() { const t = load(), lim = Number(save.timerMin) || 0; return lim ? (lim + (t.extra || 0)) * 60 - t.sec : Infinity; }
+    function showNow() {
+      const t = load(), lim = Number(save.timerMin) || 0, left = leftSec();
+      ov.querySelector('#tuNow').textContent = `いまの せってい：${lim ? lim + 'ふん' : 'なし'}${t.extra ? `（えんちょう ＋${t.extra}ふん）` : ''}・きょう ${Math.round(t.sec / 60)}ふん あそんだ${isFinite(left) ? `・あと ${Math.max(0, Math.ceil(left / 60))}ふん` : ''}`;
+      ov.querySelectorAll('[data-lim]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.lim) === lim)));
+    }
+    panel.addEventListener('click', e => {
+      const x = e.target.closest('[data-ext]'), y = e.target.closest('[data-lim]');
+      if (x) { const t = load(); t.extra = (t.extra || 0) + Number(x.dataset.ext); store(t); }
+      if (y) { save.timerMin = Number(y.dataset.lim); if (typeof persist === 'function') persist(); }
+      showNow(); tick();
+    });
+    function open(m) {
+      mode = m; ov.hidden = false; panel.hidden = true; holdBtn.hidden = false;
+      const up = m === 'up';
+      ov.querySelector('#tuTitle').textContent = up ? '⏰ おしまいの じかん' : '⏰ あそぶ じかんの せってい';
+      ov.querySelector('#tuText').textContent = up ? `きょうは ${Math.round(load().sec / 60)}ふん あそんだね。よく がんばったよ！ また あした あそぼう。` : 'おうちの かたが せってい してね。';
+      ov.querySelector('#tuHome').hidden = !up;
+      ov.querySelector('#tuClose').hidden = up;
+    }
+    function close() { mode = ''; ov.hidden = true; }
+    ov.querySelector('#tuClose').onclick = close;
+    badge.onclick = () => open('set');
+    let last = Date.now();
+    function tick() {
+      const now = Date.now(), dt = Math.min(30, (now - last) / 1000); last = now;
+      const t = load();
+      if (!document.hidden && mode !== 'up') { t.sec += dt; store(t); }
+      const lim = Number(save.timerMin) || 0;
+      const left = leftSec();
+      badge.hidden = false;
+      badge.textContent = !lim ? '⏰' : left > 60 ? `⏰ あと ${Math.ceil(left / 60)}ふん` : left > 0 ? '⏰ もうすぐ おわり' : '⏰ おわり';
+      badge.classList.toggle('soon', !!lim && left <= 60);
+      if (left <= 0 && mode !== 'up') { open('up'); if (typeof lockUI !== 'undefined') lockUI.off(); }
+      else if (left > 0 && mode === 'up') { // えんちょう・せってい で じかんが ふえた
+        if (panel.hidden) close(); else { mode = 'set'; ov.querySelector('#tuClose').hidden = false; ov.querySelector('#tuHome').hidden = true; ov.querySelector('#tuTitle').textContent = '⏰ あそぶ じかんの せってい'; ov.querySelector('#tuText').textContent = 'あそべる ように なったよ。「とじる」で つづきから。'; }
+      }
+      if (!ov.hidden && !panel.hidden) showNow();
+    }
+    document.addEventListener('visibilitychange', () => { last = Date.now(); });
+    setInterval(tick, 5000); setTimeout(tick, 300);
+    return { tick };
+  })();
 })();
 </script>
 </body>
