@@ -374,6 +374,20 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 }
 #next.wait { opacity: .6; }
 .tapnext { font-size: 14px; color: var(--muted); }
+/* 2ねんせい：九九の え・ひっさん */
+.grade button:disabled { opacity: .45; }
+.kgrid { display: flex; flex-direction: column; gap: 3px; align-items: center; }
+.krow { display: flex; gap: 2px; align-items: center; }
+.krow .blk { width: 22px; height: 22px; }
+.krow .kn { font-family: var(--num); font-weight: 800; font-size: 13px; color: var(--muted); margin-left: 6px; }
+.hissan { align-self: center; display: inline-flex; flex-direction: column; font-family: var(--num); font-weight: 800; font-size: clamp(34px, 5vw, 52px); line-height: 1.25; background: var(--slot); padding: 6px 16px; border: 3px solid var(--panel-edge); }
+.hrow, .hlbl { display: grid; grid-template-columns: repeat(4, 1.1em); text-align: center; }
+.hline { border-top: 4px solid var(--fg); margin: 2px 0; }
+.hans { color: var(--yellow); min-height: 1.25em; }
+.hlbl { font-size: 11px; line-height: 1.2; color: var(--muted); grid-template-columns: repeat(4, calc(1.1em * 52 / 11)); }
+.danrow { display: flex; flex-wrap: wrap; gap: 4px; }
+.danrow .dan { font-family: var(--num); font-weight: 800; font-size: 15px; background: var(--slot); border: 2px solid var(--panel-edge); padding: 2px 6px; }
+.danrow .dan.cur { border-color: var(--yellow); color: var(--yellow); }
 /* たたかい */
 .battle {
   position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 72px;
@@ -568,14 +582,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   </nav>
 
   <div id="view-calc" class="view">
-    <nav class="modes" id="modes" aria-label="もんだいの しゅるい">
-      <button id="m-add10" data-mode="add10">たしざん 10まで</button>
-      <button id="m-sub10" data-mode="sub10">ひきざん 10まで</button>
-      <button id="m-addC" data-mode="addC">くりあがり</button>
-      <button id="m-subC" data-mode="subC">くりさがり</button>
-      <button id="m-cherry" data-mode="cherry">🍒 さくらんぼ</button>
-      <button id="m-mix" data-mode="mix">まぜこぜ</button>
-    </nav>
+    <nav class="modes grade" id="grade" aria-label="がくねん"></nav>
+    <nav class="modes" id="modes" aria-label="もんだいの しゅるい"></nav>
     <section class="panel gearstrip" id="gearStrip" aria-label="もらえる そうび"></section>
     <main class="panel" id="card"></main>
   </div>
@@ -755,7 +763,13 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     { mode: 'addC', tier: 2, label: 'くりあがり', series: 'かみなり', pal: { x: '#ffe14d', h: '#fff7c2', d: '#b89a12' } },
     { mode: 'mix', tier: 2, label: 'まぜこぜ', series: 'ほしぞら', pal: { x: '#2b3a8f', h: '#ffd23f', d: '#151d4f' } },
     { mode: 'cherry', tier: 2, label: 'さくらんぼ', series: 'はなかんむり', pal: { x: '#ff7eb6', h: '#fff0f6', d: '#3f9a4a' } },
-    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } }
+    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } },
+    { mode: 'kuku', label: '九九（くく）', series: 'ほたる', pal: { x: '#b6e05a', h: '#f4ffc2', d: '#5e7d1f' } },
+    { mode: 'hissan', label: '2けたの けいさん', series: 'うみ', pal: { x: '#2fb5b0', h: '#b5f3f0', d: '#17605d' } },
+    { mode: 'mix2', label: '2ねん まぜこぜ', series: 'もり', pal: { x: '#3f7d3a', h: '#a6e27f', d: '#1f4a1c' } },
+    { mode: 'kuku', tier: 2, label: '九九（くく）', series: 'りゅうのうろこ', pal: { x: '#d6453a', h: '#ffd23f', d: '#7a1f18' } },
+    { mode: 'hissan', tier: 2, label: '2けたの けいさん', series: 'しんじゅ', pal: { x: '#f4eef7', h: '#ffffff', d: '#c9a3d6' } },
+    { mode: 'mix2', tier: 2, label: '2ねん まぜこぜ', series: 'ゆうひ', pal: { x: '#ff6a3d', h: '#ffd08a', d: '#8f2a12' } }
   ];
   const PIECES = ['ぶき', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
   GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
@@ -908,7 +922,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return pick(ITEMS.filter(it => it.t === tier)).id;
   }
   // もんだいの むずかしさ：1=たしざん10まで 2=ひきざん10まで 3=くりあがり 4=くりさがり
-  const diffOf = q => q.op === '+' ? (q.ans > 10 ? 3 : 1) : (q.a > 10 && q.b > q.a - 10 ? 4 : 2);
+  const diffOf = q => q.kind === 'kuku' ? 3 : q.kind === 'hissan' ? (q.op === '+' ? ((q.a % 10) + (q.b % 10) >= 10 ? 3 : 2) : ((q.a % 10) < (q.b % 10) ? 4 : 2)) : q.op === '+' ? (q.ans > 10 ? 3 : 1) : (q.a > 10 && q.b > q.a - 10 ? 4 : 2);
   const DROP = { 1: [100, 0, 0, 0], 2: [65, 35, 0, 0], 3: [0, 55, 40, 5], 4: [0, 20, 55, 25], quiz: [70, 30, 0, 0] };
   const rewardFor = q => roll(DROP[diffOf(q)]);
 
@@ -975,7 +989,8 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
 
   /* ---------- しゅじんこう ソラ ---------- */
-  const tiOf = mode => GEAR.findIndex(g => g.mode === mode);
+  const GK = m => /^kuku/.test(m) ? 'kuku' : (m === 'add2' || m === 'sub2') ? 'hissan' : m; // もんだい → そうびの しゅるい
+  const tiOf = mode => GEAR.findIndex(g => g.mode === GK(mode));
   const gearTotal = (sv = save) => GEAR.reduce((a, g, ti) => a + gearCount(ti, sv), 0);
   function renderHero(flash) {
     const eq = equipped();
@@ -993,10 +1008,10 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     return `<div class="gear-row">${GEAR[ti].names.map((nm, j) =>
       `<div class="gslot${j < cnt ? '' : ' locked'}${highlightNext && j === cnt ? ' next' : ''}">${G(ti, j)}<small>${nm}</small></div>`).join('')}</div>`;
   }
-  const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★（たしざん と ひきざん）' };
+  const RARITY_TEXT = { add10: '★', sub10: '★〜★★', addC: '★★〜★★★★', subC: '★★〜★★★★（レアが でやすい）', mix: 'もんだいに よって ★〜★★★★', cherry: '★★〜★★★★（たしざん と ひきざん）', kuku: '★★〜★★★★', hissan: '★〜★★★★（くりあがり・くりさがりが ある ほど レア）', mix2: 'もんだいに よって ★〜★★★★' };
   function renderGearStrip() {
     let ti = tiOf(st.mode);
-    if (gearCount(ti) >= 6) ti = GEAR.findIndex(x => x.mode === st.mode && x.tier === 2);
+    if (gearCount(ti) >= 6) ti = GEAR.findIndex(x => x.mode === GK(st.mode) && x.tier === 2);
     const g = GEAR[ti], cnt = gearCount(ti), mc = save.mc[g.mode] || 0;
     document.getElementById('gearStrip').innerHTML = `
       <div class="strip-head"><b>${g.label}</b> で もらえる もの</div>
@@ -1086,6 +1101,24 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
 
   function makeQ(mode) {
     if (mode === 'mix') mode = pick(['add10', 'sub10', 'addC', 'subC', 'cherry']);
+    if (mode === 'mix2') mode = pick(['kukuAll', 'add2', 'sub2']);
+    if (/^kuku/.test(mode)) {
+      const [lo, hi] = mode === 'kuku25' ? [2, 5] : mode === 'kuku69' ? [6, 9] : [1, 9];
+      const a = rnd(lo, hi), b = rnd(1, 9);
+      return { a, b, op: '×', kind: 'kuku', type: mode, ans: a * b, theme: pick(THEMES) };
+    }
+    if (mode === 'add2' || mode === 'sub2') {
+      // 2けたの ひっさん：はんぶんくらいは くりあがり／くりさがり あり
+      const want = Math.random() < .5;
+      let a, b, tries = 0;
+      do {
+        if (mode === 'add2') { a = rnd(10, 88); b = rnd(10, Math.max(10, 99 - a)); }
+        else { a = rnd(20, 99); b = rnd(10, a - 1); }
+        tries++;
+      } while (tries < 200 && ((mode === 'add2' ? (a % 10) + (b % 10) >= 10 : (a % 10) < (b % 10)) !== want || (mode === 'add2' && a + b > 99)));
+      const op = mode === 'add2' ? '+' : '-';
+      return { a, b, op, kind: 'hissan', type: mode, ans: op === '+' ? a + b : a - b, theme: pick(THEMES) };
+    }
     const type = mode;
     let a, b, op, kind = '';
     if (mode === 'cherry') {
@@ -1133,7 +1166,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     let q, tries = 0;
     do { q = makeQ(st.mode); tries++; }
     while (tries < 400 && (st.hist.includes(key(q)) ||
-      (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (st.mode === 'mix' && q.type === prev.type)))));
+      (prev && (q.ans === prev.ans || q.a === prev.a || q.b === prev.b || (/mix/.test(st.mode) && q.type === prev.type)))));
     st.hist.push(key(q));
     st.q = q; st.input = ''; st.solved = false; st.wrong = false; st.hint = false; st.blank = 0; st.vals = ['', ''];
     st.queued = false; st.lockUntil = 0;
@@ -1151,11 +1184,32 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   }
   function storyHTML(q) {
     const t = q.theme, nm = NAMES[t.kind];
+    if (q.kind === 'kuku') return `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こずつ <b class="cb">${q.b}</b>れつ あるよ。<br>ぜんぶで なんこ かな？</p>`;
+    if (q.kind === 'hissan') return q.op === '+'
+      ? `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ と <b class="cb">${q.b}</b>こ。<br>あわせて なんこ？ ひっさんで けいさん しよう。</p>`
+      : `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ。<b class="cb">${q.b}</b>こ つかうと<br>のこりは なんこ？ ひっさんで けいさん しよう。</p>`;
     if (q.op === '+') return `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ あるよ。<br><b class="cb">${q.b}</b>こ ${t.add}。<br>ぜんぶで なんこ かな？</p>`;
     return `<p class="story">${nm}ブロックが <b class="ca">${q.a}</b>こ あるよ。<br><b class="cb">${q.b}</b>こ ${t.sub}。<br>のこりは なんこ かな？</p>`;
   }
   function pictureHTML(q) {
     const t = q.theme;
+    if (q.kind === 'kuku') {
+      if (q.a * q.b > 45) return `<p class="note" style="text-align:center">ブロックが おおいので しきで かんがえよう（${q.a}の だん）</p>`;
+      let rows = '';
+      for (let r = 0; r < q.b; r++) rows += `<div class="krow">${Array.from({ length: q.a }, () => B(t.kind)).join('')}<span class="kn">${q.a}</span></div>`;
+      return `<div class="kgrid" aria-hidden="true">${rows}</div>`;
+    }
+    if (q.kind === 'hissan') {
+      const d = n => String(n).padStart(2, ' ').split('');
+      const ans = st.solved ? String(q.ans) : st.input;
+      const ad = ans.padStart(3, ' ').split('');
+      return `<div class="hissan" aria-hidden="true">
+        <div class="hrow"><span></span><span></span><span>${d(q.a)[0]}</span><span>${d(q.a)[1]}</span></div>
+        <div class="hrow"><span>${q.op === '+' ? '＋' : '−'}</span><span></span><span>${d(q.b)[0]}</span><span>${d(q.b)[1]}</span></div>
+        <div class="hline"></div>
+        <div class="hrow hans"><span></span>${ad.map(c => `<span>${c.trim()}</span>`).join('')}</div>
+        <div class="hlbl"><span></span><span></span><span>十の<br>くらい</span><span>一の<br>くらい</span></div></div>`;
+    }
     if (q.op === '+') return `<div class="picture" aria-hidden="true">
         <div class="group a">${itemsHTML(q.a, t.kind)}<span class="tag">はじめ ${q.a}こ</span></div>
         <span class="op">＋</span>
@@ -1191,6 +1245,34 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   function explainHTML(q, reveal) {
     const H = v => reveal ? `<span class="n">${v}</span>` : '<span class="hide">?</span>';
     const N = v => `<span class="n">${v}</span>`;
+    if (q.kind === 'kuku') {
+      const row = Array.from({ length: 9 }, (_, k) => k + 1).map(k => `<span class="dan${k === q.b ? ' cur' : ''}">${q.a}×${k}＝${k === q.b && !reveal ? '?' : q.a * k}</span>`).join('');
+      return `<section class="explain" aria-live="polite"><h2>${reveal ? 'かんがえかた' : 'ヒント'}</h2>
+        <ol class="steps">
+          <li>${N(q.a)} × ${N(q.b)} は、${N(q.a)}を ${N(q.b)}かい たす ことだよ。</li>
+          <li>${Array.from({ length: q.b }, () => q.a).join(' ＋ ')} ＝ ${H(q.ans)}</li>
+          <li>${N(q.a)}の だんは ${N(q.a)}ずつ ふえるよ。</li>
+        </ol>
+        <div class="danrow">${row}</div></section>`;
+    }
+    if (q.kind === 'hissan') {
+      const a1 = q.a % 10, b1 = q.b % 10, a10 = Math.floor(q.a / 10), b10 = Math.floor(q.b / 10);
+      let steps;
+      if (q.op === '+') {
+        const s1 = a1 + b1, c = s1 >= 10 ? 1 : 0;
+        steps = [`一の くらい：${N(a1)} ＋ ${N(b1)} ＝ ${N(s1)}${c ? `　→ ${N(s1 - 10)}を かいて、十の くらいに ${N(1)} くりあがり` : ''}`,
+          `十の くらい：${N(a10)} ＋ ${N(b10)}${c ? ` ＋ ${N(1)}` : ''} ＝ ${N(a10 + b10 + c)}`,
+          `こたえ：${H(q.ans)}`];
+      } else {
+        const bor = a1 < b1;
+        steps = [bor ? `一の くらい：${N(a1)}から ${N(b1)}は ひけないので、十の くらいから ${N(10)} かりる。${N(a1 + 10)} − ${N(b1)} ＝ ${N(a1 + 10 - b1)}` : `一の くらい：${N(a1)} − ${N(b1)} ＝ ${N(a1 - b1)}`,
+          `十の くらい：${bor ? `${N(a10)}から 1 かしたので ${N(a10 - 1)}。` : ''}${N(bor ? a10 - 1 : a10)} − ${N(b10)} ＝ ${N((bor ? a10 - 1 : a10) - b10)}`,
+          `こたえ：${H(q.ans)}`];
+      }
+      return `<section class="explain" aria-live="polite"><h2>${reveal ? 'かんがえかた' : 'ヒント'}</h2>
+        <p class="note">ひっさんは 一の くらいから じゅんばんに けいさん するよ。</p>
+        <ol class="steps">${steps.map(x => `<li>${x}</li>`).join('')}</ol></section>`;
+    }
     let cherry = '', cells = [], steps = [], cap = '';
     const ansTok = reveal ? q.ans : '?';
     if (q.op === '+') {
@@ -1468,7 +1550,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       return;
     }
     const q = st.q;
-    const opSym = q.op === '+' ? '＋' : '−';
+    const opSym = q.op === '+' ? '＋' : q.op === '×' ? '×' : '−';
     const ansBox = st.solved ? `<span class="ans right">${q.ans}</span>`
       : `<span class="ans${st.input ? ' filled' : ''}">${st.input || '&nbsp;'}</span>`;
     let fb = '';
@@ -1494,8 +1576,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
       <p class="note" style="text-align:center">${st.solved ? '' : st.steps[st.blank].type === 'berry' ? 'きいろの さくらんぼに はいる かずを いれてね' : st.steps[st.blank].type === 'eq' ? 'きいろの □に はいる かずを いれてね' : 'きいろの □に こたえを いれてね'}</p>` : `
       ${storyHTML(q)}
       ${pictureHTML(q)}
-      <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>`}
+      <div class="expr" aria-label="${q.a} ${q.op === '+' ? 'たす' : q.op === '×' ? 'かける' : 'ひく'} ${q.b} は？"><span>${q.a}</span><span>${opSym}</span><span>${q.b}</span><span>＝</span>${ansBox}</div>`}
       ${fb}
+      ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}
       </div><div class="acol">
       ${battleHTML()}
       ${padHTML('c')}
@@ -1504,7 +1587,6 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
                     : (st.hint ? '' : '<button class="btn" id="hint">ヒントを みる</button>')}
       </div>
       </div></div>
-      ${st.hint || st.solved ? explainHTML(q, st.solved) : ''}
       <div class="mine-wrap"><div class="mine-lbl">⛏ ほった ブロック</div>${mineHTML()}</div></div>`;
     fitCard(card);
     setDash(card);
@@ -1568,15 +1650,15 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
           else { save.cherryStreak = (save.cherryStreak || 0) + 1; if (save.cherryStreak >= 3 && lv < 3) { lv++; save.cherryStreak = 0; st.lvMsg = 'up'; } }
           save.cherryLv = lv;
         }
-        const tis = GEAR.map((g, i) => i).filter(i => GEAR[i].mode === st.mode), before = tis.map(i => gearCount(i));
-        save.mc[st.mode] = (save.mc[st.mode] || 0) + 1;
+        const gk = GK(st.mode), tis = GEAR.map((g, i) => i).filter(i => GEAR[i].mode === gk), before = tis.map(i => gearCount(i));
+        save.mc[gk] = (save.mc[gk] || 0) + 1;
         st.got = rewardFor(st.q); st.gotNew = gain(st.got);
         st.newGear = null;
         tis.forEach((i, k) => { const a = gearCount(i); if (a > before[k]) st.newGear = [i, a - 1]; });
         if (st.i === TOTAL - 1) { st.bossBonus = roll([0, 0, 70, 30]); st.bossBonusNew = gain(st.bossBonus); }
         renderHero(!!st.newGear);
       } else { st.wrong = true; st.hint = !cherry || st.qLv >= 3; st.input = ''; st.fx = 'miss'; }
-    } else if (st.input.length < 2) st.input = (st.input === '0' ? '' : st.input) + k;
+    } else if (st.input.length < 3) st.input = (st.input === '0' ? '' : st.input) + k;
     render();
   }
   let userMoved = false;
@@ -2335,6 +2417,24 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
     if (v === 'zukan') renderZukan();
   }
   document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) showView(b.dataset.view); };
+  // がくねん（3〜6ねんは じゅんびちゅう）
+  const GRADES = {
+    1: { first: 'add10', modes: [['add10', 'たしざん 10まで'], ['sub10', 'ひきざん 10まで'], ['addC', 'くりあがり'], ['subC', 'くりさがり'], ['cherry', '🍒 さくらんぼ'], ['mix', 'まぜこぜ']] },
+    2: { first: 'kuku25', modes: [['kuku25', '九九 2〜5の だん'], ['kuku69', '九九 6〜9の だん'], ['kukuAll', '九九 ぜんぶ'], ['add2', '2けたの たしざん'], ['sub2', '2けたの ひきざん'], ['mix2', 'まぜこぜ']] }
+  };
+  const gradeNow = () => GRADES[save.sansuGrade] ? save.sansuGrade : 1;
+  function renderGrade() {
+    const gnow = gradeNow();
+    document.getElementById('grade').innerHTML = [1, 2, 3, 4, 5, 6].map(n => GRADES[n]
+      ? `<button id="g-${n}" data-grade="${n}" aria-pressed="${n === gnow}">${n}ねんせい</button>`
+      : `<button disabled title="じゅんびちゅう">${n}ねんせい 🔒</button>`).join('');
+    document.getElementById('modes').innerHTML = GRADES[gnow].modes.map(([id, n]) => `<button id="m-${id}" data-mode="${id}" aria-pressed="${id === st.mode}">${n}</button>`).join('');
+  }
+  document.getElementById('grade').onclick = e => {
+    const b = e.target.closest('[data-grade]'); if (!b) return;
+    save.sansuGrade = Number(b.dataset.grade); persist(); userMoved = true;
+    st.mode = GRADES[gradeNow()].first; renderGrade(); start(st.mode);
+  };
   document.getElementById('modes').onclick = e => { const b = e.target.closest('button'); if (b) { userMoved = true; start(b.dataset.mode); } };
   document.getElementById('chips').onclick = e => { const b = e.target.closest('button'); if (b) { sp.n = Number(b.dataset.n); renderSplit(); } };
   document.addEventListener('click', e => {
@@ -2367,7 +2467,9 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   persistPlayers();
   renderInv();
   renderHero();
-  start('add10');
+  st.mode = GRADES[gradeNow()].first;
+  renderGrade();
+  start(st.mode);
   window.addEventListener('resize', () => { if (view === 'calc') { fitCard(card); setDash(card); } });
   setCloudState('');
   if (cloudOn()) pull();
@@ -2379,7 +2481,7 @@ h1 { letter-spacing: .02em; word-break: keep-all; text-wrap: balance; }
   if (location.hash === '#players' || location.hash === '#cloud') {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
-  const LOCK_SEL = '.back-top, .hero-panel, #tabs, #modes, #gearStrip, .parents';
+  const LOCK_SEL = '.back-top, .hero-panel, #tabs, #grade, #modes, #gearStrip, .parents';
 
   /* あそびちゅう ロック：あそんで いる あいだは まわりを さわっても きえない・とじない。「⏹ おわる」→「はい」で とく */
   const lockUI = (() => {

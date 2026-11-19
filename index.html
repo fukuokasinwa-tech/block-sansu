@@ -193,13 +193,13 @@ a.game:active { transform: translateY(3px); box-shadow: inset 3px 3px 0 var(--pa
   function sansuProgress(sv) {
     const inv = sv.inv || {}, mc = sv.mc || {};
     const items = Object.keys(inv).filter(k => inv[k] > 0 && k !== 'red' && k !== 'blue').length;
-    const gear = ['add10', 'sub10', 'addC', 'mix', 'cherry', 'subC'].reduce((a, m) => a + Math.min(12, Math.floor((mc[m] || 0) / 3)), 0);
-    return `ずかん ${Math.min(items, 100)} ／ 100 ・ そうび ${gear} ／ 72`;
+    const gear = ['add10', 'sub10', 'addC', 'mix', 'cherry', 'subC', 'kuku', 'hissan', 'mix2'].reduce((a, m) => a + Math.min(12, Math.floor((mc[m] || 0) / 3)), 0);
+    return `ずかん ${Math.min(items, 100)} ／ 100 ・ そうび ${gear} ／ 108`;
   }
 
   const GAMES = [
-    { id: 'sansu', href: 'sansu/', title: 'ブロック さんすう たんけん', tag: 'さんすう ・ 1ねんせい',
-      text: 'たしざん・ひきざん・さくらんぼ けいさん。せいかいで ブロックを ほって、そうびを あつめよう！', ready: true },
+    { id: 'sansu', href: 'sansu/', title: 'ブロック さんすう たんけん', tag: 'さんすう ・ 1〜2ねんせい',
+      text: '1ねん：たしざん・ひきざん・さくらんぼ、2ねん：九九・2けたの ひっさん。せいかいで ブロックを ほって そうびを あつめよう！', ready: true },
     { id: 'hiragana', href: 'hiragana/', title: 'ひらがな たんけん', tag: 'こくご ・ 1ねんせい',
       text: 'きいて えらぶ・えと ことば・ごじゅうおん・なぞりがき。もじカードを あつめよう！', ready: true },
     { id: 'kokugo', href: 'kokugo/', title: 'カタカナ・かんじ たんけん', tag: 'こくご ・ 1ねんせい', text: 'カタカナ と 1ねんせいの かんじ 80じ。よみかた・えと かんじ・なぞりがき で カードを あつめよう！', ready: true },

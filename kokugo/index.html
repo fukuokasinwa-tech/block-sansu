@@ -513,7 +513,13 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     { mode: 'addC', tier: 2, label: 'くりあがり', series: 'かみなり', pal: { x: '#ffe14d', h: '#fff7c2', d: '#b89a12' } },
     { mode: 'mix', tier: 2, label: 'まぜこぜ', series: 'ほしぞら', pal: { x: '#2b3a8f', h: '#ffd23f', d: '#151d4f' } },
     { mode: 'cherry', tier: 2, label: 'さくらんぼ', series: 'はなかんむり', pal: { x: '#ff7eb6', h: '#fff0f6', d: '#3f9a4a' } },
-    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } }
+    { mode: 'subC', tier: 2, label: 'くりさがり', series: 'ぎんが', pal: { x: '#5b2a9e', h: '#9ff3ef', d: '#2a1150' } },
+    { mode: 'kuku', label: '九九（くく）', series: 'ほたる', pal: { x: '#b6e05a', h: '#f4ffc2', d: '#5e7d1f' } },
+    { mode: 'hissan', label: '2けたの けいさん', series: 'うみ', pal: { x: '#2fb5b0', h: '#b5f3f0', d: '#17605d' } },
+    { mode: 'mix2', label: '2ねん まぜこぜ', series: 'もり', pal: { x: '#3f7d3a', h: '#a6e27f', d: '#1f4a1c' } },
+    { mode: 'kuku', tier: 2, label: '九九（くく）', series: 'りゅうのうろこ', pal: { x: '#d6453a', h: '#ffd23f', d: '#7a1f18' } },
+    { mode: 'hissan', tier: 2, label: '2けたの けいさん', series: 'しんじゅ', pal: { x: '#f4eef7', h: '#ffffff', d: '#c9a3d6' } },
+    { mode: 'mix2', tier: 2, label: '2ねん まぜこぜ', series: 'ゆうひ', pal: { x: '#ff6a3d', h: '#ffd08a', d: '#8f2a12' } }
   ];
   const PIECES = ['ぶき', 'ぼうし', 'ふく', 'ズボン', 'ブーツ', 'たて'];
   GEAR.forEach(g => { g.names = PIECES.map(p => `${g.series}の ${p}`); });
